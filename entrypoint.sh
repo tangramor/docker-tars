@@ -19,12 +19,7 @@ case ${1} in
                 ;;
         start)
 
-                #时间戳
-            # cp -rf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime && echo 'Asia/Shanghai' >/etc/timezone
-
-                 source /etc/profile
-            #    /usr/local/app/tars/tars_install.sh
-            #    /usr/local/app/tars/tarspatch/util/init.sh
+                source /etc/profile
                 exec /usr/local/resin/bin/resin.sh console
                 ;;
         *)
