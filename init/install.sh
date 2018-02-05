@@ -5,7 +5,6 @@ MachineIp=$(ip addr | grep inet | grep eth0 | awk '{print $2;}' | sed 's|/.*$||'
 MachineName=$(cat /etc/hosts | grep ${MachineIp} | awk '{print $2}')
 
 build_cpp_framework(){
-
 	echo "build cpp framework ...."
 	##Tars数据库环境初始化
 	mysql -h${DBIP} -P${DBPort} -u${DBUser} -p${DBPassword} -e "grant all on *.* to 'tars'@'%' identified by 'tars2015' with grant option;"
@@ -20,32 +19,17 @@ build_cpp_framework(){
 	sed -i "s/proot@appinside/h${DBIP} -P${DBPort} -u${DBUser} -p${DBPassword} /g" `grep proot@appinside -rl ./exec-sql.sh`
 	chmod u+x /root/Tars/cpp/framework/sql/exec-sql.sh
 	/root/Tars/cpp/framework/sql/exec-sql.sh
-
 }
 
 install_base_services(){
-
-	echo "install base services ...."
+	echo "base services ...."
 	
-	##打包框架基础服务
+	##框架基础服务包
 	cd /root/Tars/cpp/build/
-	make framework-tar
-
-	make tarsstat-tar
-	make tarsnotify-tar
-	make tarsproperty-tar
-	make tarslog-tar
-	make tarsquerystat-tar
-	make tarsqueryproperty-tar
 	mv t*.tgz /data	
-	cd -
-
-	##安装核心基础服务
-	mkdir -p /usr/local/app/tars/
-	cd /root/Tars/cpp/build/
-	cp framework.tgz /usr/local/app/tars/
+	
+	##核心基础服务配置修改
 	cd /usr/local/app/tars
-	tar xzfv framework.tgz
 
 	sed -i "s/dbhost.*=.*192.168.2.131/dbhost = ${DBIP}/g" `grep dbhost -rl ./*`
 	sed -i "s/192.168.2.131/${MachineIp}/g" `grep 192.168.2.131 -rl ./*`
@@ -61,22 +45,23 @@ install_base_services(){
 }
 
 build_web_mgr(){
-
-	echo "build web manager ...."
-
-	##安装web管理系统
-	cd /root/Tars/web/
-	sed -i "s/db.tars.com/${DBIP}/g" `grep db.tars.com -rl /root/Tars/web/src/main/resources/app.config.properties`
-	sed -i "s/3306/${DBPort}/g" `grep 3306 -rl /root/Tars/web/src/main/resources/app.config.properties`
-	sed -i "s/registry1.tars.com/${MachineIp}/g" `grep registry1.tars.com -rl /root/Tars/web/src/main/resources/tars.conf`
-	sed -i "s/registry2.tars.com/${MachineIp}/g" `grep registry2.tars.com -rl /root/Tars/web/src/main/resources/tars.conf`
-	sed -i "s/DEBUG/INFO/g" `grep DEBUG -rl /root/Tars/web/src/main/resources/log4j.properties`
+	echo "web manager ...."
 	
-	source /etc/profile
-	mvn clean package
+	##web管理系统配置修改后重新打war包
+	cd /usr/local/resin/webapps/
+	mkdir tars
+	cd tars
+	jar -xvf ../tars.war
 	
-	cp /root/Tars/build/conf/resin.xml /usr/local/resin/conf/
-	cp /root/Tars/web/target/tars.war /usr/local/resin/webapps/
+	sed -i "s/db.tars.com/${DBIP}/g" `grep db.tars.com -rl ./WEB-INF/classes/app.config.properties`
+	sed -i "s/3306/${DBPort}/g" `grep 3306 -rl ./WEB-INF/classes/app.config.properties`
+	sed -i "s/registry1.tars.com/${MachineIp}/g" `grep registry1.tars.com -rl ./WEB-INF/classes/tars.conf`
+	sed -i "s/registry2.tars.com/${MachineIp}/g" `grep registry2.tars.com -rl ./WEB-INF/classes/tars.conf`
+	sed -i "s/DEBUG/INFO/g" `grep DEBUG -rl ./WEB-INF/classes/log4j.properties`
+	
+	jar -uvf ../tars.war .
+	cd ..
+	rm -rf tars
 }
 
 

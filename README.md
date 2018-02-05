@@ -38,4 +38,3 @@ Trouble Shooting
 
 在启动容器后，因为它需要自动运行安装脚本，所以耗时会比较长，可以 `docker exec -it tars bash` 进入容器，查看当前运行状态；当然如果 /c/Users/\<ACCOUNT\>/tars_data/log/tars 下面出现了 _log4j.log 文件，说明安装已经完成，resin运行起来了。
 
-通过 `ps -ef | grep mvn` 可以查看web管理系统的构建进程是否在执行。可能会碰到的一种情况是构建进程已经结束但其实构建失败了。这个时候在容器中进入 /usr/local/resin/webapps/ 目录，查看是否存在 tar.war 文件和 tars 目录，tars目录里应该包含html文件和相关目录。如果不存在，可以手动执行： `cd /root/Tars/web/ && source /etc/profile && mvn clean package && cp target/tars.war /usr/local/resin/webapps/`
