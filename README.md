@@ -17,7 +17,7 @@ docker run --name mysql -e MYSQL_ROOT_PASSWORD=password -d -p 3306:3306 -v /c/Us
 镜像构建命令：docker build -t tars .
 
 在运行容器时需要指定数据库的环境变量，例如：
-
+```
 DBIP mysql
 
 DBPort 3306
@@ -25,7 +25,7 @@ DBPort 3306
 DBUser root
 
 DBPassword password
-
+```
 run_docker_tars.sh 里的命令如下，请自己修改：
 ```
 docker run -d -it --name tars --link mysql --env DBIP=mysql --env DBPort=3306 --env DBUser=root --env DBPassword=PASS -p 8080:8080 -v /c/Users/<ACCOUNT>/tars_data:/data tars
@@ -34,6 +34,6 @@ docker run -d -it --name tars --link mysql --env DBIP=mysql --env DBPort=3306 --
 Trouble Shooting
 ----------------
 
-在启动容器后，因为它需要自动运行安装脚本，所以耗时会比较长，可以 docker exec -it tars bash 进入容器，查看当前运行状态；当然如果 /c/Users/<ACCOUNT>/tars_data/log/tars 下面出现了 _log4j.log 文件，说明安装已经完成，resin运行起来了。
+在启动容器后，因为它需要自动运行安装脚本，所以耗时会比较长，可以 `docker exec -it tars bash` 进入容器，查看当前运行状态；当然如果 /c/Users/<ACCOUNT>/tars_data/log/tars 下面出现了 _log4j.log 文件，说明安装已经完成，resin运行起来了。
 
-通过 ps -ef | grep mvn 可以查看web管理系统的构建进程是否在执行。可能会碰到的一种情况是构建进程已经结束但其实构建失败了。这个时候在容器中进入 /usr/local/resin/webapps/ 目录，查看是否存在 tar.war 文件和 tars 目录，tars目录里应该包含html文件和相关目录。如果不存在，可以手动执行： cd /root/Tars/web/ && source /etc/profile && mvn clean package && cp target/tars.war /usr/local/resin/webapps/
+通过 `ps -ef | grep mvn` 可以查看web管理系统的构建进程是否在执行。可能会碰到的一种情况是构建进程已经结束但其实构建失败了。这个时候在容器中进入 /usr/local/resin/webapps/ 目录，查看是否存在 tar.war 文件和 tars 目录，tars目录里应该包含html文件和相关目录。如果不存在，可以手动执行： `cd /root/Tars/web/ && source /etc/profile && mvn clean package && cp target/tars.war /usr/local/resin/webapps/`
