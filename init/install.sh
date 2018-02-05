@@ -21,13 +21,45 @@ build_cpp_framework(){
   chmod u+x /root/Tars/cpp/framework/sql/exec-sql.sh
   /root/Tars/cpp/framework/sql/exec-sql.sh
 
-  sed -i "s/192.168.2.131/${MachineIp}/g" `grep 192.168.2.131 -rl /usr/local/app/tars/*`
-  sed -i "s/db.tars.com/${DBIP}/g" `grep db.tars.com -rl /usr/local/app/tars/*`
-  sed -i "s/dbport=3306/dbport=${DBPort}/g" `grep 3306 -rl /usr/local/app/tars/*`
-  sed -i "s/registry.tars.com/${MachineIp}/g" `grep registry.tars.com -rl /usr/local/app/tars/*`
-  sed -i "s/web.tars.com/${MachineIp}/g" `grep web.tars.com -rl /usr/local/app/tars/*`
+  #sed -i "s/192.168.2.131/${MachineIp}/g" `grep 192.168.2.131 -rl /usr/local/app/tars/*`
+  #sed -i "s/db.tars.com/${DBIP}/g" `grep db.tars.com -rl /usr/local/app/tars/*`
+  #sed -i "s/dbport=3306/dbport=${DBPort}/g" `grep 3306 -rl /usr/local/app/tars/*`
+  #sed -i "s/registry.tars.com/${MachineIp}/g" `grep registry.tars.com -rl /usr/local/app/tars/*`
+  #sed -i "s/web.tars.com/${MachineIp}/g" `grep web.tars.com -rl /usr/local/app/tars/*`
+}
 
-  chmod u+x /usr/local/app/tars/tars_install.sh
+install_base_services(){
+	##打包框架基础服务
+	cd /root/Tars/cpp/build/
+	make framework-tar
+
+	make tarsstat-tar
+	make tarsnotify-tar
+	make tarsproperty-tar
+	make tarslog-tar
+	make tarsquerystat-tar
+	make tarsqueryproperty-tar
+	mv t*.tgz /data	
+	cd -
+
+	##安装核心基础服务
+	mkdir -p /usr/local/app/tars/
+	cd /root/Tars/cpp/build/
+	cp framework.tgz /usr/local/app/tars/
+	cd /usr/local/app/tars
+	tar xzfv framework.tgz
+
+	sed -i "s/dbhost.*=.*192.168.2.131/dbhost = ${DBIP}/g" `grep dbhost -rl ./*`
+	sed -i "s/192.168.2.131/${MachineIp}/g" `grep 192.168.2.131 -rl ./*`
+	sed -i "s/db.tars.com/${DBIP}/g" `grep db.tars.com -rl ./*`
+	sed -i "s/dbport.*=.*3306/dbport = ${DBPort}/g" `grep dbport -rl /usr/local/app/tars/*`
+	sed -i "s/registry.tars.com/${MachineIp}/g" `grep registry.tars.com -rl ./*`
+	sed -i "s/web.tars.com/${MachineIp}/g" `grep web.tars.com -rl ./*`
+
+	chmod u+x tars_install.sh
+	./tars_install.sh
+
+	./tarspatch/util/init.sh
 }
 
 build_web_mgr(){
@@ -49,5 +81,7 @@ build_web_mgr(){
 
 
 build_cpp_framework
+
+install_base_services
 
 build_web_mgr
