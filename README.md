@@ -36,5 +36,5 @@ docker run -d -it --name tars --link mysql --env DBIP=mysql --env DBPort=3306 --
 Trouble Shooting
 ----------------
 
-在启动容器后，因为它需要自动运行安装脚本，所以耗时会比较长，可以 `docker exec -it tars bash` 进入容器，查看当前运行状态；当然如果 /c/Users/\<ACCOUNT\>/tars_data/log/tars 下面出现了 _log4j.log 文件，说明安装已经完成，resin运行起来了。
+在启动容器后，可以 `docker exec -it tars bash` 进入容器，查看当前运行状态；如果 /c/Users/\<ACCOUNT\>/tars_data/log/tars 下面出现了 _log4j.log 文件，说明安装已经完成，resin运行起来了。
 
