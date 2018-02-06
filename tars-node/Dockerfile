@@ -49,12 +49,11 @@ RUN cd /root/Tars/cpp/build/ && make framework-tar
 
 ##安装核心基础服务
 RUN mkdir -p /usr/local/app/tars/ && cp /root/Tars/cpp/build/framework.tgz /usr/local/app/tars/ 
-RUN cd /usr/local/app/tars/ && tar xzfv framework.tgz
-# && rm -rf framework.tgz
+RUN cd /usr/local/app/tars/ && tar xzfv framework.tgz && rm -rf framework.tgz
 RUN mkdir -p /usr/local/app/patchs/tars.upload
 
 ##删除Tars源码
-#RUN rm -rf /root/Tars
+RUN rm -rf /root/Tars
 
 ##拷贝资源
 COPY tars-node/init/install.sh /root/init/

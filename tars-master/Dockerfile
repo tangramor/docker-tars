@@ -1,6 +1,5 @@
 FROM centos
 
-
 ##安装glibc-devel flex、bison mysql 支持库 中文乱码
 RUN yum install -y git gcc gcc-c++ make wget cmake mysql mysql-devel unzip iproute which glibc-devel flex bison ncurses-devel zlib-devel kde-l10n-Chinese glibc-common && yum clean all
 
@@ -59,7 +58,6 @@ RUN mkdir -p /usr/local/app/patchs/tars.upload
 RUN cd /root/Tars/web/ && source /etc/profile && mvn clean package
 RUN cp /root/Tars/build/conf/resin.xml /usr/local/resin/conf/
 RUN cp /root/Tars/web/target/tars.war /usr/local/resin/webapps/
-
 
 ##拷贝SQL文件
 RUN mkdir -p /root/sql && cp -rf /root/Tars/cpp/framework/sql/* /root/sql/
