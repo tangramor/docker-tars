@@ -38,7 +38,8 @@ RUN source /etc/profile && cd /root/Tars/java && mvn clean install && mvn clean 
 
 ##安装c++语言框架
 RUN cd /root/Tars/cpp/thirdparty && sh thirdparty.sh 
-RUN chmod u+x /root/Tars/cpp/build/build.sh && /root/Tars/cpp/build/build.sh all && /root/Tars/cpp/build/build.sh install
+RUN chmod u+x /root/Tars/cpp/build/build.sh && /root/Tars/cpp/build/build.sh all 
+RUN /root/Tars/cpp/build/build.sh install
 
 ##打包框架基础服务
 RUN cd /root/Tars/cpp/build/ && make framework-tar 
