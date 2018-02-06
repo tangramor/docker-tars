@@ -63,7 +63,7 @@ RUN cp /root/Tars/web/target/tars.war /usr/local/resin/webapps/
 RUN mkdir -p /root/sql && cp -rf /root/Tars/cpp/framework/sql/* /root/sql/
 
 ##删除Tars源码
-RUN rm -rf /root/Tars
+RUN rm -rf /root/Tars && rm -f /root/master.zip
 
 ##拷贝资源
 COPY tars-master/init/install.sh /root/init/

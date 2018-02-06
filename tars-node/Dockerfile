@@ -53,7 +53,7 @@ RUN cd /usr/local/app/tars/ && tar xzfv framework.tgz && rm -rf framework.tgz
 RUN mkdir -p /usr/local/app/patchs/tars.upload
 
 ##删除Tars源码
-RUN rm -rf /root/Tars
+RUN rm -rf /root/Tars && rm -f /root/master.zip
 
 ##拷贝资源
 COPY tars-node/init/install.sh /root/init/
