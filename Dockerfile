@@ -7,8 +7,8 @@ WORKDIR /root/
 
 ##修改镜像时区 
 ENV TZ=Asia/Shanghai
-RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
-RUN localedef -c -f UTF-8 -i zh_CN zh_CN.utf8
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone \
+	&& localedef -c -f UTF-8 -i zh_CN zh_CN.utf8
 
 ENV LC_ALL zh_CN.utf8
 ENV DBIP 127.0.0.1
