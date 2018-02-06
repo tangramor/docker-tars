@@ -1,5 +1,6 @@
 FROM centos
 
+
 ##安装glibc-devel flex、bison mysql 支持库 中文乱码
 RUN yum install -y git gcc gcc-c++ make wget cmake mysql mysql-devel unzip iproute which glibc-devel flex bison ncurses-devel zlib-devel kde-l10n-Chinese glibc-common && yum clean all
 
@@ -25,7 +26,8 @@ ENV JAVA_HOME /usr/java/jdk1.8.0_131
 RUN cd /usr/local/ && wget http://mirrors.gigenet.com/apache/maven/maven-3/3.5.2/binaries/apache-maven-3.5.2-bin.tar.gz && tar zxvf apache-maven-3.5.2-bin.tar.gz && echo "export MAVEN_HOME=/usr/local/apache-maven-3.5.2/" >> /etc/profile && echo "export PATH=\$PATH:\$MAVEN_HOME/bin" >> /etc/profile && source /etc/profile && mvn -v && rm -rf apache-maven-3.5.2-bin.tar.gz 
 ENV MAVEN_HOME /usr/local/apache-maven-3.5.2
 
-##安装libmysqlclient
+##安装resin
+RUN cd /usr/local/ && wget http://caucho.com/download/resin-4.0.51.tar.gz && tar zxvf resin-4.0.51.tar.gz && mv resin-4.0.51 resin && rm -rf resin-4.0.51.tar.gz
 RUN mkdir -p /usr/local/mysql && ln -s /usr/lib64/mysql /usr/local/mysql/lib && ln -s /usr/include/mysql /usr/local/mysql/include && echo "/usr/local/mysql/lib/" >> /etc/ld.so.conf && ldconfig
 RUN cd /usr/local/mysql/lib/ && ln -s libmysqlclient.so.*.*.* libmysqlclient.a
 
@@ -45,21 +47,33 @@ RUN cd /root/Tars/cpp/build/ && ./build.sh all
 RUN cd /root/Tars/cpp/build/ && ./build.sh install
 
 ##打包框架基础服务
-RUN cd /root/Tars/cpp/build/ && make framework-tar
+RUN cd /root/Tars/cpp/build/ && make framework-tar 
+RUN cd /root/Tars/cpp/build/ && make tarsstat-tar && make tarsnotify-tar && make tarsproperty-tar && make tarslog-tar && make tarsquerystat-tar && make tarsqueryproperty-tar
 
 ##安装核心基础服务
 RUN mkdir -p /usr/local/app/tars/ && cp /root/Tars/cpp/build/framework.tgz /usr/local/app/tars/ 
-RUN cd /usr/local/app/tars/ && tar xzfv framework.tgz
-# && rm -rf framework.tgz
+RUN cd /usr/local/app/tars/ && tar xzfv framework.tgz && rm -rf framework.tgz
 RUN mkdir -p /usr/local/app/patchs/tars.upload
 
+##安装web管理系统
+RUN cd /root/Tars/web/ && source /etc/profile && mvn clean package
+RUN cp /root/Tars/build/conf/resin.xml /usr/local/resin/conf/
+RUN cp /root/Tars/web/target/tars.war /usr/local/resin/webapps/
+
+
+##拷贝SQL文件
+RUN mkdir -p /root/sql && cp -rf /root/Tars/cpp/framework/sql/* /root/sql/
+
 ##删除Tars源码
-#RUN rm -rf /root/Tars
+RUN rm -rf /root/Tars
 
 ##拷贝资源
-COPY tars-node/init/install.sh /root/init/
-COPY tars-node/entrypoint.sh /sbin/
+COPY tars-master/init/install.sh /root/init/
+COPY entrypoint.sh /sbin/
 
 ENTRYPOINT ["/bin/bash","/sbin/entrypoint.sh"]
 
 CMD ["start"]
+
+#Expose ports
+EXPOSE 8080

@@ -18,7 +18,7 @@ case ${1} in
         init)
                 ;;
         start)
-				tail -f /data/tars/app_log/tars/tarsnode/tars.tarsnode.log
+				tail -f /var/log/yum.log
                 ;;
         *)
                 exec "$@"

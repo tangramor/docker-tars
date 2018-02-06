@@ -7,10 +7,6 @@ MachineName=$(cat /etc/hosts | grep ${MachineIp} | awk '{print $2}')
 install_node_services(){
 	echo "base services ...."
 	
-	##框架基础服务包
-	cd /root/Tars/cpp/build/
-	mv t*.tgz /data	
-	
 	##核心基础服务配置修改
 	cd /usr/local/app/tars
 

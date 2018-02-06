@@ -31,7 +31,10 @@ RUN mkdir -p /usr/local/mysql && ln -s /usr/lib64/mysql /usr/local/mysql/lib && 
 RUN cd /usr/local/mysql/lib/ && ln -s libmysqlclient.so.*.*.* libmysqlclient.a
 
 ##获取Tars源码
-RUN git clone https://github.com/Tencent/Tars.git
+#RUN git clone https://github.com/Tencent/Tars.git
+RUN wget https://github.com/Tencent/Tars/archive/master.zip
+RUN unzip -a master.zip
+RUN mv Tars-master Tars
 
 ##安装java语言框架
 RUN source /etc/profile && cd /root/Tars/java && mvn clean install && mvn clean install -f core/client.pom.xml && mvn clean install -f core/server.pom.xml
