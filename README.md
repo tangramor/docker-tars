@@ -19,6 +19,22 @@ tars-node 之下是只部署 tarsnode 服务的节点镜像脚本，也删除了
 docker pull tangramor/docker-tars-node
 ```
 
+在运行容器时需要指定数据库的环境变量，例如：
+```
+DBIP mysql
+DBPort 3306
+DBUser root
+DBPassword password
+```
+
+run_docker_tars.sh 里的命令如下，请自己修改：
+```
+docker run -d -it --name tars --link mysql --env DBIP=mysql --env DBPort=3306 --env DBUser=root --env DBPassword=PASS -p 8080:8080 -v /c/Users/<ACCOUNT>/tars_data:/data tangramor/docker-tars
+```
+
+另外安装脚本把构建成功的 tarslog.tgz、tarsnotify.tgz、tarsproperty.tgz、tarsqueryproperty.tgz、tarsquerystat.tgz 和 tarsstat.tgz 都放到了 /c/Users/\<ACCOUNT\>/tars_data/ 目录之下，可以参考Tars官方文档的 [安装框架普通基础服务](https://github.com/Tencent/Tars/blob/master/Install.md#44-%E5%AE%89%E8%A3%85%E6%A1%86%E6%9E%B6%E6%99%AE%E9%80%9A%E5%9F%BA%E7%A1%80%E6%9C%8D%E5%8A%A1) 来安装这些服务。
+
+
 MySQL
 -----
 
@@ -38,20 +54,9 @@ docker run --name mysql -e MYSQL_ROOT_PASSWORD=password -d -p 3306:3306 -v /c/Us
 
 镜像构建命令：`docker build -t tars .`
 
-在运行容器时需要指定数据库的环境变量，例如：
-```
-DBIP mysql
-DBPort 3306
-DBUser root
-DBPassword password
-```
+tars-master 镜像构建命令：`docker build -t tars-master -f tars-master/Dockerfile .`
 
-run_docker_tars.sh 里的命令如下，请自己修改：
-```
-docker run -d -it --name tars --link mysql --env DBIP=mysql --env DBPort=3306 --env DBUser=root --env DBPassword=PASS -p 8080:8080 -v /c/Users/<ACCOUNT>/tars_data:/data tangramor/docker-tars
-```
-
-另外安装脚本把构建成功的 tarslog.tgz、tarsnotify.tgz、tarsproperty.tgz、tarsqueryproperty.tgz、tarsquerystat.tgz 和 tarsstat.tgz 都放到了 /c/Users/\<ACCOUNT\>/tars_data/ 目录之下，可以参考Tars官方文档的 [安装框架普通基础服务](https://github.com/Tencent/Tars/blob/master/Install.md#44-%E5%AE%89%E8%A3%85%E6%A1%86%E6%9E%B6%E6%99%AE%E9%80%9A%E5%9F%BA%E7%A1%80%E6%9C%8D%E5%8A%A1) 来安装这些服务。
+tars-node 镜像构建命令：`docker build -t tars-node -f tars-node/Dockerfile .`
 
 
 Trouble Shooting
