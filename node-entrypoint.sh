@@ -1,4 +1,3 @@
-
 #!/bin/bash
 
 if [ -d /root/init ];then
@@ -18,7 +17,7 @@ case ${1} in
         init)
                 ;;
         start)
-				tail -f /var/log/yum.log
+                tail -f /var/log/yum.log
                 ;;
         *)
                 exec "$@"
