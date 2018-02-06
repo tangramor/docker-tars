@@ -7,8 +7,8 @@ WORKDIR /root/
 
 ##修改镜像时区 
 ENV TZ=Asia/Shanghai
-RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
-RUN localedef -c -f UTF-8 -i zh_CN zh_CN.utf8
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone \
+	&& localedef -c -f UTF-8 -i zh_CN zh_CN.utf8
 
 ENV LC_ALL zh_CN.utf8
 ENV DBIP 127.0.0.1
@@ -40,7 +40,6 @@ RUN mkdir -p /usr/local/mysql && ln -s /usr/lib64/mysql /usr/local/mysql/lib && 
 	&& cd /usr/local/mysql/lib/ && ln -s libmysqlclient.so.*.*.* libmysqlclient.a
 
 ##获取Tars源码
-#RUN git clone https://github.com/Tencent/Tars.git
 RUN wget https://github.com/Tencent/Tars/archive/master.zip \
 	&& unzip -a master.zip \
 	&& mv Tars-master Tars

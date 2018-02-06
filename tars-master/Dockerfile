@@ -41,7 +41,6 @@ RUN cd /usr/local/ && wget http://caucho.com/download/resin-4.0.51.tar.gz && tar
 	&& cd /usr/local/mysql/lib/ && ln -s libmysqlclient.so.*.*.* libmysqlclient.a
 
 ##获取Tars源码
-#RUN git clone https://github.com/Tencent/Tars.git
 RUN wget https://github.com/Tencent/Tars/archive/master.zip \
 	&& unzip -a master.zip \
 	&& mv Tars-master Tars
