@@ -51,8 +51,8 @@ RUN cd /usr/local/app/tars/ && tar xzfv framework.tgz && rm -rf framework.tgz
 RUN mkdir -p /usr/local/app/patchs/tars.upload
 
 ##拷贝资源
-COPY init/install.sh /root/init/
-COPY entrypoint.sh /sbin/
+COPY tars-node/init/install.sh /root/init/
+COPY tars-node/entrypoint.sh /sbin/
 
 ENTRYPOINT ["/bin/bash","/sbin/entrypoint.sh"]
 
