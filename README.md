@@ -4,7 +4,7 @@
 镜像
 -----
 
-docker镜像已经由docker hub自动构建：https://hub.docker.com/r/tangramor/docker-tars/，使用下面命令即可获取：
+docker镜像已经由docker hub自动构建：https://hub.docker.com/r/tangramor/docker-tars/ ，使用下面命令即可获取：
 ```
 docker pull tangramor/docker-tars
 ```
