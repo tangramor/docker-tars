@@ -75,7 +75,7 @@ RUN mkdir -p /root/sql && cp -rf /root/Tars/cpp/framework/sql/* /root/sql/
 RUN rm -rf /root/Tars && rm -f /root/master.zip
 
 ##拷贝资源
-COPY init/master-install.sh /root/init/install.sh
+COPY init/master-install.sh /root/init/
 COPY entrypoint.sh /sbin/
 
 ENTRYPOINT ["/bin/bash","/sbin/entrypoint.sh"]
