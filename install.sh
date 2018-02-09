@@ -17,8 +17,12 @@ build_cpp_framework(){
 
 	cd /root/Tars/cpp/framework/sql/
 	sed -i "s/proot@appinside/h${DBIP} -P${DBPort} -u${DBUser} -p${DBPassword} /g" `grep proot@appinside -rl ./exec-sql.sh`
-	chmod u+x /root/Tars/cpp/framework/sql/exec-sql.sh
-	/root/Tars/cpp/framework/sql/exec-sql.sh
+	
+	if [ $(mysql -h${DBIP} -P${DBPort} -u${DBUser} -p${DBPassword} 'use tars_property') -eq 1 ];
+	then
+		chmod u+x /root/Tars/cpp/framework/sql/exec-sql.sh
+		/root/Tars/cpp/framework/sql/exec-sql.sh
+	fi
 }
 
 install_base_services(){
