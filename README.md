@@ -7,7 +7,7 @@
 docker镜像已经由docker hub自动构建：https://hub.docker.com/r/tangramor/docker-tars/ ，使用下面命令即可获取：
 
 ```
-docker pull tangramor/docker-tars-php7
+docker pull tangramor/docker-tars:php7
 ```
 
 包含了php7.2环境和phptars扩展，也添加了MySQL C++ connector以方便开发。
