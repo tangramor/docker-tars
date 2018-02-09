@@ -79,8 +79,9 @@ RUN yum -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.n
 	&& yum clean all && rm -rf /var/cache/yum
 
 ##拷贝资源
-COPY install_master.sh /root/init/
+COPY install_master.sh /opt/
 COPY entrypoint.sh /sbin/
+RUN mv /opt/install_master.sh /root/init/
 COPY php/ttars.c /root/Tars/php/tarsclient/ext/
 
 ##编译安装phptars
