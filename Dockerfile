@@ -68,9 +68,28 @@ RUN cd /root/Tars/web/ && source /etc/profile && mvn clean package \
 	&& cp /root/Tars/build/conf/resin.xml /usr/local/resin/conf/ \
 	&& cp /root/Tars/web/target/tars.war /usr/local/resin/webapps/
 
+##安装PHP相关
+RUN yum -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm \
+	&& yum -y install http://rpms.remirepo.net/enterprise/remi-release-7.rpm \
+	&& yum -y install yum-utils && yum-config-manager --enable remi-php72 \
+	&& yum -y install php php-devel php-mcrypt php-cli php-gd php-curl php-mysql php-zip php-fileinfo
+	
+##安装boost与MySQL C++ driver
+RUN yum -y install boost boost-devel \
+	&& yum -y install https://dev.mysql.com/get/Downloads/Connector-C++/mysql-connector-c++-1.1.9-linux-el7-x86-64bit.rpm \
+	&& yum clean all && rm -rf /var/cache/yum
+	
 ##拷贝资源
 COPY init/install.sh /root/init/
 COPY entrypoint.sh /sbin/
+COPY php/ttars.c /root/Tars/php/tarsclient/ext/
+
+##编译安装phptars
+RUN cd /tmp && curl -sS https://getcomposer.org/installer | php \
+	&& chmod +x composer.phar && mv composer.phar /usr/local/bin/composer \
+	&& cd /root/Tars/php/tarsclient/ext/ && phpize --clean && phpize \
+	&& ./configure --enable-phptars --with-php-config=/usr/bin/php-config && make && make install \
+	&& echo "extension=phptars.so" > /etc/php.d/phptars.ini
 
 ENTRYPOINT ["/bin/bash","/sbin/entrypoint.sh"]
 
