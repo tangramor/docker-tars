@@ -61,12 +61,27 @@ RUN mkdir -p /usr/local/app/tars/ && cp /root/Tars/cpp/build/framework.tgz /usr/
 	&& cd /usr/local/app/tars/ && tar xzfv framework.tgz && rm -rf framework.tgz \
 	&& mkdir -p /usr/local/app/patchs/tars.upload
 
-##删除Tars源码
-RUN rm -rf /root/Tars && rm -f /root/master.zip
+##安装PHP相关
+RUN yum -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm \
+	&& yum -y install http://rpms.remirepo.net/enterprise/remi-release-7.rpm \
+	&& yum -y install yum-utils && yum-config-manager --enable remi-php72 \
+	&& yum -y install php php-devel php-mcrypt php-cli php-gd php-curl php-mysql php-zip php-fileinfo \
+	&& yum clean all && rm -rf /var/cache/yum
 
 ##拷贝资源
-ADD init/node-install.sh /root/init/
-COPY node-entrypoint.sh /sbin/
+COPY install_node.sh /root/init/
+COPY node_entrypoint.sh /sbin/
+COPY php/ttars.c /root/Tars/php/tarsclient/ext/
+
+##编译安装phptars
+RUN cd /tmp && curl -sS https://getcomposer.org/installer | php \
+	&& chmod +x composer.phar && mv composer.phar /usr/local/bin/composer \
+	&& cd /root/Tars/php/tarsclient/ext/ && phpize --clean && phpize \
+	&& ./configure --enable-phptars --with-php-config=/usr/bin/php-config && make && make install \
+	&& echo "extension=phptars.so" > /etc/php.d/phptars.ini
+
+##删除Tars源码
+RUN rm -rf /root/Tars && rm -f /root/master.zip
 
 ENTRYPOINT ["/bin/bash","/sbin/node-entrypoint.sh"]
 

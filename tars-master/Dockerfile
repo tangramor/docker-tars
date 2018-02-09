@@ -71,12 +71,27 @@ RUN cd /root/Tars/web/ && source /etc/profile && mvn clean package \
 ##拷贝SQL文件
 RUN mkdir -p /root/sql && cp -rf /root/Tars/cpp/framework/sql/* /root/sql/
 
-##删除Tars源码
-RUN rm -rf /root/Tars && rm -f /root/master.zip
+##安装PHP相关
+RUN yum -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm \
+	&& yum -y install http://rpms.remirepo.net/enterprise/remi-release-7.rpm \
+	&& yum -y install yum-utils && yum-config-manager --enable remi-php72 \
+	&& yum -y install php php-devel php-mcrypt php-cli php-gd php-curl php-mysql php-zip php-fileinfo \
+	&& yum clean all && rm -rf /var/cache/yum
 
 ##拷贝资源
-COPY init/master-install.sh /root/init/
+COPY install_master.sh /root/init/
 COPY entrypoint.sh /sbin/
+COPY php/ttars.c /root/Tars/php/tarsclient/ext/
+
+##编译安装phptars
+RUN cd /tmp && curl -sS https://getcomposer.org/installer | php \
+	&& chmod +x composer.phar && mv composer.phar /usr/local/bin/composer \
+	&& cd /root/Tars/php/tarsclient/ext/ && phpize --clean && phpize \
+	&& ./configure --enable-phptars --with-php-config=/usr/bin/php-config && make && make install \
+	&& echo "extension=phptars.so" > /etc/php.d/phptars.ini
+
+##删除Tars源码
+RUN rm -rf /root/Tars && rm -f /root/master.zip
 
 ENTRYPOINT ["/bin/bash","/sbin/entrypoint.sh"]
 

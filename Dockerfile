@@ -80,7 +80,7 @@ RUN yum -y install boost boost-devel \
 	&& yum clean all && rm -rf /var/cache/yum
 	
 ##拷贝资源
-COPY init/install.sh /root/init/
+COPY install.sh /root/init/
 COPY entrypoint.sh /sbin/
 COPY php/ttars.c /root/Tars/php/tarsclient/ext/
 
@@ -88,7 +88,7 @@ COPY php/ttars.c /root/Tars/php/tarsclient/ext/
 RUN cd /tmp && curl -sS https://getcomposer.org/installer | php \
 	&& chmod +x composer.phar && mv composer.phar /usr/local/bin/composer \
 	&& cd /root/Tars/php/tarsclient/ext/ && phpize --clean && phpize \
-	&& ./configure --enable-phptars --with-php-config=/usr/bin/php-config && make && make install \
+	&& ./configure --enable-phptars --with-php-config=/usr/bin/php-config && make && make install && phpize --clean \
 	&& echo "extension=phptars.so" > /etc/php.d/phptars.ini
 
 ENTRYPOINT ["/bin/bash","/sbin/entrypoint.sh"]

@@ -15,11 +15,17 @@
 #include "./include/php_tupapi.h"
 #include "./include/ttars.h"
 
-#include <zend_operators.h>
 #include <zend_smart_str.h>
 
-#define ZVAL_ADDREF Z_ADDREF_P
+#define ZVAL_ADDREF Z_ADDREF
+
+#if PHP_MAJOR_VERSION > 6
 #define Z_BVAL(zval) ((zend_bool)(zval).value.lval)
+#endif
+
+#if PHP_MAJOR_VERSION < 5
+#define ZVAL_COPY ZVAL_COPY_VALUE
+#endif
 
 /* {{{ static variable
  */
