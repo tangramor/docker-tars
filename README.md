@@ -7,10 +7,14 @@
 docker镜像已经由docker hub自动构建：https://hub.docker.com/r/tangramor/docker-tars/ ，使用下面命令即可获取：
 
 ```
-docker pull tangramor/docker-tars:php7
+docker pull tangramor/docker-tars
 ```
 
-包含了php7.2环境和phptars扩展，也添加了MySQL C++ connector以方便开发。
+tag 为 php7 的镜像包含了php7.2环境和phptars扩展，也添加了MySQL C++ connector以方便开发：
+
+```
+docker pull tangramor/docker-tars:php7
+```
 
 
 tars-master 之下是在镜像中删除了Tars源码的脚本，使用下面命令即可获取：
@@ -69,6 +73,11 @@ docker run --name mysql -e MYSQL_ROOT_PASSWORD=password -d -p 3306:3306 -v /c/Us
 tars-master 镜像构建命令：`docker build -t tars-master -f tars-master/Dockerfile .`
 
 tars-node 镜像构建命令：`docker build -t tars-node -f tars-node/Dockerfile .`
+
+
+开发方式
+--------
+使用docker镜像进行Tars相关的开发就方便很多了，我的做法是把项目放置在被挂载到镜像 /data 目录的本地目录下，例如 /c/Users/<ACCOUNT>/tars_data 。在本地使用编辑器或IDE对项目文件进行开发，然后开启命令行：`docker exec -it tars bash` 进入Tars环境进行编译或测试。
 
 
 Trouble Shooting
