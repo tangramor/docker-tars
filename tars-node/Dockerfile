@@ -65,7 +65,7 @@ RUN mkdir -p /usr/local/app/tars/ && cp /root/Tars/cpp/build/framework.tgz /usr/
 RUN rm -rf /root/Tars && rm -f /root/master.zip
 
 ##拷贝资源
-COPY init/install_node.sh /root/init/
+COPY install_node.sh /root/init/
 COPY node_entrypoint.sh /sbin/
 
 ENTRYPOINT ["/bin/bash","/sbin/node-entrypoint.sh"]

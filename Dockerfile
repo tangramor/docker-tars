@@ -69,7 +69,7 @@ RUN cd /root/Tars/web/ && source /etc/profile && mvn clean package \
 	&& cp /root/Tars/web/target/tars.war /usr/local/resin/webapps/
 
 ##拷贝资源
-COPY init/install.sh /root/init/
+COPY install.sh /root/init/
 COPY entrypoint.sh /sbin/
 
 ENTRYPOINT ["/bin/bash","/sbin/entrypoint.sh"]
