@@ -44,13 +44,13 @@ RUN yum install -y git gcc gcc-c++ make wget cmake mysql mysql-devel unzip iprou
 	&& echo "CLASSPATH=\$JAVA_HOME/lib/dt.jar:\$JAVA_HOME/lib/tools.jar" >> /etc/profile \
 	&& echo "PATH=\$JAVA_HOME/bin:\$PATH" >> /etc/profile \
 	&& echo "export PATH JAVA_HOME CLASSPATH" >> /etc/profile \
-	&& cd /usr/local/ && wget http://mirrors.gigenet.com/apache/maven/maven-3/3.5.2/binaries/apache-maven-3.5.2-bin.tar.gz \
+	&& cd /usr/local/ && wget http://mirrors.hust.edu.cn/apache/maven/binaries/apache-maven-3.5.2-bin.tar.gz \
 	&& tar zxvf apache-maven-3.5.2-bin.tar.gz && echo "export MAVEN_HOME=/usr/local/apache-maven-3.5.2/" >> /etc/profile \
 	&& echo "export PATH=\$PATH:\$MAVEN_HOME/bin" >> /etc/profile && source /etc/profile && mvn -v \
 	&& rm -rf apache-maven-3.5.2-bin.tar.gz \
 	&& source /etc/profile && cd /root/Tars/java && mvn clean install && mvn clean install -f core/client.pom.xml && mvn clean install -f core/server.pom.xml \
 	&& rm -rf /root/Tars \
-	&& mkdir -p /data/tars/tarsnode_data && ln -s /usr/local/app/tars/tarsnode/data \
+	&& mkdir -p /data/tars/tarsnode_data && ln -s /data/tars/tarsnode_data /usr/local/app/tars/tarsnode/data \
 	&& yum -y remove git gcc gcc-c++ make cmake mysql-devel glibc-devel ncurses-devel zlib-devel glibc-headers kernel-headers keyutils-libs-devel krb5-devel libcom_err-devel libselinux-devel libsepol-devel libstdc++-devel libverto-devel openssl-devel pcre-devel autoconf automake \
 	&& yum clean all && rm -rf /var/cache/yum
 

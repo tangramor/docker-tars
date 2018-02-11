@@ -46,7 +46,7 @@ RUN yum install -y git gcc gcc-c++ make wget cmake mysql mysql-devel unzip iprou
 	&& echo "CLASSPATH=\$JAVA_HOME/lib/dt.jar:\$JAVA_HOME/lib/tools.jar" >> /etc/profile \
 	&& echo "PATH=\$JAVA_HOME/bin:\$PATH" >> /etc/profile \
 	&& echo "export PATH JAVA_HOME CLASSPATH" >> /etc/profile \
-	&& cd /usr/local/ && wget http://mirrors.gigenet.com/apache/maven/maven-3/3.5.2/binaries/apache-maven-3.5.2-bin.tar.gz \
+	&& cd /usr/local/ && wget http://mirrors.hust.edu.cn/apache/maven/binaries/apache-maven-3.5.2-bin.tar.gz \
 	&& tar zxvf apache-maven-3.5.2-bin.tar.gz && echo "export MAVEN_HOME=/usr/local/apache-maven-3.5.2/" >> /etc/profile \
 	&& echo "export PATH=\$PATH:\$MAVEN_HOME/bin" >> /etc/profile && source /etc/profile && mvn -v \
 	&& rm -rf apache-maven-3.5.2-bin.tar.gz  \
@@ -57,10 +57,10 @@ RUN yum install -y git gcc gcc-c++ make wget cmake mysql mysql-devel unzip iprou
 	&& cp /root/Tars/web/target/tars.war /usr/local/resin/webapps/ \
 	&& mkdir -p /root/sql && cp -rf /root/Tars/cpp/framework/sql/* /root/sql/ \
 	&& rm -rf /root/Tars \
-	&& mkdir -p /data/tars/tarsconfig_data && ln -s /usr/local/app/tars/tarsconfig/data \
-	&& mkdir -p /data/tars/tarsnode_data && ln -s /usr/local/app/tars/tarsnode/data \
-	&& mkdir -p /data/tars/tarspatch_data && ln -s /usr/local/app/tars/tarspatch/data \
-	&& mkdir -p /data/tars/tarsregistry_data && ln -s /usr/local/app/tars/tarsregistry/data \
+	&& mkdir -p /data/tars/tarsconfig_data && ln -s /data/tars/tarsconfig_data /usr/local/app/tars/tarsconfig/data \
+	&& mkdir -p /data/tars/tarsnode_data && ln -s /data/tars/tarsnode_data /usr/local/app/tars/tarsnode/data \
+	&& mkdir -p /data/tars/tarspatch_data && ln -s /data/tars/tarspatch_data /usr/local/app/tars/tarspatch/data \
+	&& mkdir -p /data/tars/tarsregistry_data && ln -s /data/tars/tarsregistry_data /usr/local/app/tars/tarsregistry/data \
 	&& yum -y remove git gcc gcc-c++ make cmake mysql-devel glibc-devel ncurses-devel zlib-devel glibc-headers kernel-headers keyutils-libs-devel krb5-devel libcom_err-devel libselinux-devel libsepol-devel libstdc++-devel libverto-devel openssl-devel pcre-devel autoconf automake \
 	&& yum clean all && rm -rf /var/cache/yum
 	
