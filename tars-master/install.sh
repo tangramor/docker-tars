@@ -20,8 +20,8 @@ build_cpp_framework(){
 	
 	if [ $(mysql -h${DBIP} -P${DBPort} -u${DBUser} -p${DBPassword} 'use tars_property') -eq 1 ];
 	then
-		chmod u+x /root/Tars/cpp/framework/sql/exec-sql.sh
-		/root/Tars/cpp/framework/sql/exec-sql.sh
+		chmod u+x /root/sql/exec-sql.sh
+		/root/sql/exec-sql.sh
 	fi
 }
 
