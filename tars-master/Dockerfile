@@ -1,11 +1,12 @@
-FROM centos
+FROM bitnami/minideb
 
 WORKDIR /root/
 
 ##修改镜像时区 
 ENV TZ=Asia/Shanghai
-RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone \
-	&& localedef -c -f UTF-8 -i zh_CN zh_CN.utf8
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+
+#&& localedef -c -f UTF-8 -i zh_CN zh_CN.utf8
 
 ENV LC_ALL zh_CN.utf8
 ENV DBIP 127.0.0.1
@@ -14,11 +15,11 @@ ENV DBUser root
 ENV DBPassword password
 
 ##安装
-RUN yum install -y git gcc gcc-c++ make wget cmake mysql mysql-devel unzip iproute which glibc-devel flex bison ncurses-devel zlib-devel kde-l10n-Chinese glibc-common \
+RUN install_packages build-essential cmake wget mariadb-client libmariadbclient-dev libmariadbclient18 unzip iproute flex bison libncurses5-dev zlib1g-dev ca-certificates \
 	&& wget https://github.com/Tencent/Tars/archive/master.zip \
 	&& unzip -a master.zip && mv Tars-master Tars && rm -f /root/master.zip \
-	&& mkdir -p /usr/local/mysql && ln -s /usr/lib64/mysql /usr/local/mysql/lib && ln -s /usr/include/mysql /usr/local/mysql/include && echo "/usr/local/mysql/lib/" >> /etc/ld.so.conf && ldconfig \
-	&& cd /usr/local/mysql/lib/ && ln -s libmysqlclient.so.*.*.* libmysqlclient.a \
+	&& mkdir -p /usr/local/mysql/lib && ln -s /usr/include/mysql /usr/local/mysql/include \
+	&& ln -s /usr/lib/x86_64-linux-gnu/libmariadbclient.so.*.*.* /usr/local/mysql/lib/libmysqlclient.a \
 	&& cd /root/Tars/cpp/thirdparty && wget https://github.com/Tencent/rapidjson/archive/master.zip \
 	&& unzip -a master.zip && mv rapidjson-master rapidjson && rm -f master.zip \
 	&& mkdir -p /data && chmod u+x /root/Tars/cpp/build/build.sh \
@@ -29,21 +30,23 @@ RUN yum install -y git gcc gcc-c++ make wget cmake mysql mysql-devel unzip iprou
 	&& mkdir -p /usr/local/app/tars/ && cp /root/Tars/cpp/build/framework.tgz /usr/local/app/tars/ \
 	&& cd /usr/local/app/tars/ && tar xzfv framework.tgz && rm -rf framework.tgz \
 	&& cd /root/Tars/cpp/build/ && cp -f t*.tgz /data/ && rm -f t*.tgz \
+	&& ./build.sh cleanall \
 	&& mkdir -p /usr/local/app/patchs/tars.upload \
 	&& mkdir -p /root/init && cd /root/init/ \
-	&& wget --header "Cookie: oraclelicense=accept" -c --no-check-certificate http://download.oracle.com/otn-pub/java/jdk/8u131-b11/d54c1d3a095b4ff2b6607d096fa80163/jdk-8u131-linux-x64.rpm \
-	&& rpm -ivh /root/init/jdk-8u131-linux-x64.rpm && rm -rf /root/init/jdk-8u131-linux-x64.rpm \
+	&& wget --header "Cookie: oraclelicense=accept" -c --no-check-certificate http://download.oracle.com/otn-pub/java/jdk/8u131-b11/d54c1d3a095b4ff2b6607d096fa80163/jdk-8u131-linux-x64.tar.gz \
+	&& tar zxf /root/init/jdk-8u131-linux-x64.tar.gz && rm -rf /root/init/jdk-8u131-linux-x64.tar.gz \
+	&& mkdir /usr/java && mv /root/init/jdk1.8.0_131 /usr/java \
 	&& echo "export JAVA_HOME=/usr/java/jdk1.8.0_131" >> /etc/profile \
 	&& echo "CLASSPATH=\$JAVA_HOME/lib/dt.jar:\$JAVA_HOME/lib/tools.jar" >> /etc/profile \
 	&& echo "PATH=\$JAVA_HOME/bin:\$PATH" >> /etc/profile \
 	&& echo "export PATH JAVA_HOME CLASSPATH" >> /etc/profile \
 	&& cd /usr/local/ && wget http://mirrors.gigenet.com/apache/maven/maven-3/3.5.2/binaries/apache-maven-3.5.2-bin.tar.gz \
 	&& tar zxvf apache-maven-3.5.2-bin.tar.gz && echo "export MAVEN_HOME=/usr/local/apache-maven-3.5.2/" >> /etc/profile \
-	&& echo "export PATH=\$PATH:\$MAVEN_HOME/bin" >> /etc/profile && source /etc/profile && mvn -v \
+	&& echo "export PATH=\$PATH:\$MAVEN_HOME/bin" >> /etc/profile && . /etc/profile && mvn -v \
 	&& rm -rf apache-maven-3.5.2-bin.tar.gz  \
 	&& cd /usr/local/ && wget http://caucho.com/download/resin-4.0.51.tar.gz && tar zxvf resin-4.0.51.tar.gz && mv resin-4.0.51 resin && rm -rf resin-4.0.51.tar.gz \
-	&& source /etc/profile && cd /root/Tars/java && mvn clean install && mvn clean install -f core/client.pom.xml && mvn clean install -f core/server.pom.xml \
-	&& cd /root/Tars/web/ && source /etc/profile && mvn clean package \
+	&& cd /root/Tars/java && mvn clean install && mvn clean install -f core/client.pom.xml && mvn clean install -f core/server.pom.xml \
+	&& cd /root/Tars/web/ && mvn clean package \
 	&& cp /root/Tars/build/conf/resin.xml /usr/local/resin/conf/ \
 	&& cp /root/Tars/web/target/tars.war /usr/local/resin/webapps/ \
 	&& mkdir -p /root/sql && cp -rf /root/Tars/cpp/framework/sql/* /root/sql/ \
@@ -52,17 +55,17 @@ RUN yum install -y git gcc gcc-c++ make wget cmake mysql mysql-devel unzip iprou
 	&& mkdir -p /data/tars/tarsnode_data && ln -s /data/tars/tarsnode_data /usr/local/app/tars/tarsnode/data \
 	&& mkdir -p /data/tars/tarspatch_data && ln -s /data/tars/tarspatch_data /usr/local/app/tars/tarspatch/data \
 	&& mkdir -p /data/tars/tarsregistry_data && ln -s /data/tars/tarsregistry_data /usr/local/app/tars/tarsregistry/data \
-	&& yum -y remove git gcc gcc-c++ make cmake mysql-devel glibc-devel ncurses-devel zlib-devel glibc-headers kernel-headers keyutils-libs-devel krb5-devel libcom_err-devel libselinux-devel libsepol-devel libstdc++-devel libverto-devel openssl-devel pcre-devel autoconf automake \
-	&& yum clean all && rm -rf /var/cache/yum
-	
+	&& apt-get -y purge build-essential cmake cmake-data cpp cpp-6 dpkg-dev g++ g++-6 gcc gcc-6 libc-dev-bin libc6-dev libgcc-6-dev libmariadbclient-dev libstdc++-6-dev libtinfo-dev linux-libc-dev make zlib1g-dev \
+	&& apt-get autoremove
+
 ENV JAVA_HOME /usr/java/jdk1.8.0_131
 
 ENV MAVEN_HOME /usr/local/apache-maven-3.5.2
 
 VOLUME ["/data"]
-
+	
 ##拷贝资源
-COPY tars-master/install.sh /root/init/
+COPY install.sh /root/init/
 COPY entrypoint.sh /sbin/
 
 ENTRYPOINT ["/bin/bash","/sbin/entrypoint.sh"]
