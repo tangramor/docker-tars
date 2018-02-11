@@ -25,7 +25,7 @@ RUN yum install -y git gcc gcc-c++ make wget cmake mysql mysql-devel unzip iprou
 	&& cd /usr/local/mysql/lib/ && ln -s libmysqlclient.so.*.*.* libmysqlclient.a \
 	&& cd /root/Tars/cpp/thirdparty && wget https://github.com/Tencent/rapidjson/archive/master.zip \
 	&& unzip -a master.zip && mv rapidjson-master rapidjson && rm -f master.zip \
-	&& chmod u+x /root/Tars/cpp/build/build.sh \
+	&& mkdir -p /data && chmod u+x /root/Tars/cpp/build/build.sh \
 	&& cd /root/Tars/cpp/build/ && ./build.sh all \
 	&& ./build.sh install \
 	&& cd /root/Tars/cpp/build/ && make framework-tar \
@@ -55,7 +55,17 @@ RUN yum install -y git gcc gcc-c++ make wget cmake mysql mysql-devel unzip iprou
 	&& cd /root/Tars/web/ && source /etc/profile && mvn clean package \
 	&& cp /root/Tars/build/conf/resin.xml /usr/local/resin/conf/ \
 	&& cp /root/Tars/web/target/tars.war /usr/local/resin/webapps/ \
-	&& mkdir -p /root/sql && cp -rf /root/Tars/cpp/framework/sql/* /root/sql/
+	&& mkdir -p /root/sql && cp -rf /root/Tars/cpp/framework/sql/* /root/sql/ \
+	&& mkdir -p /data/tars/tarsconfig_data && ln -s /usr/local/app/tars/tarsconfig/data \
+	&& mkdir -p /data/tars/tarsnode_data && ln -s /usr/local/app/tars/tarsnode/data \
+	&& mkdir -p /data/tars/tarspatch_data && ln -s /usr/local/app/tars/tarspatch/data \
+	&& mkdir -p /data/tars/tarsregistry_data && ln -s /usr/local/app/tars/tarsregistry/data
+
+ENV JAVA_HOME /usr/java/jdk1.8.0_131
+
+ENV MAVEN_HOME /usr/local/apache-maven-3.5.2
+
+VOLUME ["/data"]
 	
 ##拷贝资源
 COPY install.sh /root/init/

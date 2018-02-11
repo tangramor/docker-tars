@@ -25,13 +25,14 @@ RUN yum install -y git gcc gcc-c++ make wget cmake mysql mysql-devel unzip iprou
 	&& cd /usr/local/mysql/lib/ && ln -s libmysqlclient.so.*.*.* libmysqlclient.a \
 	&& cd /root/Tars/cpp/thirdparty && wget https://github.com/Tencent/rapidjson/archive/master.zip \
 	&& unzip -a master.zip && mv rapidjson-master rapidjson && rm -f master.zip \
-	&& chmod u+x /root/Tars/cpp/build/build.sh \
+	&& mkdir -p /data && chmod u+x /root/Tars/cpp/build/build.sh \
 	&& cd /root/Tars/cpp/build/ && ./build.sh all \
 	&& ./build.sh install \
 	&& cd /root/Tars/cpp/build/ && make framework-tar \
 	&& make tarsstat-tar && make tarsnotify-tar && make tarsproperty-tar && make tarslog-tar && make tarsquerystat-tar && make tarsqueryproperty-tar \
 	&& mkdir -p /usr/local/app/tars/ && cp /root/Tars/cpp/build/framework.tgz /usr/local/app/tars/ \
 	&& cd /usr/local/app/tars/ && tar xzfv framework.tgz && rm -rf framework.tgz \
+	&& cd /root/Tars/cpp/build/ && cp -f t*.tgz /data/ && rm -f t*.tgz \
 	&& mkdir -p /usr/local/app/patchs/tars.upload \
 	&& cd /tmp && curl -sS https://getcomposer.org/installer | php \
 	&& chmod +x composer.phar && mv composer.phar /usr/local/bin/composer \
@@ -56,6 +57,10 @@ RUN yum install -y git gcc gcc-c++ make wget cmake mysql mysql-devel unzip iprou
 	&& cp /root/Tars/web/target/tars.war /usr/local/resin/webapps/ \
 	&& mkdir -p /root/sql && cp -rf /root/Tars/cpp/framework/sql/* /root/sql/ \
 	&& rm -rf /root/Tars \
+	&& mkdir -p /data/tars/tarsconfig_data && ln -s /usr/local/app/tars/tarsconfig/data \
+	&& mkdir -p /data/tars/tarsnode_data && ln -s /usr/local/app/tars/tarsnode/data \
+	&& mkdir -p /data/tars/tarspatch_data && ln -s /usr/local/app/tars/tarspatch/data \
+	&& mkdir -p /data/tars/tarsregistry_data && ln -s /usr/local/app/tars/tarsregistry/data \
 	&& yum -y remove git gcc gcc-c++ make cmake mysql-devel glibc-devel ncurses-devel zlib-devel glibc-headers kernel-headers keyutils-libs-devel krb5-devel libcom_err-devel libselinux-devel libsepol-devel libstdc++-devel libverto-devel openssl-devel pcre-devel autoconf automake \
 	&& yum clean all && rm -rf /var/cache/yum
 	
@@ -63,6 +68,7 @@ ENV JAVA_HOME /usr/java/jdk1.8.0_131
 
 ENV MAVEN_HOME /usr/local/apache-maven-3.5.2
 
+VOLUME ["/data"]
 
 ##拷贝资源
 COPY install_master.sh /root/init/
