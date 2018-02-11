@@ -50,7 +50,7 @@ RUN yum install -y git gcc gcc-c++ make wget cmake mysql mysql-devel unzip iprou
 	&& rm -rf apache-maven-3.5.2-bin.tar.gz \
 	&& source /etc/profile && cd /root/Tars/java && mvn clean install && mvn clean install -f core/client.pom.xml && mvn clean install -f core/server.pom.xml \
 	&& rm -rf /root/Tars \
-	&& yum -y remove git gcc gcc-c++ make cmake mysql-devel glibc-devel ncurses-devel zlib-devel glibc-headers kernel-headers keyutils-libs-devel krb5-devel libcom_err-devel libselinux-devel libsepol-devel libstdc++-devel libverto-devel openssl-devel pcre-devel centos-logos autoconf automake \
+	&& yum -y remove git gcc gcc-c++ make cmake mysql-devel glibc-devel ncurses-devel zlib-devel glibc-headers kernel-headers keyutils-libs-devel krb5-devel libcom_err-devel libselinux-devel libsepol-devel libstdc++-devel libverto-devel openssl-devel pcre-devel autoconf automake \
 	&& yum clean all && rm -rf /var/cache/yum
 
 	
@@ -59,9 +59,8 @@ ENV JAVA_HOME /usr/java/jdk1.8.0_131
 ENV MAVEN_HOME /usr/local/apache-maven-3.5.2
 
 ##拷贝资源
-COPY install_node.sh /opt/
+COPY install_node.sh /root/init/
 COPY node_entrypoint.sh /sbin/
-RUN mv /opt/install_node.sh /root/init/
 COPY php/ttars.c /root/Tars/php/tarsclient/ext/
 
 ENTRYPOINT ["/bin/bash","/sbin/node-entrypoint.sh"]

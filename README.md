@@ -20,14 +20,14 @@ docker pull tangramor/docker-tars:php7
 tars-master 之下是在镜像中删除了Tars源码的脚本，使用下面命令即可获取：
 
 ```
-docker pull tangramor/docker-tars-master
+docker pull tangramor/tars-master
 ```
 
 
 tars-node 之下是只部署 tarsnode 服务的节点镜像脚本，也删除了Tars源码，使用下面命令即可获取：
 
 ```
-docker pull tangramor/docker-tars-node
+docker pull tangramor/tars-node
 
 ```
 

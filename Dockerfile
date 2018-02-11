@@ -32,6 +32,7 @@ RUN yum install -y git gcc gcc-c++ make wget cmake mysql mysql-devel unzip iprou
 	&& make tarsstat-tar && make tarsnotify-tar && make tarsproperty-tar && make tarslog-tar && make tarsquerystat-tar && make tarsqueryproperty-tar \
 	&& mkdir -p /usr/local/app/tars/ && cp /root/Tars/cpp/build/framework.tgz /usr/local/app/tars/ \
 	&& cd /usr/local/app/tars/ && tar xzfv framework.tgz && rm -rf framework.tgz \
+	&& cd /root/Tars/cpp/build/ && cp -f t*.tgz /data/ && rm -f t*.tgz \
 	&& mkdir -p /usr/local/app/patchs/tars.upload \
 	&& cd /tmp && curl -sS https://getcomposer.org/installer | php \
 	&& chmod +x composer.phar && mv composer.phar /usr/local/bin/composer \
