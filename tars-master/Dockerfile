@@ -71,7 +71,7 @@ ENV MAVEN_HOME /usr/local/apache-maven-3.5.2
 VOLUME ["/data"]
 
 ##拷贝资源
-COPY install_master.sh /root/init/
+COPY tars-master/install.sh /root/init/
 COPY entrypoint.sh /sbin/
 COPY php/ttars.c /root/Tars/php/tarsclient/ext/
 

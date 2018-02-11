@@ -61,8 +61,8 @@ ENV MAVEN_HOME /usr/local/apache-maven-3.5.2
 VOLUME ["/data"]
 
 ##拷贝资源
-COPY install_node.sh /root/init/
-COPY node_entrypoint.sh /sbin/
+COPY tars-node/install.sh /root/init/
+COPY tars-node/entrypoint.sh /sbin/
 COPY php/ttars.c /root/Tars/php/tarsclient/ext/
 
 ENTRYPOINT ["/bin/bash","/sbin/node-entrypoint.sh"]
