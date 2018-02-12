@@ -42,7 +42,7 @@ RUN install_packages build-essential cmake wget mariadb-client libmariadbclient-
 	&& tar zxvf apache-maven-3.5.2-bin.tar.gz && echo "export MAVEN_HOME=/usr/local/apache-maven-3.5.2/" >> /etc/profile \
 	&& echo "export PATH=\$PATH:\$MAVEN_HOME/bin" >> /etc/profile && . /etc/profile && mvn -v \
 	&& rm -rf apache-maven-3.5.2-bin.tar.gz  \
-	&& source /etc/profile && cd /root/Tars/java && mvn clean install && mvn clean install -f core/client.pom.xml && mvn clean install -f core/server.pom.xml \
+	&& . /etc/profile && cd /root/Tars/java && mvn clean install && mvn clean install -f core/client.pom.xml && mvn clean install -f core/server.pom.xml \
 	&& rm -rf /root/Tars \
 	&& mkdir -p /data/tars/tarsnode_data && ln -s /data/tars/tarsnode_data /usr/local/app/tars/tarsnode/data \
 	&& apt-get -y purge build-essential cmake cmake-data cpp cpp-6 dpkg-dev g++ g++-6 gcc gcc-6 libc-dev-bin libc6-dev libgcc-6-dev libmariadbclient-dev libstdc++-6-dev libtinfo-dev linux-libc-dev make zlib1g-dev \
