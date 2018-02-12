@@ -16,18 +16,24 @@ tag 为 php7 的镜像包含了php7.2环境和phptars扩展，也添加了MySQL 
 docker pull tangramor/docker-tars:php7
 ```
 
+tag 为 minideb 的镜像是使用名为 minideb 的精简版 debian 作为基础镜像的版本：
+
+```
+docker pull tangramor/docker-tars:minideb
+```
+
 
 tars-master 之下是在镜像中删除了Tars源码的脚本，使用下面命令即可获取：
 
 ```
-docker pull tangramor/tars-master
+docker pull tangramor/docker-tars-master
 ```
 
 
 tars-node 之下是只部署 tarsnode 服务的节点镜像脚本，也删除了Tars源码，使用下面命令即可获取：
 
 ```
-docker pull tangramor/tars-node
+docker pull tangramor/docker-tars-node
 
 ```
 
@@ -84,4 +90,6 @@ Trouble Shooting
 ----------------
 
 在启动容器后，可以 `docker exec -it tars bash` 进入容器，查看当前运行状态；如果 /c/Users/\<ACCOUNT\>/tars_data/log/tars 下面出现了 _log4j.log 文件，说明安装已经完成，resin运行起来了。
+
+，resin运行起来了。
 
