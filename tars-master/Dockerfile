@@ -56,7 +56,7 @@ RUN install_packages build-essential cmake wget mariadb-client libmariadbclient-
 	&& mkdir -p /data/tars/tarspatch_data && ln -s /data/tars/tarspatch_data /usr/local/app/tars/tarspatch/data \
 	&& mkdir -p /data/tars/tarsregistry_data && ln -s /data/tars/tarsregistry_data /usr/local/app/tars/tarsregistry/data \
 	&& apt-get -y purge build-essential cmake cmake-data cpp cpp-6 dpkg-dev g++ g++-6 gcc gcc-6 libc-dev-bin libc6-dev libgcc-6-dev libmariadbclient-dev libstdc++-6-dev libtinfo-dev linux-libc-dev make zlib1g-dev \
-	&& apt-get autoremove
+	&& apt-get -y autoremove
 
 ENV JAVA_HOME /usr/java/jdk1.8.0_131
 

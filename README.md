@@ -16,6 +16,12 @@ tag 为 php7 的镜像包含了php7.2环境和phptars扩展，也添加了MySQL 
 docker pull tangramor/docker-tars:php7
 ```
 
+tag 为 minideb 的镜像是使用名为 minideb 的精简版 debian 作为基础镜像的版本：
+
+```
+docker pull tangramor/docker-tars:minideb
+```
+
 
 tars-master 之下是在镜像中删除了Tars源码的脚本，使用下面命令即可获取：
 
