@@ -13,6 +13,8 @@ ENV DBPort 3306
 ENV DBUser root
 ENV DBPassword password
 
+COPY php/ttars.c /root/
+
 ##安装
 RUN yum install -y git gcc gcc-c++ make wget cmake mysql mysql-devel unzip iproute which glibc-devel flex bison ncurses-devel zlib-devel kde-l10n-Chinese glibc-common \
 	&& yum -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm \
@@ -35,7 +37,7 @@ RUN yum install -y git gcc gcc-c++ make wget cmake mysql mysql-devel unzip iprou
 	&& mkdir -p /usr/local/app/patchs/tars.upload \
 	&& cd /tmp && curl -fsSL https://getcomposer.org/installer | php \
 	&& chmod +x composer.phar && mv composer.phar /usr/local/bin/composer \
-	&& cd /root/Tars/php/tarsclient/ext/ && phpize --clean && phpize \
+	&& cd /root/Tars/php/tarsclient/ext/ && cp -f /root/ttars.c ./ && phpize --clean && phpize \
 	&& ./configure --enable-phptars --with-php-config=/usr/bin/php-config && make && make install && phpize --clean \
 	&& echo "extension=phptars.so" > /etc/php.d/phptars.ini \
 	&& mkdir -p /root/init && cd /root/init/ \
@@ -64,7 +66,6 @@ VOLUME ["/data"]
 ##拷贝资源
 COPY tars-node/install.sh /root/init/
 COPY tars-node/entrypoint.sh /sbin/
-COPY php/ttars.c /root/Tars/php/tarsclient/ext/
 
 ENTRYPOINT ["/bin/bash","/sbin/node-entrypoint.sh"]
 
