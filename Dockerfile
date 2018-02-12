@@ -16,7 +16,6 @@ ENV DBPassword password
 
 ##安装
 RUN install_packages build-essential cmake wget mariadb-client libmariadbclient-dev libmariadbclient18 unzip iproute flex bison libncurses5-dev zlib1g-dev ca-certificates \
-#yum install -y git gcc gcc-c++ make wget cmake mysql mysql-devel unzip iproute which glibc-devel flex bison ncurses-devel zlib-devel kde-l10n-Chinese glibc-common \
 	&& wget https://github.com/Tencent/Tars/archive/master.zip \
 	&& unzip -a master.zip && mv Tars-master Tars && rm -f /root/master.zip \
 	&& mkdir -p /usr/local/mysql/lib && ln -s /usr/include/mysql /usr/local/mysql/include \
@@ -53,7 +52,8 @@ RUN install_packages build-essential cmake wget mariadb-client libmariadbclient-
 	&& mkdir -p /data/tars/tarsconfig_data && ln -s /data/tars/tarsconfig_data /usr/local/app/tars/tarsconfig/data \
 	&& mkdir -p /data/tars/tarsnode_data && ln -s /data/tars/tarsnode_data /usr/local/app/tars/tarsnode/data \
 	&& mkdir -p /data/tars/tarspatch_data && ln -s /data/tars/tarspatch_data /usr/local/app/tars/tarspatch/data \
-	&& mkdir -p /data/tars/tarsregistry_data && ln -s /data/tars/tarsregistry_data /usr/local/app/tars/tarsregistry/data
+	&& mkdir -p /data/tars/tarsregistry_data && ln -s /data/tars/tarsregistry_data /usr/local/app/tars/tarsregistry/data \
+	&& apt-get -y autoclean && apt-get -y autoremove
 
 ENV JAVA_HOME /usr/java/jdk1.8.0_131
 
