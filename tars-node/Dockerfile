@@ -31,6 +31,7 @@ RUN yum install -y git gcc gcc-c++ make wget cmake mysql mysql-devel unzip iprou
 	&& make framework-tar \
 	&& mkdir -p /usr/local/app/tars/ && cp /root/Tars/cpp/build/framework.tgz /usr/local/app/tars/ \
 	&& cd /usr/local/app/tars/ && tar xzfv framework.tgz && rm -rf framework.tgz \
+	&& cd /root/Tars/cpp/build/ && ./build.sh cleanall \
 	&& mkdir -p /usr/local/app/patchs/tars.upload \
 	&& cd /tmp && curl -sS https://getcomposer.org/installer | php \
 	&& chmod +x composer.phar && mv composer.phar /usr/local/bin/composer \
