@@ -51,7 +51,8 @@ RUN yum install -y git gcc gcc-c++ make wget cmake mysql mysql-devel unzip iprou
 	&& mkdir -p /data/tars/tarsconfig_data && ln -s /data/tars/tarsconfig_data /usr/local/app/tars/tarsconfig/data \
 	&& mkdir -p /data/tars/tarsnode_data && ln -s /data/tars/tarsnode_data /usr/local/app/tars/tarsnode/data \
 	&& mkdir -p /data/tars/tarspatch_data && ln -s /data/tars/tarspatch_data /usr/local/app/tars/tarspatch/data \
-	&& mkdir -p /data/tars/tarsregistry_data && ln -s /data/tars/tarsregistry_data /usr/local/app/tars/tarsregistry/data
+	&& mkdir -p /data/tars/tarsregistry_data && ln -s /data/tars/tarsregistry_data /usr/local/app/tars/tarsregistry/data \
+	&& yum clean all && rm -rf /var/cache/yum
 
 ENV JAVA_HOME /usr/java/jdk1.8.0_131
 
