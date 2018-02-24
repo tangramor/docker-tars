@@ -73,9 +73,15 @@ build_web_mgr(){
 	rm -rf tars
 }
 
+start_redis() {
+	sed -i "s/daemonize no/daemonize yes/g" /etc/redis.conf
+	redis-server /etc/redis.conf
+}
 
 build_cpp_framework
 
 install_base_services
 
 build_web_mgr
+
+start_redis

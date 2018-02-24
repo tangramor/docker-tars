@@ -20,7 +20,7 @@ RUN yum install -y git gcc gcc-c++ make wget cmake mysql mysql-devel unzip iprou
 	&& yum -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm \
 	&& yum -y install http://rpms.remirepo.net/enterprise/remi-release-7.rpm \
 	&& yum -y install yum-utils && yum-config-manager --enable remi-php72 \
-	&& yum -y install php php-devel php-mcrypt php-cli php-gd php-curl php-mysql php-zip php-fileinfo \
+	&& yum -y install redis php php-devel php-mcrypt php-cli php-gd php-curl php-mysql php-zip php-fileinfo php-phpiredis \
 	&& yum -y install https://dev.mysql.com/get/Downloads/Connector-C++/mysql-connector-c++-1.1.9-linux-el7-x86-64bit.rpm \
 	&& wget https://github.com/Tencent/Tars/archive/master.zip \
 	&& unzip -a master.zip && mv Tars-master Tars && rm -f /root/master.zip \
@@ -58,9 +58,11 @@ RUN yum install -y git gcc gcc-c++ make wget cmake mysql mysql-devel unzip iprou
 	&& cp /root/Tars/build/conf/resin.xml /usr/local/resin/conf/ \
 	&& cp /root/Tars/web/target/tars.war /usr/local/resin/webapps/ \
 	&& mkdir -p /root/sql && cp -rf /root/Tars/cpp/framework/sql/* /root/sql/ \
-	&& rm -rf /root/Tars \
+	&& cd /root && git clone https://github.com/Cylix/cpp_redis.git \
+	&& cd /root/cpp_redis && git submodule init && git submodule update \
+	&& mkdir build && cd build && cmake .. -DCMAKE_BUILD_TYPE=Release && make && make install \
+	&& rm -rf /root/Tars && cd /root && rm -rf cpp_redis \
 	&& yum -y remove git gcc gcc-c++ make cmake mysql-devel glibc-devel ncurses-devel zlib-devel glibc-headers kernel-headers keyutils-libs-devel krb5-devel libcom_err-devel libselinux-devel libsepol-devel libstdc++-devel libverto-devel openssl-devel pcre-devel autoconf automake boost-devel \
-	&& cd /root/Tars/cpp/build/ && ./build.sh cleanall \
 	&& yum clean all && rm -rf /var/cache/yum
 	
 ENV JAVA_HOME /usr/java/jdk1.8.0_131

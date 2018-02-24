@@ -25,4 +25,11 @@ install_node_services(){
 	echo "* * * * * /usr/local/app/tars/tarsnode/util/monitor.sh" >> /etc/crontab
 }
 
+start_redis() {
+	sed -i "s/daemonize no/daemonize yes/g" /etc/redis.conf
+	redis-server /etc/redis.conf
+}
+
 install_node_services
+
+start_redis
