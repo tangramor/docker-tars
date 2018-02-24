@@ -76,7 +76,7 @@ build_web_mgr(){
 
 start_redis() {
 	sed -i "s/daemonize no/daemonize yes/g" /etc/redis.conf
-	redis-server
+	redis-server /etc/redis.conf
 }
 
 build_cpp_framework

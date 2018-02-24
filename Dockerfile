@@ -16,11 +16,11 @@ ENV DBPassword password
 COPY php/ttars.c /root/
 
 ##安装
-RUN yum install -y git gcc gcc-c++ make wget cmake mysql mysql-devel unzip iproute which glibc-devel flex bison ncurses-devel zlib-devel kde-l10n-Chinese glibc-common boost boost-devel redis \
+RUN yum install -y git gcc gcc-c++ make wget cmake mysql mysql-devel unzip iproute which glibc-devel flex bison ncurses-devel zlib-devel kde-l10n-Chinese glibc-common boost boost-devel \
 	&& yum -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm \
 	&& yum -y install http://rpms.remirepo.net/enterprise/remi-release-7.rpm \
 	&& yum -y install yum-utils && yum-config-manager --enable remi-php72 \
-	&& yum -y install php php-devel php-mcrypt php-cli php-gd php-curl php-mysql php-zip php-fileinfo php-phpiredis \
+	&& yum -y install redis php php-devel php-mcrypt php-cli php-gd php-curl php-mysql php-zip php-fileinfo php-phpiredis \
 	&& yum -y install https://dev.mysql.com/get/Downloads/Connector-C++/mysql-connector-c++-1.1.9-linux-el7-x86-64bit.rpm \
 	&& wget https://github.com/Tencent/Tars/archive/master.zip \
 	&& unzip -a master.zip && mv Tars-master Tars && rm -f /root/master.zip \
