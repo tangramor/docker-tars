@@ -18,7 +18,8 @@ build_cpp_framework(){
 	cd /root/Tars/cpp/framework/sql/
 	sed -i "s/proot@appinside/h${DBIP} -P${DBPort} -u${DBUser} -p${DBPassword} /g" `grep proot@appinside -rl ./exec-sql.sh`
 
-	if [ $(mysql -h${DBIP} -P${DBPort} -u${DBUser} -p${DBPassword} 'use tars_property') -eq 1 ];
+	RESULT=`mysqlshow -h${DBIP} -P${DBPort} -u${DBUser} -p${DBPassword} tars_property | grep -v Wildcard | grep -o tars_property`
+	if [ $RESULT != "tars_property" ];
 	then
 		chmod u+x /root/Tars/cpp/framework/sql/exec-sql.sh
 		/root/Tars/cpp/framework/sql/exec-sql.sh
@@ -31,6 +32,11 @@ install_base_services(){
 	##框架基础服务包
 	cd /root/Tars/cpp/build/
 	mv t*.tgz /data	
+
+	mkdir -p /data/tars/tarsconfig_data && ln -s /data/tars/tarsconfig_data /usr/local/app/tars/tarsconfig/data
+	mkdir -p /data/tars/tarsnode_data && ln -s /data/tars/tarsnode_data /usr/local/app/tars/tarsnode/data
+	mkdir -p /data/tars/tarspatch_data && ln -s /data/tars/tarspatch_data /usr/local/app/tars/tarspatch/data
+	mkdir -p /data/tars/tarsregistry_data && ln -s /data/tars/tarsregistry_data /usr/local/app/tars/tarsregistry/data
 	
 	##核心基础服务配置修改
 	cd /usr/local/app/tars
@@ -68,9 +74,15 @@ build_web_mgr(){
 	rm -rf tars
 }
 
+start_redis() {
+	sed -i "s/daemonize no/daemonize yes/g" /etc/redis.conf
+	redis-server
+}
 
 build_cpp_framework
 
 install_base_services
 
 build_web_mgr
+
+start_redis

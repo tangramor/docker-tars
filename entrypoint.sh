@@ -18,6 +18,7 @@ case ${1} in
 		;;
 	start)
 
+		/usr/sbin/init
 		source /etc/profile
 		exec /usr/local/resin/bin/resin.sh console
 		;;
