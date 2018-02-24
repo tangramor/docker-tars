@@ -18,12 +18,12 @@ build_cpp_framework(){
 	cd /root/Tars/cpp/framework/sql/
 	sed -i "s/proot@appinside/h${DBIP} -P${DBPort} -u${DBUser} -p${DBPassword} /g" `grep proot@appinside -rl ./exec-sql.sh`
 	
-	RESULT=`mysqlshow -h${DBIP} -P${DBPort} -u${DBUser} -p${DBPassword} tars_property | grep -v Wildcard | grep -o tars_property`
-	if [ $RESULT != "tars_property" ];
-	then
+	#RESULT=`mysqlshow -h${DBIP} -P${DBPort} -u${DBUser} -p${DBPassword} tars_property | grep -v Wildcard | grep -o tars_property`
+	#if [ $RESULT != "tars_property" ];
+	#then
 		chmod u+x /root/Tars/cpp/framework/sql/exec-sql.sh
 		/root/Tars/cpp/framework/sql/exec-sql.sh
-	fi
+	#fi
 }
 
 install_base_services(){
