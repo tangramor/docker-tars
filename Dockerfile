@@ -35,9 +35,8 @@ RUN yum install -y git gcc gcc-c++ make wget cmake mysql mysql-devel unzip iprou
 	&& make tarsstat-tar && make tarsnotify-tar && make tarsproperty-tar && make tarslog-tar && make tarsquerystat-tar && make tarsqueryproperty-tar \
 	&& mkdir -p /usr/local/app/tars/ && cp /root/Tars/cpp/build/framework.tgz /usr/local/app/tars/ && cp /root/Tars/cpp/build/t*.tgz /root/ \
 	&& cd /usr/local/app/tars/ && tar xzfv framework.tgz && rm -rf framework.tgz \
-	&& ./build.sh cleanall \
-	&& mkdir -p /usr/local/app/patchs/tars.upload \
-	&& cd /tmp && curl -fsSL https://getcomposer.org/installer | php \
+	&& mkdir -p /usr/local/app/patchs/tars.upload
+RUN cd /tmp && curl -fsSL https://getcomposer.org/installer | php \
 	&& chmod +x composer.phar && mv composer.phar /usr/local/bin/composer \
 	&& cd /root/Tars/php/tarsclient/ext/ && cp -f /root/ttars.c ./ && phpize --clean && phpize \
 	&& ./configure --enable-phptars --with-php-config=/usr/bin/php-config && make && make install \
@@ -62,7 +61,9 @@ RUN yum install -y git gcc gcc-c++ make wget cmake mysql mysql-devel unzip iprou
 	&& cd /root && git clone https://github.com/Cylix/cpp_redis.git \
 	&& cd /root/cpp_redis && git submodule init && git submodule update \
 	&& mkdir build && cd build && cmake .. -DCMAKE_BUILD_TYPE=Release && make && make install \
-	&& cd /root && rm -rf cpp_redis
+	&& cd /root/Tars/cpp/build/ && ./build.sh cleanall \
+	&& cd /root && rm -rf cpp_redis \
+	&& yum clean all && rm -rf /var/cache/yum
 
 ENV JAVA_HOME /usr/java/jdk1.8.0_131
 
