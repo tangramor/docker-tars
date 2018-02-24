@@ -28,7 +28,8 @@ build_cpp_framework(){
 install_base_services(){
 	echo "base services ...."
 	
-	cd /root/Tars/cpp/build/ && cp -f t*.tgz /data/ && rm -f t*.tgz
+	cd /root
+	mv t*.tgz /data
 
 	mkdir -p /data/tars/tarsconfig_data && ln -s /data/tars/tarsconfig_data /usr/local/app/tars/tarsconfig/data
 	mkdir -p /data/tars/tarsnode_data && ln -s /data/tars/tarsnode_data /usr/local/app/tars/tarsnode/data
