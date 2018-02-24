@@ -7,6 +7,8 @@ MachineName=$(cat /etc/hosts | grep ${MachineIp} | awk '{print $2}')
 install_node_services(){
 	echo "base services ...."
 	
+	mkdir -p /data/tars/tarsnode_data && ln -s /data/tars/tarsnode_data /usr/local/app/tars/tarsnode/data
+
 	##核心基础服务配置修改
 	cd /usr/local/app/tars
 
