@@ -32,7 +32,8 @@ install_base_services(){
 	##框架基础服务包
 	cd /root/Tars/cpp/build/
 	mv t*.tgz /data	
-
+	rm -f t*.tgz
+	
 	mkdir -p /data/tars/tarsconfig_data && ln -s /data/tars/tarsconfig_data /usr/local/app/tars/tarsconfig/data
 	mkdir -p /data/tars/tarsnode_data && ln -s /data/tars/tarsnode_data /usr/local/app/tars/tarsnode/data
 	mkdir -p /data/tars/tarspatch_data && ln -s /data/tars/tarspatch_data /usr/local/app/tars/tarspatch/data
