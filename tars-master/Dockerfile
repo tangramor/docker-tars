@@ -58,10 +58,7 @@ RUN yum install -y git gcc gcc-c++ make wget cmake mysql mysql-devel unzip iprou
 	&& cp /root/Tars/build/conf/resin.xml /usr/local/resin/conf/ \
 	&& cp /root/Tars/web/target/tars.war /usr/local/resin/webapps/ \
 	&& mkdir -p /root/sql && cp -rf /root/Tars/cpp/framework/sql/* /root/sql/ \
-	&& cd /root && git clone https://github.com/Cylix/cpp_redis.git \
-	&& cd /root/cpp_redis && git submodule init && git submodule update \
-	&& mkdir build && cd build && cmake .. -DCMAKE_BUILD_TYPE=Release && make && make install \
-	&& rm -rf /root/Tars && cd /root && rm -rf cpp_redis \
+	&& rm -rf /root/Tars \
 	&& yum -y remove git gcc gcc-c++ make cmake mysql-devel glibc-devel ncurses-devel zlib-devel glibc-headers kernel-headers keyutils-libs-devel krb5-devel libcom_err-devel libselinux-devel libsepol-devel libstdc++-devel libverto-devel openssl-devel pcre-devel autoconf automake boost-devel \
 	&& yum clean all && rm -rf /var/cache/yum
 	

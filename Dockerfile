@@ -16,7 +16,7 @@ ENV DBPassword password
 COPY php/ttars.c /root/
 
 ##安装
-RUN yum install -y git gcc gcc-c++ make wget cmake mysql mysql-devel unzip iproute which glibc-devel flex bison ncurses-devel zlib-devel kde-l10n-Chinese glibc-common boost boost-devel \
+RUN yum install -y git gcc gcc-c++ make wget cmake mysql mysql-devel unzip iproute which glibc-devel flex bison ncurses-devel zlib-devel kde-l10n-Chinese glibc-common boost boost-devel hiredis-devel rapidjson-devel \
 	&& yum -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm \
 	&& yum -y install http://rpms.remirepo.net/enterprise/remi-release-7.rpm \
 	&& yum -y install yum-utils && yum-config-manager --enable remi-php72 \
@@ -58,11 +58,7 @@ RUN yum install -y git gcc gcc-c++ make wget cmake mysql mysql-devel unzip iprou
 	&& cp /root/Tars/build/conf/resin.xml /usr/local/resin/conf/ \
 	&& cp /root/Tars/web/target/tars.war /usr/local/resin/webapps/ \
 	&& mkdir -p /root/sql && cp -rf /root/Tars/cpp/framework/sql/* /root/sql/ \
-	&& cd /root && git clone https://github.com/Cylix/cpp_redis.git \
-	&& cd /root/cpp_redis && git submodule init && git submodule update \
-	&& mkdir build && cd build && cmake .. -DCMAKE_BUILD_TYPE=Release && make && make install \
 	&& cd /root/Tars/cpp/build/ && ./build.sh cleanall \
-	&& cd /root && rm -rf cpp_redis \
 	&& yum clean all && rm -rf /var/cache/yum
 
 ENV JAVA_HOME /usr/java/jdk1.8.0_131
