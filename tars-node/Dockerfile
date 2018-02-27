@@ -42,7 +42,6 @@ RUN yum install -y git gcc gcc-c++ make wget cmake mysql mysql-devel unzip iprou
 	&& source /etc/profile && cd /root/Tars/java && mvn clean install && mvn clean install -f core/client.pom.xml && mvn clean install -f core/server.pom.xml \
 	&& rm -rf /root/Tars \
 	&& yum -y remove git gcc gcc-c++ make cmake mysql-devel glibc-devel ncurses-devel zlib-devel glibc-headers kernel-headers keyutils-libs-devel krb5-devel libcom_err-devel libselinux-devel libsepol-devel libstdc++-devel libverto-devel openssl-devel pcre-devel autoconf automake \
-	&& cd /root/Tars/cpp/build/ && ./build.sh cleanall \
 	&& yum clean all && rm -rf /var/cache/yum
 
 ENV JAVA_HOME /usr/java/jdk1.8.0_131
