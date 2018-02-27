@@ -58,7 +58,7 @@ docker run --name mysql -e MYSQL_ROOT_PASSWORD=password -d -p 3306:3306 -v /c/Us
 
 注意上面的运行命令添加了 `--innodb_use_native_aio=0` ，因为mysql的aio对windows文件系统不支持
 
-如果要使用5.7以后版本的mysql，需要再添加 `--sql_mode="NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION"` 参数，因为不支持全零的date字段值（ https://dev.mysql.com/doc/refman/5.7/en/sql-mode.html#sqlmode_no_zero_date ）
+如果要使用5.7以后版本的mysql，需要再添加 `--sql_mode=NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION` 参数，因为不支持全零的date字段值（ https://dev.mysql.com/doc/refman/5.7/en/sql-mode.html#sqlmode_no_zero_date ）
 
 或者你也可以挂载使用一个自定义的 my.cnf 来添加上述参数。
 
@@ -142,7 +142,7 @@ docker run --name mysql -e MYSQL_ROOT_PASSWORD=password -d -p 3306:3306 -v /c/Us
 
 Please be aware of option `--innodb_use_native_aio=0` appended in the command above. Because MySQL aio does not support Windows file system.
 
-If you want a 5.7 or higher version MySQL, you may need to add option `--sql_mode="NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION"`. Because after 5.6 MySQL does not support zero date field ( https://dev.mysql.com/doc/refman/5.7/en/sql-mode.html#sqlmode_no_zero_date ).
+If you want a 5.7 or higher version MySQL, you may need to add option `--sql_mode=NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION`. Because after 5.6 MySQL does not support zero date field ( https://dev.mysql.com/doc/refman/5.7/en/sql-mode.html#sqlmode_no_zero_date ).
 
 You can also use a customized my.cnf to add those options.
 
