@@ -41,7 +41,6 @@ RUN install_packages build-essential cmake wget mariadb-client libmariadbclient-
 	&& rm -rf apache-maven-3.5.2-bin.tar.gz  \
 	&& . /etc/profile && cd /root/Tars/java && mvn clean install && mvn clean install -f core/client.pom.xml && mvn clean install -f core/server.pom.xml \
 	&& rm -rf /root/Tars \
-	&& apt-get -y purge build-essential cmake cmake-data cpp cpp-6 dpkg-dev g++ g++-6 gcc gcc-6 libc-dev-bin libc6-dev libgcc-6-dev libmariadbclient-dev libstdc++-6-dev libtinfo-dev linux-libc-dev make zlib1g-dev \
 	&& apt-get -y autoremove
 
 ENV JAVA_HOME /usr/java/jdk1.8.0_131
