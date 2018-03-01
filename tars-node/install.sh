@@ -8,6 +8,7 @@ install_node_services(){
 	echo "base services ...."
 	
 	##核心基础服务配置修改
+	source /etc/profile
 	cd /usr/local/app/tars
 
 	sed -i "s/dbhost.*=.*192.168.2.131/dbhost = ${DBIP}/g" `grep dbhost -rl ./*`

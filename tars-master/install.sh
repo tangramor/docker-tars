@@ -54,6 +54,7 @@ build_web_mgr(){
 	echo "web manager ...."
 	
 	##web管理系统配置修改后重新打war包
+	source /etc/profile
 	cd /usr/local/resin/webapps/
 	mkdir tars
 	cd tars
