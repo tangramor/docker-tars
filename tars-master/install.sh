@@ -78,6 +78,15 @@ start_redis() {
 	redis-server /etc/redis.conf
 }
 
+start_apache() {
+	mkdir /data/web
+	echo "<?php phpinfo(); ?>" > /data/web/phpinfo.php
+	rm -rf /var/www/html
+	rm -f /etc/httpd/conf.d/welcome.conf
+	ln -s /data/web /var/www/html
+	httpd
+}
+
 build_cpp_framework
 
 install_base_services
@@ -85,3 +94,5 @@ install_base_services
 build_web_mgr
 
 start_redis
+
+start_apache

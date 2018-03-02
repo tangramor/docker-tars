@@ -67,3 +67,6 @@ COPY tars-node/entrypoint.sh /sbin/
 ENTRYPOINT ["/bin/bash","/sbin/node-entrypoint.sh"]
 
 CMD ["start"]
+
+#Expose ports
+EXPOSE 80

@@ -76,3 +76,4 @@ CMD ["start"]
 
 #Expose ports
 EXPOSE 8080
+EXPOSE 80
