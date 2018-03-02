@@ -21,11 +21,11 @@ RUN yum -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.n
 	&& yum -y install yum-utils && yum-config-manager --enable remi-php72 \
 	&& yum -y install git gcc gcc-c++ make wget cmake mysql mysql-devel unzip iproute which glibc-devel flex bison ncurses-devel zlib-devel kde-l10n-Chinese glibc-common hiredis-devel rapidjson-devel boost boost-devel redis php php-devel php-mcrypt php-cli php-gd php-curl php-mysql php-zip php-fileinfo php-phpiredis \
 	&& yum -y install https://dev.mysql.com/get/Downloads/Connector-C++/mysql-connector-c++-1.1.9-linux-el7-x86-64bit.rpm \
-	&& wget https://github.com/Tencent/Tars/archive/master.zip -O master.zip \
+	&& wget -c -t 0 https://github.com/Tencent/Tars/archive/master.zip -O master.zip \
 	&& unzip -a master.zip && mv Tars-master Tars && rm -f /root/master.zip \
 	&& mkdir -p /usr/local/mysql && ln -s /usr/lib64/mysql /usr/local/mysql/lib && ln -s /usr/include/mysql /usr/local/mysql/include && echo "/usr/local/mysql/lib/" >> /etc/ld.so.conf && ldconfig \
 	&& cd /usr/local/mysql/lib/ && ln -s libmysqlclient.so.*.*.* libmysqlclient.a \
-	&& cd /root/Tars/cpp/thirdparty && wget https://github.com/Tencent/rapidjson/archive/master.zip -O master.zip \
+	&& cd /root/Tars/cpp/thirdparty && wget -c -t 0 https://github.com/Tencent/rapidjson/archive/master.zip -O master.zip \
 	&& unzip -a master.zip && mv rapidjson-master rapidjson && rm -f master.zip \
 	&& mkdir -p /data && chmod u+x /root/Tars/cpp/build/build.sh \
 	&& cd /root/Tars/cpp/build/ && ./build.sh all \
@@ -41,17 +41,17 @@ RUN yum -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.n
 	&& ./configure --enable-phptars --with-php-config=/usr/bin/php-config && make && make install \
 	&& echo "extension=phptars.so" > /etc/php.d/phptars.ini \
 	&& mkdir -p /root/init && cd /root/init/ \
-	&& wget --header "Cookie: oraclelicense=accept" -c --no-check-certificate http://download.oracle.com/otn-pub/java/jdk/8u131-b11/d54c1d3a095b4ff2b6607d096fa80163/jdk-8u131-linux-x64.rpm \
+	&& wget -c -t 0 --header "Cookie: oraclelicense=accept" -c --no-check-certificate http://download.oracle.com/otn-pub/java/jdk/8u131-b11/d54c1d3a095b4ff2b6607d096fa80163/jdk-8u131-linux-x64.rpm \
 	&& rpm -ivh /root/init/jdk-8u131-linux-x64.rpm && rm -rf /root/init/jdk-8u131-linux-x64.rpm \
 	&& echo "export JAVA_HOME=/usr/java/jdk1.8.0_131" >> /etc/profile \
 	&& echo "CLASSPATH=\$JAVA_HOME/lib/dt.jar:\$JAVA_HOME/lib/tools.jar" >> /etc/profile \
 	&& echo "PATH=\$JAVA_HOME/bin:\$PATH" >> /etc/profile \
 	&& echo "export PATH JAVA_HOME CLASSPATH" >> /etc/profile \
-	&& cd /usr/local/ && wget http://mirrors.gigenet.com/apache/maven/maven-3/3.5.2/binaries/apache-maven-3.5.2-bin.tar.gz \
+	&& cd /usr/local/ && wget -c -t 0 http://mirrors.gigenet.com/apache/maven/maven-3/3.5.2/binaries/apache-maven-3.5.2-bin.tar.gz \
 	&& tar zxvf apache-maven-3.5.2-bin.tar.gz && echo "export MAVEN_HOME=/usr/local/apache-maven-3.5.2/" >> /etc/profile \
 	&& echo "export PATH=\$PATH:\$MAVEN_HOME/bin" >> /etc/profile && source /etc/profile && mvn -v \
 	&& rm -rf apache-maven-3.5.2-bin.tar.gz  \
-	&& cd /usr/local/ && wget http://caucho.com/download/resin-4.0.51.tar.gz && tar zxvf resin-4.0.51.tar.gz && mv resin-4.0.51 resin && rm -rf resin-4.0.51.tar.gz \
+	&& cd /usr/local/ && wget -c -t 0 http://caucho.com/download/resin-4.0.51.tar.gz && tar zxvf resin-4.0.51.tar.gz && mv resin-4.0.51 resin && rm -rf resin-4.0.51.tar.gz \
 	&& source /etc/profile && cd /root/Tars/java && mvn clean install && mvn clean install -f core/client.pom.xml && mvn clean install -f core/server.pom.xml \
 	&& cd /root/Tars/web/ && source /etc/profile && mvn clean package \
 	&& cp /root/Tars/build/conf/resin.xml /usr/local/resin/conf/ \
