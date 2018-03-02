@@ -64,7 +64,7 @@ VOLUME ["/data"]
 COPY tars-node/install.sh /root/init/
 COPY tars-node/entrypoint.sh /sbin/
 
-ENTRYPOINT ["/bin/bash","/sbin/node-entrypoint.sh"]
+ENTRYPOINT ["/bin/bash","/sbin/entrypoint.sh"]
 
 CMD ["start"]
 
