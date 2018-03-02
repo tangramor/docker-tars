@@ -11,7 +11,7 @@ docker镜像已经由docker hub自动构建：https://hub.docker.com/r/tangramor
 docker pull tangramor/docker-tars
 ```
 
-tag 为 **php7** 的镜像包含了php7.1环境（php7.2在当前的remi库里有依赖问题）和phptars扩展，也添加了MySQL C++ connector以方便开发：
+tag 为 **php7** 的镜像包含了php7.2环境和phptars扩展，也添加了MySQL C++ connector以方便开发：
 ```
 docker pull tangramor/docker-tars:php7
 ```
