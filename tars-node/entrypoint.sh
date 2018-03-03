@@ -17,6 +17,7 @@ case ${1} in
 	init)
 		;;
 	start)
+		/usr/local/app/tars/tarsnode/util/start.sh
 		tail -f /var/log/yum.log
 		;;
 	*)
