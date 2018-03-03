@@ -17,9 +17,10 @@ case ${1} in
 	init)
 		;;
 	start)
-
 		/usr/sbin/init
 		source /etc/profile
+		/usr/local/app/tars/tars_install.sh
+		httpd
 		exec /usr/local/resin/bin/resin.sh console
 		;;
 	*)
