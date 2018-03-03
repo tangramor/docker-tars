@@ -178,7 +178,7 @@ tars-node 镜像构建命令：`docker build -t tars-node -f tars-node/Dockerfil
     
     	$end = microtime();
     
-    	echo "<p>耗时：".($end - $start)." 微秒</p>";
+    	echo "<p>耗时：".($end - $start)." 秒</p>";
     ```
     
     在宿主机上使用浏览器访问 http://127.0.0.1/index.php （linux、mac）或 http://192.168.99.100/index.php （windows），如果没有意外，页面应该返回类似下面的内容：
@@ -186,7 +186,7 @@ tars-node 镜像构建命令：`docker build -t tars-node -f tars-node/Dockerfil
     ```
     服务器返回：Hello World!
     
-    耗时：0.051169 微秒
+    耗时：0.051169 秒
     ```
     	
 
