@@ -1,4 +1,6 @@
-[Click to Read English Version](https://github.com/tangramor/docker-tars#english-vesion) or Scroll Down to Read it
+# Tencent Tars 的Docker镜像脚本与使用
+
+## [Click to Read English Version](https://github.com/tangramor/docker-tars#english-vesion) or Scroll Down to Read it
 
 本镜像脚本根据 https://github.com/panjen/docker-tars 修改，最初版本来自 https://github.com/luocheng812/docker_tars 。
 
@@ -77,6 +79,116 @@ tars-node 镜像构建命令：`docker build -t tars-node -f tars-node/Dockerfil
 --------
 使用docker镜像进行Tars相关的开发就方便很多了，我的做法是把项目放置在被挂载到镜像 /data 目录的本地目录下，例如 `/c/Users/<ACCOUNT>/tars_data` 。在本地使用编辑器或IDE对项目文件进行开发，然后开启命令行：`docker exec -it tars bash` 进入Tars环境进行编译或测试。
 
+### 举例说明：
+	
+1. **开发服务端**
+
+    首先使用docker命令启动容器，这里我们可以用 `tangramor/tars-master`  或者 `tangramor/docker-tars`：
+    
+    ```
+    docker run -d -it --name tars -p 8080:8080 -v /Users/tangramor/Workspace/tars_data:/data tangramor/tars-master
+    ```
+    
+    这个命令启动了 `tangramor/tars-master` 容器 **tars** 并将本地的一个目录 `/Users/tangramor/Workspace/tars_data` 挂载为容器的 /data 目录，同时它还把 8080 端口暴露出来了。
+    
+    然后我们可以在宿主机的 `/Users/tangramor/Workspace/tars_data` 目录下看到有两个子目录被创建出来了：log、tars，前者是resin的日志目录，后者里面是Tars各系统进程的日志目录。同时 `/Users/tangramor/Workspace/tars_data` 目录下还有各个需要手动部署的 Tars 子系统的部署 tgz 包，我们参考 [安装框架普通基础服务](https://github.com/Tencent/Tars/blob/master/Install.md#44-%E5%AE%89%E8%A3%85%E6%A1%86%E6%9E%B6%E6%99%AE%E9%80%9A%E5%9F%BA%E7%A1%80%E6%9C%8D%E5%8A%A1) 来安装这些服务。
+    
+    运行 `docker exec -it tars bash` 进入容器 **tars**，`cd /data` 进入工作目录，参考官方的 [服务开发](https://github.com/Tencent/Tars/blob/master/docs/tars_cpp_quickstart.md#5-%E6%9C%8D%E5%8A%A1%E5%BC%80%E5%8F%91--) 文档，开发 TestApp.HelloServer，其中 testHello 方法修改如下：
+    
+    ```
+    int HelloImp::testHello(const std::string &sReq, std::string &sRsp, tars::TarsCurrentPtr current)
+    {
+        TLOGDEBUG("HelloImp::testHellosReq:"<<sReq<<endl);
+        sRsp = sReq + " World!";
+        return 0;
+    }
+    
+    ```
+    
+    然后将编译完成的 HelloServer.tgz 部署到 tars-master 容器或者 docker-tars 容器里
+
+2. **开发PHP客户端**
+
+    C++的客户端可以参考官方的 [客户端同步/异步调用服务](https://github.com/Tencent/Tars/blob/master/docs/tars_cpp_quickstart.md#54-%E5%AE%A2%E6%88%B7%E7%AB%AF%E5%90%8C%E6%AD%A5%E5%BC%82%E6%AD%A5%E8%B0%83%E7%94%A8%E6%9C%8D%E5%8A%A1)。注意如果要把C++的客户端部署到 tars-node 容器里，那么不要混用 minideb 标签和 latest、php7 标签的镜像，因为会有依赖问题。
+    
+    这里主要讲一下PHP的客户端开发与部署。
+    
+    首先使用docker命令启动**php7**标签的容器，这里我们可以用 `tangramor/tars-node:php7` ：
+    
+    ```
+    docker run -d -it --name tars-node --link tars:tars -p 80:80 -v /Users/tangramor/Workspace/tars_node:/data tangramor/tars-node:php7
+    ```
+    
+    这个命令启动了 `tangramor/tars-node:php7` 容器 **tars-node** 并将本地的一个目录 `/Users/tangramor/Workspace/tars_node` 挂载为容器的 /data 目录，同时它连接了命名为 **tars** 的服务端容器，还把 80 端口暴露出来了。
+    
+    我们可以在宿主机的 `/Users/tangramor/Workspace/tars_node` 目录下看到有三个子目录被创建出来了：log、tars 和 web。前两个都是日志目录，最后一个在容器中被链接为 `/var/www/html`，也就是Apache服务器的根目录。并且在 web 目录下可以看到 phpinfo.php 文件。我们使用浏览器访问 http://127.0.0.1/phpinfo.php （linux、mac）或 http://192.168.99.100/phpinfo.php （windows）就可以看到PHP的信息页面了。
+    
+    我们从宿主机的 `/Users/tangramor/Workspace/tars_data/TestApp/HelloServer` 目录里找到 `Hello.tars` 文件，将它拷贝到宿主机的 `/Users/tangramor/Workspace/tars_node/web` 目录下。
+    
+    运行 `docker exec -it tars-node bash` 进入容器 tars-node，`cd /data/web` 来到web目录，然后执行 `wget https://raw.githubusercontent.com/Tencent/Tars/master/php/tarsclient/tars2php.php` 把 `tars2php.php` 文件下载到本地。然后执行 `php tars2php.php Hello.tars "TestApp.HelloServer.HelloObj"` ，我们可以在 web 目录下看到 TestApp 目录被创建出来，`TestApp/HelloServer/HelloObj` 目录下是生成的PHP的客户端文件。
+    
+    在 web 目录下再创建一个 `composer.json` 文件，内容如下：
+    
+    ```
+    {
+      "name": "demo",
+      "description": "demo",
+      "authors": [
+        {
+          "name": "Tangramor",
+          "email": "tangramor@qq.com"
+        }
+      ],
+      "require": {
+        "php": ">=5.3",
+        "phptars/tars-assistant" : "0.2.1"
+      },
+      "autoload": {
+        "psr-4": {
+          "TestApp\\": "TestApp/"
+        }
+      }
+    }
+    ```
+    
+    然后运行 `composer install` 命令，`vendor` 目录被创建出来了。这表明我们可以在PHP文件里使用 autoload 来加载 phptars。在 web 目录下新建 `index.php` 文件，内容如下：
+    
+    ```
+    <?php
+    	require_once("./vendor/autoload.php");
+    	// 指定主控
+    	$host = "tars";
+    	$port = 20001;
+    
+    	$start = microtime();
+    
+    	try {
+    		$servant = new TestApp\HelloServer\HelloObj\Hello($host, $port);
+    
+    		$in1 = "Hello";
+    
+    		$intVal = $servant->testHello($in1,$out1);
+    
+    		echo "服务器返回：".$out1;
+    
+    	} catch(phptars\TarsException $e) {
+    	    // 错误处理
+    	    echo "Error: ".$e;
+    	}
+    
+    	$end = microtime();
+    
+    	echo "<p>耗时：".($end - $start)." 秒</p>";
+    ```
+    
+    在宿主机上使用浏览器访问 http://127.0.0.1/index.php （linux、mac）或 http://192.168.99.100/index.php （windows），如果没有意外，页面应该返回类似下面的内容：
+    
+    ```
+    服务器返回：Hello World!
+    
+    耗时：0.051169 秒
+    ```
+    	
 
 Trouble Shooting
 ----------------

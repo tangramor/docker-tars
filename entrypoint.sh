@@ -17,8 +17,8 @@ case ${1} in
 	init)
 		;;
 	start)
-
 		source /etc/profile
+		/usr/local/app/tars/tars_install.sh
 		exec /usr/local/resin/bin/resin.sh console
 		;;
 	*)

@@ -29,7 +29,7 @@ RUN install_packages build-essential cmake wget mariadb-client libmariadbclient-
 	&& cd /usr/local/app/tars/ && tar xzfv framework.tgz && rm -rf framework.tgz \
 	&& mkdir -p /usr/local/app/patchs/tars.upload \
 	&& mkdir -p /root/init && cd /root/init/ \
-	&& wget -c -t 0 --header "Cookie: oraclelicense=accept" -c --no-check-certificate http://download.oracle.com/otn-pub/java/jdk/8u131-b11/d54c1d3a095b4ff2b6607d096fa80163/jdk-8u131-linux-x64.tar.gz \
+	&& wget -c -t 0 --header "Cookie: oraclelicense=accept" --no-check-certificate http://download.oracle.com/otn-pub/java/jdk/8u131-b11/d54c1d3a095b4ff2b6607d096fa80163/jdk-8u131-linux-x64.tar.gz \
 	&& tar zxf /root/init/jdk-8u131-linux-x64.tar.gz && rm -rf /root/init/jdk-8u131-linux-x64.tar.gz \
 	&& mkdir /usr/java && mv /root/init/jdk1.8.0_131 /usr/java \
 	&& echo "export JAVA_HOME=/usr/java/jdk1.8.0_131" >> /etc/profile \
