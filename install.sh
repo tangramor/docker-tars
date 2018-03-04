@@ -72,9 +72,17 @@ build_web_mgr(){
 	rm -rf tars
 }
 
+setup_apache() {
+	mkdir /data/web
+	echo "<?php phpinfo(); ?>" > /data/web/phpinfo.php
+	rm -rf /var/www/html
+	ln -s /data/web /var/www/html
+}
 
 build_cpp_framework
 
 install_base_services
 
 build_web_mgr
+
+setup_apache

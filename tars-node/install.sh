@@ -24,4 +24,13 @@ install_node_services(){
 	echo "* * * * * /usr/local/app/tars/tarsnode/util/monitor.sh" >> /etc/crontab
 }
 
+setup_apache() {
+	mkdir /data/web
+	echo "<?php phpinfo(); ?>" > /data/web/phpinfo.php
+	rm -rf /var/www/html
+	ln -s /data/web /var/www/html
+}
+
 install_node_services
+
+setup_apache
