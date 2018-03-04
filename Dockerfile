@@ -28,7 +28,7 @@ RUN install_packages build-essential cmake wget mariadb-client libmariadbclient-
 	&& mkdir -p /usr/local/app/tars/ && cp /root/Tars/cpp/build/framework.tgz /usr/local/app/tars/ && cp /root/Tars/cpp/build/t*.tgz /root/ \
 	&& cd /usr/local/app/tars/ && tar xzfv framework.tgz && rm -rf framework.tgz \
 	&& mkdir -p /usr/local/app/patchs/tars.upload \
-	&& cd /tmp && curl -fsSL https://getcomposer.org/installer | php \
+	&& cd /tmp && wget -c -t 0 https://getcomposer.org/installer && php installer \
 	&& chmod +x composer.phar && mv composer.phar /usr/local/bin/composer \
 	&& cd /root/Tars/php/tarsclient/ext/ && phpize --clean && phpize \
 	&& ./configure --enable-phptars --with-php-config=/usr/bin/php-config && make && make install && phpize --clean \
