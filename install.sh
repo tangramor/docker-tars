@@ -2,7 +2,7 @@
 
 ResourceDir=/root/res
 MachineIp=$(ip addr | grep inet | grep eth0 | awk '{print $2;}' | sed 's|/.*$||')
-MachineName=$(cat /etc/hosts | grep ${MachineName} | awk '{print $2}')
+MachineName=$(cat /etc/hosts | grep ${MachineIp} | awk '{print $2}')
 
 build_cpp_framework(){
 	echo "build cpp framework ...."
