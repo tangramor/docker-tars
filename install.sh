@@ -2,7 +2,7 @@
 
 ResourceDir=/root/res
 MachineIp=$(ip addr | grep inet | grep eth0 | awk '{print $2;}' | sed 's|/.*$||')
-MachineName=$(cat /etc/hosts | grep ${MachineIp} | awk '{print $2}')
+MachineName=$(cat /etc/hosts | grep ${MachineName} | awk '{print $2}')
 
 build_cpp_framework(){
 	echo "build cpp framework ...."
@@ -12,7 +12,7 @@ build_cpp_framework(){
 	mysql -h${DBIP} -P${DBPort} -u${DBUser} -p${DBPassword} -e "grant all on *.* to 'tars'@'${MachineName}' identified by 'tars2015' with grant option;"
 	mysql -h${DBIP} -P${DBPort} -u${DBUser} -p${DBPassword} -e "flush privileges;"
 
-	sed -i "s/192.168.2.131/${MachineIp}/g" `grep 192.168.2.131 -rl /root/Tars/cpp/framework/sql/*`
+	sed -i "s/192.168.2.131/${MachineName}/g" `grep 192.168.2.131 -rl /root/Tars/cpp/framework/sql/*`
 	sed -i "s/db.tars.com/${DBIP}/g" `grep db.tars.com -rl /root/Tars/cpp/framework/sql/*`
 
 	cd /root/Tars/cpp/framework/sql/
@@ -42,11 +42,11 @@ install_base_services(){
 	cd /usr/local/app/tars
 
 	sed -i "s/dbhost.*=.*192.168.2.131/dbhost = ${DBIP}/g" `grep dbhost -rl ./*`
-	sed -i "s/192.168.2.131/${MachineIp}/g" `grep 192.168.2.131 -rl ./*`
+	sed -i "s/192.168.2.131/${MachineName}/g" `grep 192.168.2.131 -rl ./*`
 	sed -i "s/db.tars.com/${DBIP}/g" `grep db.tars.com -rl ./*`
 	sed -i "s/dbport.*=.*3306/dbport = ${DBPort}/g" `grep dbport -rl /usr/local/app/tars/*`
-	sed -i "s/registry.tars.com/${MachineIp}/g" `grep registry.tars.com -rl ./*`
-	sed -i "s/web.tars.com/${MachineIp}/g" `grep web.tars.com -rl ./*`
+	sed -i "s/registry.tars.com/${MachineName}/g" `grep registry.tars.com -rl ./*`
+	sed -i "s/web.tars.com/${MachineName}/g" `grep web.tars.com -rl ./*`
 
 	chmod u+x tars_install.sh
 	./tars_install.sh
@@ -65,8 +65,8 @@ build_web_mgr(){
 	
 	sed -i "s/db.tars.com/${DBIP}/g" `grep db.tars.com -rl ./WEB-INF/classes/app.config.properties`
 	sed -i "s/3306/${DBPort}/g" `grep 3306 -rl ./WEB-INF/classes/app.config.properties`
-	sed -i "s/registry1.tars.com/${MachineIp}/g" `grep registry1.tars.com -rl ./WEB-INF/classes/tars.conf`
-	sed -i "s/registry2.tars.com/${MachineIp}/g" `grep registry2.tars.com -rl ./WEB-INF/classes/tars.conf`
+	sed -i "s/registry1.tars.com/${MachineName}/g" `grep registry1.tars.com -rl ./WEB-INF/classes/tars.conf`
+	sed -i "s/registry2.tars.com/${MachineName}/g" `grep registry2.tars.com -rl ./WEB-INF/classes/tars.conf`
 	sed -i "s/DEBUG/INFO/g" `grep DEBUG -rl ./WEB-INF/classes/log4j.properties`
 	
 	jar -uvf ../tars.war .
