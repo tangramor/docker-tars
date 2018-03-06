@@ -18,12 +18,15 @@ build_cpp_framework(){
 	cd /root/sql/
 	sed -i "s/proot@appinside/h${DBIP} -P${DBPort} -u${DBUser} -p${DBPassword} /g" `grep proot@appinside -rl ./exec-sql.sh`
 	
-	#RESULT=`mysqlshow -h${DBIP} -P${DBPort} -u${DBUser} -p${DBPassword} tars_property | grep -v Wildcard | grep -o tars_property`
-	#if [ $RESULT != "tars_property" ];
-	#then
-		chmod u+x /root/Tars/cpp/framework/sql/exec-sql.sh
-		/root/Tars/cpp/framework/sql/exec-sql.sh
-	#fi
+	chmod u+x /root/sql/exec-sql.sh
+	
+	CHECK=$(mysqlshow --user=${DBUser} --password=${DBPassword} --host=${DBIP} --port=${DBPort} db_tars | grep -v Wildcard | grep -o db_tars)
+	if [ "$CHECK" = "db_tars" -a ${MOUNT_DATA} = true ];
+	then
+		echo "DB db_tars already exists" > /root/DB_Exists.lock
+	else
+		/root/sql/exec-sql.sh
+	fi
 }
 
 install_base_services(){
@@ -48,8 +51,17 @@ install_base_services(){
 	sed -i "s/web.tars.com/${MachineIp}/g" `grep web.tars.com -rl ./*`
 
 	chmod u+x tars_install.sh
-	./tars_install.sh
+	#./tars_install.sh
 
+	if [ ${MOUNT_DATA} = true ];
+	then
+		mkdir -p /data/tarsconfig_data && ln -s /data/tarsconfig_data /usr/local/app/tars/tarsconfig/data
+		mkdir -p /data/tarsnode_data && ln -s /data/tarsnode_data /usr/local/app/tars/tarsnode/data
+		mkdir -p /data/tarspatch_data && ln -s /data/tarspatch_data /usr/local/app/tars/tarspatch/data
+		mkdir -p /data/tarsregistry_data && ln -s /data/tarsregistry_data /usr/local/app/tars/tarsregistry/data
+	fi
+
+	chmod u+x tarspatch/util/init.sh
 	./tarspatch/util/init.sh
 }
 
