@@ -4,7 +4,7 @@ WORKDIR /root/
 
 ##修改镜像时区 
 ENV TZ=Asia/Shanghai
-ENV LC_ALL zh_CN.UTF-8
+
 ENV DBIP 127.0.0.1
 ENV DBPort 3306
 ENV DBUser root
@@ -12,8 +12,8 @@ ENV DBPassword password
 
 ##安装
 RUN install_packages build-essential cmake wget mariadb-client libmariadbclient-dev libmariadbclient18 unzip iproute flex bison libncurses5-dev zlib1g-dev ca-certificates vim rsync locales apache2 composer php7.0 php7.0-cli php7.0-dev php7.0-mcrypt php7.0-gd php7.0-curl php7.0-mysql php7.0-zip php7.0-fileinfo php7.0-mbstring php-redis redis-server \
-	&& echo "zh_CN.UTF-8 UTF-8" >> /etc/locale.gen && locale-gen && ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone \
-	&& echo 'LC_ALL=zh_CN.UTF-8' >> /etc/environment && localedef -c -f UTF-8 -i zh_CN zh_CN.UTF-8 \
+	&& echo "zh_CN zh_CN.UTF-8 UTF-8" >> /etc/locale.gen && locale-gen && ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone \
+	&& localedef -c -f UTF-8 -i zh_CN zh_CN.UTF-8 \
 	&& wget -c -t 0 https://github.com/Tencent/Tars/archive/master.zip -O master.zip \
 	&& unzip -a master.zip && mv Tars-master Tars && rm -f /root/master.zip \
 	&& mkdir -p /usr/local/mysql/lib && ln -s /usr/include/mysql /usr/local/mysql/include \
@@ -57,6 +57,9 @@ RUN install_packages build-essential cmake wget mariadb-client libmariadbclient-
 ENV JAVA_HOME /usr/java/jdk1.8.0_131
 
 ENV MAVEN_HOME /usr/local/apache-maven-3.5.2
+
+# 是否将Tars系统进程的data目录挂载到外部存储，缺省为false以支持windows下使用
+ENV MOUNT_DATA false
 
 VOLUME ["/data"]
 	
