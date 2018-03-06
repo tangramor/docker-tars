@@ -48,6 +48,9 @@ ENV JAVA_HOME /usr/java/jdk1.8.0_131
 
 ENV MAVEN_HOME /usr/local/apache-maven-3.5.2
 
+# 是否将Tars系统进程的data目录挂载到外部存储，缺省为false以支持windows下使用
+ENV MOUNT_DATA false
+
 VOLUME ["/data"]
 
 ##拷贝资源

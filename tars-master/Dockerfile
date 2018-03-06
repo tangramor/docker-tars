@@ -8,6 +8,7 @@ RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone \
 	&& localedef -c -f UTF-8 -i zh_CN zh_CN.utf8
 
 ENV LC_ALL zh_CN.utf8
+
 ENV DBIP 127.0.0.1
 ENV DBPort 3306
 ENV DBUser root
@@ -49,16 +50,15 @@ RUN yum install -y git gcc gcc-c++ make wget cmake mysql mysql-devel unzip iprou
 	&& cp /root/Tars/web/target/tars.war /usr/local/resin/webapps/ \
 	&& mkdir -p /root/sql && cp -rf /root/Tars/cpp/framework/sql/* /root/sql/ \
 	&& rm -rf /root/Tars \
-	&& mkdir -p /data/tars/tarsconfig_data && ln -s /data/tars/tarsconfig_data /usr/local/app/tars/tarsconfig/data \
-	&& mkdir -p /data/tars/tarsnode_data && ln -s /data/tars/tarsnode_data /usr/local/app/tars/tarsnode/data \
-	&& mkdir -p /data/tars/tarspatch_data && ln -s /data/tars/tarspatch_data /usr/local/app/tars/tarspatch/data \
-	&& mkdir -p /data/tars/tarsregistry_data && ln -s /data/tars/tarsregistry_data /usr/local/app/tars/tarsregistry/data \
 	&& yum -y remove git gcc gcc-c++ make cmake mysql-devel glibc-devel ncurses-devel zlib-devel glibc-headers kernel-headers keyutils-libs-devel krb5-devel libcom_err-devel libselinux-devel libsepol-devel libstdc++-devel libverto-devel openssl-devel pcre-devel autoconf automake \
 	&& yum clean all && rm -rf /var/cache/yum
 	
 ENV JAVA_HOME /usr/java/jdk1.8.0_131
 
 ENV MAVEN_HOME /usr/local/apache-maven-3.5.2
+
+# 是否将Tars系统进程的data目录挂载到外部存储，缺省为false以支持windows下使用
+ENV MOUNT_DATA false
 
 VOLUME ["/data"]
 

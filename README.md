@@ -33,7 +33,7 @@ docker pull tangramor/tars-master
 docker pull tangramor/tars-node
 ```
 
-在运行容器时需要指定数据库的环境变量，例如：
+在运行容器时需要指定数据库的**环境变量**，例如：
 ```
 DBIP mysql
 DBPort 3306
@@ -41,9 +41,12 @@ DBUser root
 DBPassword password
 ```
 
+如果是在**Linux**或者**Mac**上运行，可以设定**环境变量** `MOUNT_DATA` 为 `true` 。此选项用于将Tars的系统进程的数据目录挂载到 /data 目录之下（一般把外部存储卷挂载为 /data 目录），这样即使重新创建容器，只要环境变量一致（数据库也没变化），那么之前的部署就不会丢失。这符合容器是无状态的原则。可惜在Windows下由于文件系统与虚拟机共享文件夹的权限问题，我们不能使用这个选项。
+
+
 run_docker_tars.sh 里的命令如下，请自己修改：
 ```
-docker run -d -it --name tars --link mysql --env DBIP=mysql --env DBPort=3306 --env DBUser=root --env DBPassword=PASS -p 8080:8080 -v /c/Users/<ACCOUNT>/tars_data:/data tangramor/docker-tars
+docker run -d -it --name tars --link mysql --env MOUNT_DATA=false --env DBIP=mysql --env DBPort=3306 --env DBUser=root --env DBPassword=PASS -p 8080:8080 -v /c/Users/<ACCOUNT>/tars_data:/data tangramor/docker-tars
 ```
 
 
@@ -80,7 +83,7 @@ tars-node 镜像构建命令：`docker build -t tars-node -f tars-node/Dockerfil
 使用docker镜像进行Tars相关的开发就方便很多了，我的做法是把项目放置在被挂载到镜像 /data 目录的本地目录下，例如 `/c/Users/<ACCOUNT>/tars_data` 。在本地使用编辑器或IDE对项目文件进行开发，然后开启命令行：`docker exec -it tars bash` 进入Tars环境进行编译或测试。
 
 ### 举例说明：
-	
+    
 1. **开发服务端**
 
     首先使用docker命令启动容器，这里我们可以用 `tangramor/tars-master`  或者 `tangramor/docker-tars`：
@@ -155,30 +158,30 @@ tars-node 镜像构建命令：`docker build -t tars-node -f tars-node/Dockerfil
     
     ```
     <?php
-    	require_once("./vendor/autoload.php");
-    	// 指定主控
-    	$host = "tars";
-    	$port = 20001;
+        require_once("./vendor/autoload.php");
+        // 指定主控
+        $host = "tars";
+        $port = 20001;
     
-    	$start = microtime();
+        $start = microtime();
     
-    	try {
-    		$servant = new TestApp\HelloServer\HelloObj\Hello($host, $port);
+        try {
+            $servant = new TestApp\HelloServer\HelloObj\Hello($host, $port);
     
-    		$in1 = "Hello";
+            $in1 = "Hello";
     
-    		$intVal = $servant->testHello($in1,$out1);
+            $intVal = $servant->testHello($in1,$out1);
     
-    		echo "服务器返回：".$out1;
+            echo "服务器返回：".$out1;
     
-    	} catch(phptars\TarsException $e) {
-    	    // 错误处理
-    	    echo "Error: ".$e;
-    	}
+        } catch(phptars\TarsException $e) {
+            // 错误处理
+            echo "Error: ".$e;
+        }
     
-    	$end = microtime();
+        $end = microtime();
     
-    	echo "<p>耗时：".($end - $start)." 秒</p>";
+        echo "<p>耗时：".($end - $start)." 秒</p>";
     ```
     
     在宿主机上使用浏览器访问 http://127.0.0.1/index.php （linux、mac）或 http://192.168.99.100/index.php （windows），如果没有意外，页面应该返回类似下面的内容：
@@ -188,7 +191,7 @@ tars-node 镜像构建命令：`docker build -t tars-node -f tars-node/Dockerfil
     
     耗时：0.051169 秒
     ```
-    	
+        
 
 Trouble Shooting
 ----------------

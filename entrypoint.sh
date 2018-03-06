@@ -18,7 +18,7 @@ case ${1} in
 		;;
 	start)
 		source /etc/profile
-		/usr/local/app/tars/tars_install.sh
+		cd /usr/local/app/tars && ./tars_install.sh
 		exec /usr/local/resin/bin/resin.sh console
 		;;
 	*)
