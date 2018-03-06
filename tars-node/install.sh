@@ -18,6 +18,11 @@ install_node_services(){
 	sed -i "s/registry.tars.com/${MachineIp}/g" `grep registry.tars.com -rl ./*`
 	sed -i "s/web.tars.com/${MachineIp}/g" `grep web.tars.com -rl ./*`
 
+	if [ ${MOUNT_DATA} = true ];
+	then
+		mkdir -p /data/tarsnode_data && ln -s /data/tarsnode_data /usr/local/app/tars/tarsnode/data
+	fi
+	
 	chmod u+x tarsnode_install.sh
 	./tarsnode_install.sh
 	
