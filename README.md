@@ -33,6 +33,10 @@ docker pull tangramor/tars-master
 docker pull tangramor/tars-node
 ```
 
+环境变量
+--------
+### DBIP, DBPort, DBUser, DBPassword
+
 在运行容器时需要指定数据库的**环境变量**，例如：
 ```
 DBIP mysql
@@ -41,7 +45,13 @@ DBUser root
 DBPassword password
 ```
 
-如果是在**Linux**或者**Mac**上运行，可以设定**环境变量** `MOUNT_DATA` 为 `true` 。此选项用于将Tars的系统进程的数据目录挂载到 /data 目录之下（一般把外部存储卷挂载为 /data 目录），这样即使重新创建容器，只要环境变量一致（数据库也没变化），那么之前的部署就不会丢失。这符合容器是无状态的原则。可惜在Windows下由于[文件系统与虚拟机共享文件夹的权限问题](https://discuss.elastic.co/t/filebeat-docker-running-on-windows-not-allowing-application-to-rotate-the-log/89616/11)，我们不能使用这个选项。
+### MOUNT_DATA
+
+如果是在**Linux**或者**Mac**上运行，可以设定**环境变量** `MOUNT_DATA` 为 `true` 。此选项用于将Tars的系统进程的数据目录挂载到 /data 目录之下（一般把外部存储卷挂载为 /data 目录），这样即使重新创建容器，只要环境变量一致（数据库也没变化），那么之前的部署就不会丢失。这符合容器是无状态的原则。可惜在**Windows**下由于[文件系统与虚拟机共享文件夹的权限问题](https://discuss.elastic.co/t/filebeat-docker-running-on-windows-not-allowing-application-to-rotate-the-log/89616/11)，我们**不能**使用这个选项。
+
+
+### INET_NAME
+如果想要把docker内部服务直接暴露到宿主机，可以在运行docker时使用 `--net=host` 选项（docker缺省使用的是bridge桥接模式），这时我们需要确定宿主机的网卡名称，如果不是 `eth0`，那么需要设定**环境变量** `INET_NAME` 的值为宿主机网卡名称，例如 `--env INET_NAME=ens160`。这种方式启动docker容器后，可以在宿主机使用 `netstat -anop |grep '8080\|10000\|10001' |grep LISTEN` 来查看端口是否被成功监听。
 
 
 run_docker_tars.sh 里的命令如下，请自己修改：
@@ -232,6 +242,9 @@ The image **tars-node** has only tarsnode service deployed, and does not have Ta
 docker pull tangramor/tars-node
 ```
 
+Environment Parameters
+----------------------
+### DBIP, DBPort, DBUser, DBPassword
 When running the container, you need to set the environment parameters:
 ```
 DBIP mysql
@@ -239,6 +252,13 @@ DBPort 3306
 DBUser root
 DBPassword password
 ```
+
+### MOUNT_DATA
+If you are runing container under **Linux** or **Mac**, you can set the **environment parameter** `MOUNT_DATA` to `true`. This option is used to link the data folders of Tars sub systems to the folers under /data, which we often mount to a external volumn. So even we removed old container and started a new one, with the old data in /data folder and mysql database, our deployments will not lose. That meets the principle "container should be stateless". **BUT** We **CANNOT** use this option under **Windows** because of the [problem of Windows file system and virtualbox](https://discuss.elastic.co/t/filebeat-docker-running-on-windows-not-allowing-application-to-rotate-the-log/89616/11).
+
+### INET_NAME
+If you want to expose all the Tars services to the host OS, you can use `--net=host` option when execute docker (the default mode that docker uses is bridge). Here we need to know the ethernet interface name, and if it is not `eth0`, we need to set the **environment parameter** `INET_NAME` to the one that host OS uses, such as `--env INET_NAME=ens160`. Once you started container with this network mode, you can execute `netstat -anop |grep '8080\|10000\|10001' |grep LISTEN` unser host OS to check if these ports are listened correctly.
+
 
 The command in run_docker_tars.sh is like following, you should modify it accordingly:
 ```
@@ -274,6 +294,117 @@ Build command for tars-node: `docker build -t tars-node -f tars-node/Dockerfile 
 Use The Image for Development
 ------------------------------
 It should be easyer to do Tars related development with the docker image. My way is put the project files under the local folder which will be mounted as /data in the container, such as `/c/Users/<ACCOUNT>/tars_data`. And once you did and works in the project, you can use command `docker exec -it tars bash` to enter Tars environment and execute the compiling or testing works.
+
+### For Example:
+    
+1. **Server Side Development**
+
+    Start docker container with following command. Here we can use image `tangramor/tars-master` or `tangramor/docker-tars`.
+    
+    ```
+    docker run -d -it --name tars -p 8080:8080 -v /c/Users/tangramor/Workspace/tars_data:/data tangramor/tars-master
+    ```
+    
+    This command starts `tangramor/tars-master` to container **tars** and mount local folder `/c/Users/tangramor/Workspace/tars_data` as /data folder in the container. It also exposes port 8080.
+    
+    We can see that there are 2 new folders, log and tars, created under `/c/Users/tangramor/Workspace/tars_data` in our host OS. Folder log is to store resin log and folder tars contains the log folders of Tars sub systems. In the mean time we can find tgz packages under `/c/Users/tangramor/Workspace/tars_data` that need us to deploy manually according to [Install general basic service for framework](https://github.com/Tencent/Tars/blob/master/Install.en.md#44-install-general-basic-service-for-framework).
+    
+    Execute `docker exec -it tars bash` to enter container **tars**, `cd /data` to the work directory, and we can refer to [Service Development](https://github.com/Tencent/Tars/blob/master/docs/tars_cpp_quickstart.md#5-%E6%9C%8D%E5%8A%A1%E5%BC%80%E5%8F%91--) to develop TestApp.HelloServer. We need to modify method testHello to following:
+    
+    ```
+    int HelloImp::testHello(const std::string &sReq, std::string &sRsp, tars::TarsCurrentPtr current)
+    {
+        TLOGDEBUG("HelloImp::testHellosReq:"<<sReq<<endl);
+        sRsp = sReq + " World!";
+        return 0;
+    }
+    
+    ```
+    
+    Then we deploy the compiled HelloServer.tgz to our **tars** container.
+
+
+2. **PHP Client Development**
+
+    C++ client can be done by referring to [Sync/Async calling to Service from Client](https://github.com/Tencent/Tars/blob/master/docs/tars_cpp_quickstart.md#54-%E5%AE%A2%E6%88%B7%E7%AB%AF%E5%90%8C%E6%AD%A5%E5%BC%82%E6%AD%A5%E8%B0%83%E7%94%A8%E6%9C%8D%E5%8A%A1). Be aware that if you want to deploy C++ client to tars-node container, you should not mix `minideb` tag with `latest` and `php7` tags, because there will be dependency problem for different OSs.
+    
+    Here I will introduce how to develop PHP client and deploy it.
+    
+    Start a **php7** tag container, such as `tangramor/tars-node:php7`:
+    
+    ```
+    docker run -d -it --name tars-node --link tars:tars -p 80:80 -v /c/Users/tangramor/Workspace/tars_node:/data tangramor/tars-node:php7
+    ```
+    
+    This command starts `tangramor/tars-node:php7` to container **tars-node** and mount local folder `/c/Users/tangramor/Workspace/tars_node` as /data folder in the container. It also exposes port 80.
+    
+    We can see that where are 3 new folders, log, tars and web, created under `/c/Users/tangramor/Workspace/tars_node`. Folder log and tars are used to store logs, folder web is linked as `/var/www/html` in the container. We can find file phpinfo.php under web folder, and if you visit http://127.0.0.1/phpinfo.php (in Linux or Mac) or http://192.168.99.100/phpinfo.php (in Windows), you can see the PHP information page.
+    
+    Find `Hello.tars` from `/c/Users/tangramor/Workspace/tars_data/TestApp/HelloServer` in host OS, and copy it to `/c/Users/tangramor/Workspace/tars_node/web`.
+    
+    Execute `docker exec -it tars-node bash` to enter container **tars-node**, `cd /data/web` to web folder, and execute `wget https://raw.githubusercontent.com/Tencent/Tars/master/php/tarsclient/tars2php.php` to download `tars2php.php` here. Then run `php tars2php.php Hello.tars "TestApp.HelloServer.HelloObj"`, we can see that TestApp folder is created, and under `TestApp/HelloServer/HelloObj` we can find the generated client files.
+    
+    Create `composer.json` file under web folder:
+    
+    ```
+    {
+      "name": "demo",
+      "description": "demo",
+      "authors": [
+        {
+          "name": "Tangramor",
+          "email": "tangramor@qq.com"
+        }
+      ],
+      "require": {
+        "php": ">=5.3",
+        "phptars/tars-assistant" : "0.2.1"
+      },
+      "autoload": {
+        "psr-4": {
+          "TestApp\\": "TestApp/"
+        }
+      }
+    }
+    ```
+    
+    Execute `composer install`, we can see `vendor` folder is created. That means we can use autoload in PHP files to load phptars. Create a file named `index.php` under web folder:
+    
+    ```
+    <?php
+        require_once("./vendor/autoload.php");
+
+        $host = "tars";
+        $port = 20001;
+    
+        $start = microtime();
+    
+        try {
+            $servant = new TestApp\HelloServer\HelloObj\Hello($host, $port);
+    
+            $in1 = "Hello";
+    
+            $intVal = $servant->testHello($in1,$out1);
+    
+            echo "Server returns: ".$out1;
+    
+        } catch(phptars\TarsException $e) {
+            echo "Error: ".$e;
+        }
+    
+        $end = microtime();
+    
+        echo "<p>Elapsed time: ".($end - $start)." seconds</p>";
+    ```
+    
+    Use a browser in host OS to visit http://127.0.0.1/index.php (in Linux or Mac) or http://192.168.99.100/index.php (in Windows), you should see result like following:
+    
+    ```
+    Server returns: Hello World!
+    
+    Elapsed time: 0.051169 seconds
+    ```
+
 
 
 Trouble Shooting
