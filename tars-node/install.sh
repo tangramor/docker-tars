@@ -1,7 +1,6 @@
 #!/bin/bash
 
-ResourceDir=/root/res
-MachineIp=$(ip addr | grep inet | grep eth0 | awk '{print $2;}' | sed 's|/.*$||')
+MachineIp=$(ip addr | grep inet | grep ${INET_NAME} | awk '{print $2;}' | sed 's|/.*$||')
 MachineName=$(cat /etc/hosts | grep ${MachineIp} | awk '{print $2}')
 
 install_node_services(){
