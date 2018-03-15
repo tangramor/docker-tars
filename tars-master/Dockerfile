@@ -27,10 +27,8 @@ RUN yum install -y git gcc gcc-c++ make wget cmake mysql mysql-devel unzip iprou
 	&& ./build.sh install \
 	&& cd /root/Tars/cpp/build/ && make framework-tar \
 	&& make tarsstat-tar && make tarsnotify-tar && make tarsproperty-tar && make tarslog-tar && make tarsquerystat-tar && make tarsqueryproperty-tar \
-	&& mkdir -p /usr/local/app/tars/ && cp /root/Tars/cpp/build/framework.tgz /usr/local/app/tars/ \
+	&& mkdir -p /usr/local/app/tars/ && cp /root/Tars/cpp/build/framework.tgz /usr/local/app/tars/ && cp /root/Tars/cpp/build/t*.tgz /root/ \
 	&& cd /usr/local/app/tars/ && tar xzfv framework.tgz && rm -rf framework.tgz \
-	&& cd /root/Tars/cpp/build/ && cp -f t*.tgz /data/ && rm -f t*.tgz \
-	&& ./build.sh cleanall \
 	&& mkdir -p /usr/local/app/patchs/tars.upload \
 	&& mkdir -p /root/init && cd /root/init/ \
 	&& wget -c -t 0 --header "Cookie: oraclelicense=accept" -c --no-check-certificate http://download.oracle.com/otn-pub/java/jdk/8u131-b11/d54c1d3a095b4ff2b6607d096fa80163/jdk-8u131-linux-x64.rpm \
