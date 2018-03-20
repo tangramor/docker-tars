@@ -52,6 +52,9 @@ ENV MOUNT_DATA false
 # 网络接口名称，如果运行时使用 --net=host，宿主机网卡接口可能不叫 eth0
 ENV INET_NAME eth0
 
+# master节点IP或主机名（如果--link了maser节点），用于注册node到master
+ENV MASTER master
+
 VOLUME ["/data"]
 
 ##拷贝资源
