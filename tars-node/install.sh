@@ -11,11 +11,10 @@ install_node_services(){
 	cd /usr/local/app/tars
 
 	sed -i "s/dbhost.*=.*192.168.2.131/dbhost = ${DBIP}/g" `grep dbhost -rl ./*`
-	sed -i "s/tars.tarsregistry.QueryObj@tcp -h 192.168.2.131/tars.tarsregistry.QueryObj@tcp -h ${MASTER}/g" `grep "tars.tarsregistry.QueryObj@tcp -h 192.168.2.131" -rl ./*`
+	sed -i "s/registry.tars.com/${MASTER}/g" `grep registry.tars.com -rl ./*`
 	sed -i "s/192.168.2.131/${MachineIp}/g" `grep 192.168.2.131 -rl ./*`
 	sed -i "s/db.tars.com/${DBIP}/g" `grep db.tars.com -rl ./*`
 	sed -i "s/dbport.*=.*3306/dbport = ${DBPort}/g" `grep dbport -rl ./*`
-	sed -i "s/registry.tars.com/${MachineIp}/g" `grep registry.tars.com -rl ./*`
 	sed -i "s/web.tars.com/${MachineIp}/g" `grep web.tars.com -rl ./*`
 
 	if [ ${MOUNT_DATA} = true ];
