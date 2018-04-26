@@ -14,14 +14,20 @@ ENV DBUser root
 ENV DBPassword password
 
 ##安装
-RUN yum install -y git gcc gcc-c++ make wget cmake mysql mysql-devel unzip iproute which glibc-devel flex bison ncurses-devel zlib-devel kde-l10n-Chinese glibc-common \
+RUN rpm -Uvh https://repo.mysql.com/mysql57-community-release-el7-11.noarch.rpm \
+	&& yum --enablerepo=mysql80-community install -y git gcc gcc-c++ make wget cmake mysql mysql-devel unzip iproute which glibc-devel flex bison ncurses-devel zlib-devel kde-l10n-Chinese glibc-common \
 	&& wget -c -t 0 https://github.com/Tencent/Tars/archive/master.zip -O master.zip \
 	&& unzip -a master.zip && mv Tars-master Tars && rm -f /root/master.zip \
 	&& mkdir -p /usr/local/mysql && ln -s /usr/lib64/mysql /usr/local/mysql/lib && ln -s /usr/include/mysql /usr/local/mysql/include && echo "/usr/local/mysql/lib/" >> /etc/ld.so.conf && ldconfig \
-	&& cd /usr/local/mysql/lib/ && ln -s libmysqlclient.so.*.*.* libmysqlclient.a \
+	&& cd /usr/local/mysql/lib/ && rm -f libmysqlclient.a && ln -s libmysqlclient.so.*.*.* libmysqlclient.a \
 	&& cd /root/Tars/cpp/thirdparty && wget -c -t 0 https://github.com/Tencent/rapidjson/archive/master.zip -O master.zip \
 	&& unzip -a master.zip && mv rapidjson-master rapidjson && rm -f master.zip \
 	&& mkdir -p /data && chmod u+x /root/Tars/cpp/build/build.sh \
+	# 以下对源码配置进行mysql8对应的修改
+	&& sed -i '11s/rt/rt crypto ssl/' /root/Tars/cpp/framework/CMakeLists.txt && sed -i '20s/5.1.14/8.0.11/' /root/Tars/web/pom.xml \
+	&& sed -i '25s/org.gjt.mm.mysql.Driver/com.mysql.cj.jdbc.Driver/' /root/Tars/web/src/main/resources/conf-spring/spring-context-datasource.xml \
+	&& sed -i '26s/convertToNull/CONVERT_TO_NULL/' /root/Tars/web/src/main/resources/conf-spring/spring-context-datasource.xml \
+	# 开始构建
 	&& cd /root/Tars/cpp/build/ && ./build.sh all \
 	&& ./build.sh install \
 	&& cd /root/Tars/cpp/build/ && make framework-tar \
