@@ -27,7 +27,7 @@ build_cpp_framework(){
 	then
 		echo "DB db_tars already exists" > /root/DB_Exists.lock
 	else
-		/root/Tars/cpp/framework/sql/exec-sql.sh
+		cd /root/Tars/cpp/framework/sql && ./exec-sql.sh
 	fi
 }
 
