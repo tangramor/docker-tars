@@ -54,6 +54,8 @@ install_base_services(){
 	sed -i "s/registry.tars.com/${MachineIp}/g" `grep registry.tars.com -rl ./*`
 	sed -i "s/web.tars.com/${MachineIp}/g" `grep web.tars.com -rl ./*`
 
+	sed -i 's/tars2015/${DBTarsPass}/g' `grep tars2015 -rl ./*`
+
 	chmod u+x tars_install.sh
 	#./tars_install.sh
 

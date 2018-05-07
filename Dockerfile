@@ -45,7 +45,7 @@ RUN yum -y install https://repo.mysql.com/mysql57-community-release-el7-11.noarc
 	&& sed -i '25s/org.gjt.mm.mysql.Driver/com.mysql.cj.jdbc.Driver/' /root/Tars/web/src/main/resources/conf-spring/spring-context-datasource.xml \
 	&& sed -i '26s/convertToNull/CONVERT_TO_NULL/' /root/Tars/web/src/main/resources/conf-spring/spring-context-datasource.xml \
 	# 修改Mysql里tars用户密码
-	&& sed -i 's/tars2015/$DBTarsPass/g' `grep tars2015 -rl /root/Tars/cpp/framework/*` \
+	# && sed -i 's/tars2015/$DBTarsPass/g' `grep tars2015 -rl /root/Tars/cpp/framework/*` \
 	# 开始构建
 	&& cd /root/Tars/cpp/build/ && ./build.sh all \
 	&& ./build.sh install \

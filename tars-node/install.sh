@@ -18,6 +18,8 @@ install_node_services(){
 	sed -i "s/dbport.*=.*3306/dbport = ${DBPort}/g" `grep dbport -rl ./*`
 	sed -i "s/web.tars.com/${MachineIp}/g" `grep web.tars.com -rl ./*`
 
+	sed -i 's/tars2015/${DBTarsPass}/g' `grep tars2015 -rl ./*`
+
 	if [ ${MOUNT_DATA} = true ];
 	then
 		mkdir -p /data/tarsnode_data && ln -s /data/tarsnode_data /usr/local/app/tars/tarsnode/data
