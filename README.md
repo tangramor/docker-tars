@@ -45,6 +45,7 @@ DBUser root
 DBPassword password
 ```
 
+
 ### DBTarsPass
 
 因为Tars的源码里面直接设置了mysql数据库里tars用户的密码，所以为了安全起见，可以通过设定此**环境变量** `DBTarsPass` 来让安装脚本替换掉缺省的tars数据库用户密码。
