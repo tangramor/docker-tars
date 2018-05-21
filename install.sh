@@ -12,7 +12,7 @@ build_cpp_framework(){
 	mysql -h${DBIP} -P${DBPort} -u${DBUser} -p${DBPassword} -e "GRANT ALL ON *.* TO 'tars'@'localhost' WITH GRANT OPTION;"
 	mysql -h${DBIP} -P${DBPort} -u${DBUser} -p${DBPassword} -e "CREATE USER 'tars'@'${MachineName}' IDENTIFIED BY '${DBTarsPass}';"
 	mysql -h${DBIP} -P${DBPort} -u${DBUser} -p${DBPassword} -e "GRANT ALL ON *.* TO 'tars'@'${MachineName}' WITH GRANT OPTION;"
-	mysql -h${DBIP} -P${DBPort} -u${DBUser} -p${DBPassword} -e "CREATE USER 'tars'@'${MachineIp}' IDENTIFIED BY '${DBTarsPass}';"
+	mysql -h${DBIP} -P${DBPort} -u${DBUser} -p${DBPassword} -e "CREATE USER 'tars'@'${MachineIp}' IDENTIFIED BY 'tars2015';"
 	mysql -h${DBIP} -P${DBPort} -u${DBUser} -p${DBPassword} -e "GRANT ALL ON *.* TO 'tars'@'${MachineIp}' WITH GRANT OPTION;"
 	mysql -h${DBIP} -P${DBPort} -u${DBUser} -p${DBPassword} -e "flush privileges;"
 
@@ -54,7 +54,7 @@ install_base_services(){
 	sed -i "s/dbport.*=.*3306/dbport = ${DBPort}/g" `grep dbport -rl ./*`
 	sed -i "s/registry.tars.com/${MachineIp}/g" `grep registry.tars.com -rl ./*`
 	sed -i "s/web.tars.com/${MachineIp}/g" `grep web.tars.com -rl ./*`
-
+	# 修改Mysql里tars用户密码
 	sed -i "s/tars2015/${DBTarsPass}/g" `grep tars2015 -rl ./*`
 
 	chmod u+x tars_install.sh
