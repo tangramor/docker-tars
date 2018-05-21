@@ -31,8 +31,8 @@ RUN yum -y install https://repo.mysql.com/mysql57-community-release-el7-11.noarc
 	&& cp -Rf include/jdbc/* /usr/include/mysql/ && cp -Rf include/mysqlx/* /usr/include/mysql/ && cp -Rf lib64/* /usr/lib64/mysql/ \
 	&& cd /root && rm -rf mysql-connector* \
 	# 获取最新TARS源码
-	&& wget -c -t 0 https://github.com/Tencent/Tars/archive/master.zip -O master.zip \
-	&& unzip -a master.zip && mv Tars-master Tars && rm -f /root/master.zip \
+	&& wget -c -t 0 https://github.com/Tencent/Tars/archive/phptars.zip -O phptars.zip \
+	&& unzip -a phptars.zip && mv Tars-phptars Tars && rm -f /root/phptars.zip \
 	&& mkdir -p /usr/local/mysql && ln -s /usr/lib64/mysql /usr/local/mysql/lib && ln -s /usr/include/mysql /usr/local/mysql/include && echo "/usr/local/mysql/lib/" >> /etc/ld.so.conf && ldconfig \
 	&& cd /usr/local/mysql/lib/ && rm -f libmysqlclient.a && ln -s libmysqlclient.so.*.*.* libmysqlclient.a \
 	&& cd /root/Tars/cpp/thirdparty && wget -c -t 0 https://github.com/Tencent/rapidjson/archive/master.zip -O master.zip \
@@ -56,7 +56,7 @@ RUN yum -y install https://repo.mysql.com/mysql57-community-release-el7-11.noarc
 	&& mkdir -p /usr/local/app/patchs/tars.upload \
 	&& cd /tmp && curl -fsSL https://getcomposer.org/installer | php \
 	&& chmod +x composer.phar && mv composer.phar /usr/local/bin/composer \
-	&& cd /root/Tars/php/tarsclient/ext/ && phpize --clean && phpize \
+	&& cd /root/Tars/php/tars-extension/ && phpize --clean && phpize \
 	&& ./configure --enable-phptars --with-php-config=/usr/bin/php-config && make && make install \
 	&& echo "extension=phptars.so" > /etc/php.d/phptars.ini \
 	&& mkdir -p /root/init && cd /root/init/ \

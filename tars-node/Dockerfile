@@ -51,7 +51,7 @@ RUN yum -y install https://repo.mysql.com/mysql57-community-release-el7-11.noarc
 	&& mkdir -p /usr/local/app/patchs/tars.upload \
 	&& cd /tmp && curl -fsSL https://getcomposer.org/installer | php \
 	&& chmod +x composer.phar && mv composer.phar /usr/local/bin/composer \
-	&& cd /root/Tars/php/tarsclient/ext/ && phpize --clean && phpize \
+	&& cd /root/Tars/php/tars-extension/ && phpize --clean && phpize \
 	&& ./configure --enable-phptars --with-php-config=/usr/bin/php-config && make && make install && phpize --clean \
 	&& echo "extension=phptars.so" > /etc/php.d/phptars.ini \
 	&& mkdir -p /root/init && cd /root/init/ \
