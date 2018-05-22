@@ -2,7 +2,32 @@
 
 ## [Click to Read English Version](https://github.com/tangramor/docker-tars#english-vesion) or Scroll Down to Read it
 
-本镜像脚本根据 https://github.com/panjen/docker-tars 修改，最初版本来自 https://github.com/luocheng812/docker_tars 。
+
+MySQL
+-----
+
+本镜像是Tars的docker版本，未安装mysql，可以使用官方mysql镜像（5.6）：
+```
+docker run --name mysql -e MYSQL_ROOT_PASSWORD=password -d -p 3306:3306 -v /c/Users/<ACCOUNT>/mysql_data:/var/lib/mysql mysql:5.6 --innodb_use_native_aio=0
+```
+
+注意上面的运行命令添加了 `--innodb_use_native_aio=0` ，因为mysql的aio对windows文件系统不支持
+
+
+如果要使用 **5.7** 版本的mysql，需要再添加 `--sql_mode=NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION` 参数，因为不支持全零的date字段值（ https://dev.mysql.com/doc/refman/5.7/en/sql-mode.html#sqlmode_no_zero_date ）
+```
+docker run --name mysql -e MYSQL_ROOT_PASSWORD=password -d -p 3306:3306 -v /c/Users/<ACCOUNT>/mysql_data:/var/lib/mysql mysql:5.7 --sql_mode=NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION --innodb_use_native_aio=0
+```
+
+
+如果使用 **8.0** 版本的mysql，则直接设定 `--sql_mode=''`，即禁止掉缺省的严格模式，（参考 https://dev.mysql.com/doc/refman/8.0/en/sql-mode.html ）
+
+```
+docker run --name mysql -e MYSQL_ROOT_PASSWORD=password -d -p 3306:3306 -v /c/Users/<ACCOUNT>/mysql_data:/var/lib/mysql mysql:8 --sql_mode='' --innodb_use_native_aio=0
+```
+
+或者你也可以挂载使用一个自定义的 my.cnf 来添加上述参数。
+
 
 
 镜像
@@ -23,6 +48,11 @@ tag 为 **minideb** 的镜像是使用名为 minideb 的精简版 debian 作为�
 docker pull tangramor/docker-tars:minideb
 ```
 
+tag 为 **php7mysql8** 的镜像使用了 TARS 的 **[phptars](https://github.com/Tencent/Tars/tree/phptars)** 分支的代码，支持PHP服务端开发，包含php7.2、JDK 10以及mysql8相关的支持修改（对TARS配置做了修改）：
+```
+docker pull tangramor/docker-tars:php7mysql8
+```
+
 **tars-master** 之下是在镜像中删除了Tars源码的脚本，使用下面命令即可获取：
 ```
 docker pull tangramor/tars-master
@@ -32,6 +62,7 @@ docker pull tangramor/tars-master
 ```
 docker pull tangramor/tars-node
 ```
+
 
 环境变量
 --------
@@ -69,29 +100,13 @@ run_docker_tars.sh 里的命令如下，请自己修改：
 docker run -d -it --name tars --link mysql --env MOUNT_DATA=false --env DBIP=mysql --env DBPort=3306 --env DBUser=root --env DBPassword=PASS -p 8080:8080 -v /c/Users/<ACCOUNT>/tars_data:/data tangramor/docker-tars
 ```
 
-
+### 框架普通基础服务
 另外安装脚本把构建成功的 tarslog.tgz、tarsnotify.tgz、tarsproperty.tgz、tarsqueryproperty.tgz、tarsquerystat.tgz 和 tarsstat.tgz 都放到了 `/c/Users/<ACCOUNT>/tars_data/` 目录之下，可以参考Tars官方文档的 [安装框架普通基础服务](https://github.com/Tencent/Tars/blob/master/Install.md#44-%E5%AE%89%E8%A3%85%E6%A1%86%E6%9E%B6%E6%99%AE%E9%80%9A%E5%9F%BA%E7%A1%80%E6%9C%8D%E5%8A%A1) 来安装这些服务。
 
 
-MySQL
------
 
-本镜像是Tars的docker版本，未安装mysql，可以使用官方mysql镜像（5.6）：
-```
-docker run --name mysql -e MYSQL_ROOT_PASSWORD=password -d -p 3306:3306 -v /c/Users/<ACCOUNT>/mysql_data:/var/lib/mysql mysql:5.6 --innodb_use_native_aio=0
-```
-
-注意上面的运行命令添加了 `--innodb_use_native_aio=0` ，因为mysql的aio对windows文件系统不支持
-
-如果要使用5.7版本的mysql，需要再添加 `--sql_mode=NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION` 参数，因为不支持全零的date字段值（ https://dev.mysql.com/doc/refman/5.7/en/sql-mode.html#sqlmode_no_zero_date ）
-
-如果使用8.0版本的mysql，则直接设定 `--sql_mode=''`，即禁止掉缺省的严格模式，（参考 https://dev.mysql.com/doc/refman/8.0/en/sql-mode.html ）
-
-或者你也可以挂载使用一个自定义的 my.cnf 来添加上述参数。
-
-
-构建镜像 
---------
+自己构建镜像 
+-------------
 
 镜像构建命令：`docker build -t tars .`
 
@@ -213,7 +228,8 @@ tars-node 镜像构建命令：`docker build -t tars-node -f tars-node/Dockerfil
     
     耗时：0.051169 秒
     ```
-        
+
+
 
 Trouble Shooting
 ----------------
@@ -225,7 +241,32 @@ Trouble Shooting
 English Vesion
 ===============
 
-The scripts of this image are based on project https://github.com/panjen/docker-tars, which is from https://github.com/luocheng812/docker_tars.
+
+MySQL
+-----
+This image does not have MySQL, you can use a docker official image(5.6):
+```
+docker run --name mysql -e MYSQL_ROOT_PASSWORD=password -d -p 3306:3306 -v /c/Users/<ACCOUNT>/mysql_data:/var/lib/mysql mysql:5.6 --innodb_use_native_aio=0
+```
+
+Please be aware of option `--innodb_use_native_aio=0` appended in the command above. Because MySQL aio does not support Windows file system.
+
+
+If you use a **5.7** MySQL, you may need to add option `--sql_mode=NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION`. Because after 5.6 MySQL does not support zero date field ( https://dev.mysql.com/doc/refman/5.7/en/sql-mode.html#sqlmode_no_zero_date ).
+```
+docker run --name mysql -e MYSQL_ROOT_PASSWORD=password -d -p 3306:3306 -v /c/Users/<ACCOUNT>/mysql_data:/var/lib/mysql mysql:5.7 --sql_mode=NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION --innodb_use_native_aio=0
+```
+
+
+If use **8.0** MySQL, you need to set `--sql_mode=''`, that will disable the default strict mode ( https://dev.mysql.com/doc/refman/8.0/en/sql-mode.html )
+
+```
+docker run --name mysql -e MYSQL_ROOT_PASSWORD=password -d -p 3306:3306 -v /c/Users/<ACCOUNT>/mysql_data:/var/lib/mysql mysql:8 --sql_mode='' --innodb_use_native_aio=0
+```
+
+
+You can also use a customized my.cnf to add those options.
+
 
 Image
 ------
@@ -242,6 +283,11 @@ docker pull tangramor/docker-tars:php7
 The image with **minideb** tag is based on minideb which is "a small image based on Debian designed for use in containers":
 ```
 docker pull tangramor/docker-tars:minideb
+```
+
+The image with **php7mysql8** tag uses source code of TARS **[phptars](https://github.com/Tencent/Tars/tree/phptars)** branch, which support PHP server development, and it includes php7.2, JDK 10 and mysql8 related support:
+```
+docker pull tangramor/docker-tars:php7mysql8
 ```
 
 The image **tars-master** removed Tars source code from the docker-tars image:
@@ -279,21 +325,8 @@ The command in run_docker_tars.sh is like following, you should modify it accord
 docker run -d -it --name tars --link mysql --env DBIP=mysql --env DBPort=3306 --env DBUser=root --env DBPassword=PASS -p 8080:8080 -v /c/Users/<ACCOUNT>/tars_data:/data tangramor/docker-tars
 ```
 
+### General basic service for framework
 In the Dockerfile I put the successfully built service packages tarslog.tgz, tarsnotify.tgz, tarsproperty.tgz, tarsqueryproperty.tgz, tarsquerystat.tgz and tarsstat.tgz to /data, which should be mounted from the host machine like `/c/Users/<ACCOUNT>/tars_data/`. You can refer to [Install general basic service for framework](https://github.com/Tencent/Tars/blob/master/Install.en.md#44-install-general-basic-service-for-framework) to install those services.
-
-
-MySQL
------
-This image does not have MySQL, you can use a docker official image(5.6):
-```
-docker run --name mysql -e MYSQL_ROOT_PASSWORD=password -d -p 3306:3306 -v /c/Users/<ACCOUNT>/mysql_data:/var/lib/mysql mysql:5.6 --innodb_use_native_aio=0
-```
-
-Please be aware of option `--innodb_use_native_aio=0` appended in the command above. Because MySQL aio does not support Windows file system.
-
-If you want a 5.7 or higher version MySQL, you may need to add option `--sql_mode=NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION`. Because after 5.6 MySQL does not support zero date field ( https://dev.mysql.com/doc/refman/5.7/en/sql-mode.html#sqlmode_no_zero_date ).
-
-You can also use a customized my.cnf to add those options.
 
 
 Build Images
@@ -426,3 +459,10 @@ Trouble Shooting
 Once you started up the container, you can enter it by command `docker exec -it tars bash` and then you can execute linux commands to check the status. If you see _log4j.log file under `/c/Users/<ACCOUNT>/tars_data/log/tars`, that means resin is up to work and the installation is done.
 
 
+
+
+感谢 / Thanks
+---------------
+本镜像脚本根据 https://github.com/panjen/docker-tars 修改，最初版本来自 https://github.com/luocheng812/docker_tars 。
+
+The scripts of this image are based on project https://github.com/panjen/docker-tars, which is from https://github.com/luocheng812/docker_tars.
