@@ -1,19 +1,19 @@
 TOC
 -----
 
-      * [MySQL](#mysql)
-      * [Image](#image)
-      * [Environment Parameters](#environment-parameters)
-         * [DBIP, DBPort, DBUser, DBPassword](#dbip-dbport-dbuser-dbpassword)
-         * [MOUNT_DATA](#mount_data)
-         * [INET_NAME](#inet_name)
-         * [MASTER](#master)
-         * [General basic service for framework](#general-basic-service-for-framework)
-      * [Build Images](#build-images)
-      * [Use The Image for Development](#use-the-image-for-development)
-         * [For Example:](#for-example)
-      * [Trouble Shooting](#trouble-shooting)
-      * [Thanks](#Thanks)
+* [MySQL](#mysql)
+* [Image](#image)
+* [Environment Parameters](#environment-parameters)
+ * [DBIP, DBPort, DBUser, DBPassword](#dbip-dbport-dbuser-dbpassword)
+ * [MOUNT_DATA](#mount_data)
+ * [INET_NAME](#inet_name)
+ * [MASTER](#master)
+ * [General basic service for framework](#general-basic-service-for-framework)
+* [Build Images](#build-images)
+* [Use The Image for Development](#use-the-image-for-development)
+ * [For Example:](#for-example)
+* [Trouble Shooting](#trouble-shooting)
+* [Thanks](#Thanks)
 
 
 MySQL
@@ -118,7 +118,7 @@ It should be easyer to do Tars related development with the docker image. My way
 
 ### For Example:
     
-1.1. **C++ Server Side Development**
+1. **C++ Server Side Development**
 
     Start docker container with following command. Here we can use image `tangramor/tars-master` or `tangramor/docker-tars`.
     
@@ -144,8 +144,7 @@ It should be easyer to do Tars related development with the docker image. My way
     
     Then we deploy the compiled HelloServer.tgz to our **tars** container.
 
-
-1.2. **PHP Client of C++ Server Development**
+2. **PHP Client of C++ Server Development**
 
     C++ client can be done by referring to [Sync/Async calling to Service from Client](https://github.com/Tencent/Tars/blob/master/docs/tars_cpp_quickstart.md#54-%E5%AE%A2%E6%88%B7%E7%AB%AF%E5%90%8C%E6%AD%A5%E5%BC%82%E6%AD%A5%E8%B0%83%E7%94%A8%E6%9C%8D%E5%8A%A1). Be aware that if you want to deploy C++ client to tars-node container, you should not mix `minideb` tag with `latest` and `php7` tags, because there will be dependency problem for different OSs.
     
@@ -194,7 +193,7 @@ It should be easyer to do Tars related development with the docker image. My way
     ```
     <?php
         require_once("./vendor/autoload.php");
-
+    
         $host = "tars";
         $port = 20001;
     
@@ -226,26 +225,26 @@ It should be easyer to do Tars related development with the docker image. My way
     Elapsed time: 0.051169 seconds
     ```
 
-2.1. **PHP Server Side Development**
-
+3. **PHP Server Side Development**
+    
     Here we need to use tag `php7mysql8` of image `tangramor/docker-tars` to develop PHP server. Here we assume that you are using Windows:
-
+    
     ```
     docker run --name mysql8 -e MYSQL_ROOT_PASSWORD=password -d -p 3306:3306 -v /c/Users/tangramor/mysql8_data:/var/lib/mysql mysql:8 --sql_mode="" --innodb_use_native_aio=0
-
+    
     docker run -d -it --name tars_mysql8 --link mysql8 --env DBIP=mysql8 --env DBPort=3306 --env DBUser=root --env DBPassword=password -p 8080:8080 -p 80:80 -v /c/Users/tangramor/tars_mysql8_data:/data tangramor/docker-tars:php7mysql8
     ```
-
+    
     The above 2 commands start 2 containers: a v8.0 mysql and `tangramor/docker-tars:php7mysql8` container with name **tars_mysql8**, and we mount the folder of host machine `/c/Users/tangramor/Workspace/tars_mysql8_data` as /data folder of container **tars_mysql8**. It also exposes port 8080 and 80.
-
+    
     Enter `/c/Users/tangramor/Workspace/tars_mysql8_data/web` and create folders: `scripts`、`src` and `tars`:
-
+    
     ![DevPHPTest1](docs/images/DevPHPTest1.png)
-
+    
     Run `docker exec -it tars_mysql8 bash` to enter container **tars_mysql8** and `cd /data/web`.
-
+    
     Create file `test.tars` under `tars` folder ( Refer: [phptars example](https://github.com/Tencent/Tars/blob/phptars/php/examples/tars-tcp-server/tars/example.tars) ):
-
+    
     ```
     module testtafserviceservant
     {
@@ -254,21 +253,21 @@ It should be easyer to do Tars related development with the docker image. My way
             1 require int count=0;
             2 require short page=0;
         };
-
+    
         struct OutStruct {
             0 require long id=0;
             1 require int count=0;
             2 require short page=0;
             3 optional string str;
         };
-
+    
         struct ComplicatedStruct {
             0 require vector<SimpleStruct> ss;
             1 require SimpleStruct rs;
             2 require map<string, SimpleStruct> mss;
             3 optional string str;
         }
-
+    
         struct LotofTags {
             0 require long id=0;
             1 require int count=0;
@@ -278,48 +277,48 @@ It should be easyer to do Tars related development with the docker image. My way
             5 require SimpleStruct rs;
             6 require map<string, SimpleStruct> mss;
         }
-
+    
         interface TestTafService
         {
-
+    
             void testTafServer();
-
+    
             int testLofofTags(LotofTags tags, out LotofTags outtags);
-
+    
             void sayHelloWorld(string name, out string outGreetings);
-
+    
             int testBasic(bool a, int b, string c, out bool d, out int e, out string f);
-
+    
             string testStruct(long a, SimpleStruct b, out OutStruct d);
-
+    
             string testMap(short a, SimpleStruct b, map<string, string> m1, out OutStruct d, out map<int, SimpleStruct> m2);
-
+    
             string testVector(int a, vector<string> v1, vector<SimpleStruct> v2, out vector<int> v3, out vector<OutStruct> v4);
-
+    
             SimpleStruct testReturn();
-
+    
             map<string,string> testReturn2();
-
+    
             vector<SimpleStruct> testComplicatedStruct(ComplicatedStruct cs,vector<ComplicatedStruct> vcs, out ComplicatedStruct ocs,out vector<ComplicatedStruct> ovcs);
-
+    
             map<string,ComplicatedStruct> testComplicatedMap(map<string,ComplicatedStruct> mcs, out map<string,ComplicatedStruct> omcs);
-
+    
             int testEmpty(short a,out bool b1, out int in2, out OutStruct d, out vector<OutStruct> v3,out vector<int> v4);
-
+    
             int testSelf();
-
+    
             int testProperty();
-
+    
         };
-
+    
     }
     ```
-
+    
     Create file `tars.proto.php` under `tars`:
-
+    
     ```
     <?php
-
+    
       return array(
           'appName' => 'PHPTest',
           'serverName' => 'PHPServer',
@@ -332,25 +331,24 @@ It should be easyer to do Tars related development with the docker image. My way
           'namespacePrefix' => 'Server\servant',
       );
     ```
-
+    
     Create `tars2php.sh` under `scripts` and give execution permission `chmod u+x tars2php.sh`:
     ```
     cd ../tars/
-
+    
     php /root/phptars/tars2php.php ./tars.proto.php
     ```
-
+    
     Create folder `src/servant`, then run `./scripts/tars2php.sh`, you will see there are 3 layers folders generated under `src/servant`: `PHPTest/PHPServer/obj`, it includes:
-
+    
     * classes folder - To store the generated tars structs
     * tars folder - To store the original tars file
     * TestTafServiceServant.php - interface
-
+    
     ![DevPHPTest2](docs/images/DevPHPTest2.png)
-
-
+    
     Enter `src` folder, we begin to implemente the server side logic. Because we are using the official example, here we copy the source code directly from example project:
-
+    
     ```
     wget https://github.com/Tencent/Tars/raw/phptars/php/examples/tars-tcp-server/src/composer.json
     wget https://github.com/Tencent/Tars/raw/phptars/php/examples/tars-tcp-server/src/index.php
@@ -358,43 +356,43 @@ It should be easyer to do Tars related development with the docker image. My way
     mkdir impl && cd impl && wget https://github.com/Tencent/Tars/raw/phptars/php/examples/tars-tcp-server/src/impl/PHPServerServantImpl.php && cd ..
     mkdir conf && cd conf && wget https://github.com/Tencent/Tars/raw/phptars/php/examples/tars-tcp-server/src/conf/ENVConf.php && cd ..
     ```
-
+    
     - conf: configurations for implementation, here we just give a demo. If you push config from Tars platform, the file will be written into this folder.
     - impl: implementation code for interface. And the address of the implementation will be written in servcies.php.
     - composer.json: dependencies of the project.
     - index.php: entrance file of the service. You can use another name, and you need to change the deployment template on Tars platform, by adding `entrance` field under `server`.
     - services.php: diclare the addresses of interface and implementation, and they will be used for instantiate and annotation parsing.
-
+    
     Change the configuration in `conf/ENVConf.php` . And execute `composer install` under `src` to load required dependencies, then run `composer run-script deploy` to build the package, and a package name like `PHPServer_20180523105340.tar.gz` will be generated.
-
+    
     ![DevPHPTest3](docs/images/DevPHPTest3.png)
-
+    
     Create a `logs` folder under `/data`, because this example will write file under it.
-
+    
     Deploy the generated package to Tars platform. Remember to use tars-php type and use `tars.tarsphp.default` template (or create a template by yourself):
-
+    
     ![DeployPHPTest1](docs/images/DeployPHPTest1.png)
-
+    
     ![DeployPHPTest2](docs/images/DeployPHPTest2.png)
-
+    
     Once the deployment is successfully completed, you will see related processes when run `ps -ef`.
-
+    
     ![DeployPHPTest3](docs/images/DeployPHPTest3.png)
 
 
-2.2. **PHP Client Side Development**
+4. **PHP Client Side Development**
 
     We will develop the client side code in the same container.
-
+    
     Enter `/c/Users/tangramor/Workspace/tars_mysql8_data/web` and create `client` folder under it.
-
+    
     Run `docker exec -it tars_mysql8 bash` to enter container **tars_mysql8**, and `cd /data/web/client`.
-
-    Copy the `test.tars` file created in 2.1. **PHP Server Side Development** to current folder, and create file `tarsclient.proto.php`:
-
+    
+    Copy the `test.tars` file created in 3. **PHP Server Side Development** to current folder, and create file `tarsclient.proto.php`:
+    
     ```
     <?php
-
+    
       return array(
           'appName' => 'PHPTest',
           'serverName' => 'PHPServer',
@@ -407,15 +405,15 @@ It should be easyer to do Tars related development with the docker image. My way
           'namespacePrefix' => 'Client\servant',
       );
     ```
-
+    
     Run `php /root/phptars/tars2php.php ./tarsclient.proto.php`, and you will see there are 3 layers folders generated: `PHPTest/PHPServer/obj`, it includes:
-
+    
     * classes folder - To store the generated tars structs
     * tars folder - To store the original tars file
     * TestTafServiceServant.php - client class TestTafServiceServant
-
+    
     Create file `composer.json`:
-
+    
     ```
     {
       "name": "demo",
@@ -442,35 +440,33 @@ It should be easyer to do Tars related development with the docker image. My way
         }
       }
     }
-
+    
     ```
-
+    
     And create `index.php` file:
     ```
     <?php
       require_once("./vendor/autoload.php");
-
+    
       // ip、port
       $config = new \Tars\client\CommunicatorConfig();
       $config->setLocator('tars.tarsregistry.QueryObj@tcp -h 172.17.0.3 -p 17890');
       $config->setModuleName('PHPTest.PHPServer');
       $config->setCharsetName('UTF-8');
-
+    
       $servant = new Client\servant\PHPTest\PHPServer\obj\TestTafServiceServant($config);
-
+    
       $name = 'ted';
       $intVal = $servant->sayHelloWorld($name, $greetings);
-
+    
       echo '<p>'.$greetings.'</p>';
     ```
-
+    
     Run `composer install` to load required dependencies, then execute `php index.php` to test our client. If everything good, it should output: `<p>hello world!</p>`. We use a web browser to visit http://192.168.99.100/client/index.php and should see page:
-
+    
     ![DeployPHPTest4](docs/images/DeployPHPTest4.png)
-
-
+        
     Check  `ted.log` under `/data/logs`, there should be content written: `sayHelloWorld name:ted`.
-
 
 
 Trouble Shooting
