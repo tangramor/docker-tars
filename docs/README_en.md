@@ -239,7 +239,7 @@ It should be easyer to do Tars related development with the docker image. My way
     
     Enter `/c/Users/tangramor/Workspace/tars_mysql8_data/web` and create folders: `scripts`、`src` and `tars`:
     
-    ![DevPHPTest1](docs/images/DevPHPTest1.png)
+    ![DevPHPTest1](images/DevPHPTest1.png)
     
     Run `docker exec -it tars_mysql8 bash` to enter container **tars_mysql8** and `cd /data/web`.
     
@@ -345,7 +345,7 @@ It should be easyer to do Tars related development with the docker image. My way
     * tars folder - To store the original tars file
     * TestTafServiceServant.php - interface
     
-    ![DevPHPTest2](docs/images/DevPHPTest2.png)
+    ![DevPHPTest2](images/DevPHPTest2.png)
     
     Enter `src` folder, we begin to implemente the server side logic. Because we are using the official example, here we copy the source code directly from example project:
     
@@ -365,19 +365,19 @@ It should be easyer to do Tars related development with the docker image. My way
     
     Change the configuration in `conf/ENVConf.php` . And execute `composer install` under `src` to load required dependencies, then run `composer run-script deploy` to build the package, and a package name like `PHPServer_20180523105340.tar.gz` will be generated.
     
-    ![DevPHPTest3](docs/images/DevPHPTest3.png)
+    ![DevPHPTest3](images/DevPHPTest3.png)
     
     Create a `logs` folder under `/data`, because this example will write file under it.
     
     Deploy the generated package to Tars platform. Remember to use tars-php type and use `tars.tarsphp.default` template (or create a template by yourself):
     
-    ![DeployPHPTest1](docs/images/DeployPHPTest1.png)
+    ![DeployPHPTest1](images/DeployPHPTest1.png)
     
-    ![DeployPHPTest2](docs/images/DeployPHPTest2.png)
+    ![DeployPHPTest2](images/DeployPHPTest2.png)
     
     Once the deployment is successfully completed, you will see related processes when run `ps -ef`.
     
-    ![DeployPHPTest3](docs/images/DeployPHPTest3.png)
+    ![DeployPHPTest3](images/DeployPHPTest3.png)
 
 
 4. **PHP Client Side Development**
@@ -464,7 +464,7 @@ It should be easyer to do Tars related development with the docker image. My way
     
     Run `composer install` to load required dependencies, then execute `php index.php` to test our client. If everything good, it should output: `<p>hello world!</p>`. We use a web browser to visit http://192.168.99.100/client/index.php and should see page:
     
-    ![DevPHPTest4](docs/images/DevPHPTest4.png)
+    ![DevPHPTest4](images/DevPHPTest4.png)
         
     Check  `ted.log` under `/data/logs`, there should be content written: `sayHelloWorld name:ted`.
 
