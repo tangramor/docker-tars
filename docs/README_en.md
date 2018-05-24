@@ -464,7 +464,7 @@ It should be easyer to do Tars related development with the docker image. My way
     
     Run `composer install` to load required dependencies, then execute `php index.php` to test our client. If everything good, it should output: `<p>hello world!</p>`. We use a web browser to visit http://192.168.99.100/client/index.php and should see page:
     
-    ![DeployPHPTest4](docs/images/DeployPHPTest4.png)
+    ![DevPHPTest4](docs/images/DevPHPTest4.png)
         
     Check  `ted.log` under `/data/logs`, there should be content written: `sayHelloWorld name:ted`.
 

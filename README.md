@@ -480,7 +480,7 @@ tars-node 镜像构建命令：`docker build -t tars-node -f tars-node/Dockerfil
   
   执行 `composer install` 命令加载对应的依赖包，然后运行 `php index.php` 来测试客户端，如果一切顺利，应该输出：`<p>hello world!</p>` 。我们使用浏览器来访问 http://192.168.99.100/client/index.php ，应该也能看到：
   
-  ![DeployPHPTest4](docs/images/DeployPHPTest4.png)
+  ![DevPHPTest4](docs/images/DevPHPTest4.png)
   
   在 `/data/logs` 目录下查看 `ted.log`，应该有内容写入：`sayHelloWorld name:ted` 。
 
