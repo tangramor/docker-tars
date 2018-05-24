@@ -1,6 +1,6 @@
 # Tencent Tars 的Docker镜像脚本与使用
 
-## [Click to Read English Version](https://github.com/tangramor/docker-tars/docs/README_en.md)
+## [Click to Read English Version](https://github.com/tangramor/docker-tars/blob/master/docs/README_en.md)
 
 * [MySQL](#mysql)
 * [镜像](#镜像)
