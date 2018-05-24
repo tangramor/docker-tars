@@ -57,8 +57,14 @@ RUN yum -y install https://repo.mysql.com/mysql57-community-release-el7-11.noarc
 	&& cd /root/Tars/php/tars-extension/ && phpize --clean && phpize \
 	&& ./configure --enable-phptars --with-php-config=/usr/bin/php-config && make && make install \
 	&& echo "extension=phptars.so" > /etc/php.d/phptars.ini \
-	&& mkdir -p /root/init && cd /root/init/ \
+	# 安装PHP swoole模块
+	&& cd /root && wget -c -t 0 https://github.com/swoole/swoole-src/archive/v2.1.3.tar.gz \
+	&& tar zxf v2.1.3.tar.gz && cd swoole-src-2.1.3 && phpize && ./configure && make && make install \
+	&& echo "extension=swoole.so" > /etc/php.d/swoole.ini \
+	&& cd /root && rm -rf v2.1.3.tar.gz swoole-src-2.1.3 \
+	&& mkdir -p /root/phptars && cp -f /root/Tars/php/tars2php/src/tars2php.php /root/phptars \
 	# 获取并安装JDK
+	&& mkdir -p /root/init && cd /root/init/ \
 	&& wget -c -t 0 --header "Cookie: oraclelicense=accept" -c --no-check-certificate http://download.oracle.com/otn-pub/java/jdk/10.0.1+10/fb4372174a714e6b8c52526dc134031e/jdk-10.0.1_linux-x64_bin.rpm \
 	&& rpm -ivh /root/init/jdk-10.0.1_linux-x64_bin.rpm && rm -rf /root/init/jdk-10.0.1_linux-x64_bin.rpm \
 	&& echo "export JAVA_HOME=/usr/java/jdk-10.0.1" >> /etc/profile \
