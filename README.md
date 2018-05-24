@@ -1,7 +1,21 @@
 # Tencent Tars 的Docker镜像脚本与使用
 
-## [Click to Read English Version](https://github.com/tangramor/docker-tars#english-vesion) or Scroll Down to Read it
+## [Click to Read English Version](https://github.com/tangramor/docker-tars/blob/master/docs/README_en.md)
 
+* [MySQL](#mysql)
+* [镜像](#镜像)
+* [环境变量](#环境变量)
+  * [DBIP, DBPort, DBUser, DBPassword](#dbip-dbport-dbuser-dbpassword)
+  * [DBTarsPass](#dbtarspass)
+  * [MOUNT_DATA](#mount_data)
+  * [INET_NAME](#inet_name)
+  * [MASTER](#master)
+  * [框架普通基础服务](#框架普通基础服务)
+* [自己构建镜像](#自己构建镜像)
+* [开发方式](#开发方式)
+  * [举例说明：](#举例说明)
+* [Trouble Shooting](#trouble-shooting)
+* [感谢](#感谢)
 
 MySQL
 -----
@@ -121,114 +135,354 @@ tars-node 镜像构建命令：`docker build -t tars-node -f tars-node/Dockerfil
 
 ### 举例说明：
     
-1. **开发服务端**
+1. **开发C++服务端**
 
-    首先使用docker命令启动容器，这里我们可以用 `tangramor/tars-master`  或者 `tangramor/docker-tars`：
-    
-    ```
-    docker run -d -it --name tars -p 8080:8080 -v /c/Users/tangramor/Workspace/tars_data:/data tangramor/tars-master
-    ```
-    
-    这个命令启动了 `tangramor/tars-master` 容器 **tars** 并将本地的一个目录 `/c/Users/tangramor/Workspace/tars_data` 挂载为容器的 /data 目录，同时它还把 8080 端口暴露出来了。
-    
-    然后我们可以在宿主机的 `/c/Users/tangramor/Workspace/tars_data` 目录下看到有两个子目录被创建出来了：log、tars，前者是resin的日志目录，后者里面是Tars各系统进程的日志目录。同时 `/c/Users/tangramor/Workspace/tars_data` 目录下还有各个需要手动部署的 Tars 子系统的部署 tgz 包，我们参考 [安装框架普通基础服务](https://github.com/Tencent/Tars/blob/master/Install.md#44-%E5%AE%89%E8%A3%85%E6%A1%86%E6%9E%B6%E6%99%AE%E9%80%9A%E5%9F%BA%E7%A1%80%E6%9C%8D%E5%8A%A1) 来安装这些服务。
-    
-    运行 `docker exec -it tars bash` 进入容器 **tars**，`cd /data` 进入工作目录，参考官方的 [服务开发](https://github.com/Tencent/Tars/blob/master/docs/tars_cpp_quickstart.md#5-%E6%9C%8D%E5%8A%A1%E5%BC%80%E5%8F%91--) 文档，开发 TestApp.HelloServer，其中 testHello 方法修改如下：
-    
-    ```
-    int HelloImp::testHello(const std::string &sReq, std::string &sRsp, tars::TarsCurrentPtr current)
-    {
-        TLOGDEBUG("HelloImp::testHellosReq:"<<sReq<<endl);
-        sRsp = sReq + " World!";
-        return 0;
-    }
-    
-    ```
-    
-    然后将编译完成的 HelloServer.tgz 部署到 tars-master 容器或者 docker-tars 容器里
+  首先使用docker命令启动容器，这里我们可以用 `tangramor/tars-master`  或者 `tangramor/docker-tars`：
+  ```
+  docker run -d -it --name tars -p 8080:8080 -v /c/Users/tangramor/Workspace/tars_data:/data tangramor/tars-master
+  ```
+  这个命令启动了 `tangramor/tars-master` 容器 **tars** 并将本地的一个目录 `/c/Users/tangramor/Workspace/tars_data` 挂载为容器的 /data 目录，同时它还把 8080 端口暴露出来了。
+  
+  然后我们可以在宿主机的 `/c/Users/tangramor/Workspace/tars_data` 目录下看到有两个子目录被创建出来了：log、tars，前者是resin的日志目录，后者里面是Tars各系统进程的日志目录。同时 `/c/Users/tangramor/Workspace/tars_data` 目录下还有各个需要手动部署的 Tars 子系统的部署 tgz 包，我们参考 [安装框架普通基础服务](https://github.com/Tencent/Tars/blob/master/Install.md#44-%E5%AE%89%E8%A3%85%E6%A1%86%E6%9E%B6%E6%99%AE%E9%80%9A%E5%9F%BA%E7%A1%80%E6%9C%8D%E5%8A%A1) 来安装这些服务。
+  
+  运行 `docker exec -it tars bash` 进入容器 **tars**，`cd /data` 进入工作目录，参考官方的 [服务开发](https://github.com/Tencent/Tars/blob/master/docs/tars_cpp_quickstart.md#5-%E6%9C%8D%E5%8A%A1%E5%BC%80%E5%8F%91--) 文档，开发 TestApp.HelloServer，其中 testHello 方法修改如下：
+  
+  ```
+  int HelloImp::testHello(const std::string &sReq, std::string &sRsp, tars::TarsCurrentPtr current)
+  {
+      TLOGDEBUG("HelloImp::testHellosReq:"<<sReq<<endl);
+      sRsp = sReq + " World!";
+      return 0;
+  }
+  
+  ```
+  
+  然后将编译完成的 HelloServer.tgz 部署到 tars-master 容器或者 docker-tars 容器里
 
-2. **开发PHP客户端**
+2. **开发 C++服务端 的 PHP客户端**
 
-    C++的客户端可以参考官方的 [客户端同步/异步调用服务](https://github.com/Tencent/Tars/blob/master/docs/tars_cpp_quickstart.md#54-%E5%AE%A2%E6%88%B7%E7%AB%AF%E5%90%8C%E6%AD%A5%E5%BC%82%E6%AD%A5%E8%B0%83%E7%94%A8%E6%9C%8D%E5%8A%A1)。注意如果要把C++的客户端部署到 tars-node 容器里，那么不要混用 minideb 标签和 latest、php7 标签的镜像，因为会有依赖问题。
-    
-    这里主要讲一下PHP的客户端开发与部署。
-    
-    首先使用docker命令启动**php7**标签的容器，这里我们可以用 `tangramor/tars-node:php7` ：
-    
-    ```
-    docker run -d -it --name tars-node --link tars:tars -p 80:80 -v /c/Users/tangramor/Workspace/tars_node:/data tangramor/tars-node:php7
-    ```
-    
-    这个命令启动了 `tangramor/tars-node:php7` 容器 **tars-node** 并将本地的一个目录 `/c/Users/tangramor/Workspace/tars_node` 挂载为容器的 /data 目录，同时它连接了命名为 **tars** 的服务端容器，还把 80 端口暴露出来了。
-    
-    我们可以在宿主机的 `/c/Users/tangramor/Workspace/tars_node` 目录下看到有三个子目录被创建出来了：log、tars 和 web。前两个都是日志目录，最后一个在容器中被链接为 `/var/www/html`，也就是Apache服务器的根目录。并且在 web 目录下可以看到 phpinfo.php 文件。我们使用浏览器访问 http://127.0.0.1/phpinfo.php （linux、mac）或 http://192.168.99.100/phpinfo.php （windows）就可以看到PHP的信息页面了。
-    
-    我们从宿主机的 `/c/Users/tangramor/Workspace/tars_data/TestApp/HelloServer` 目录里找到 `Hello.tars` 文件，将它拷贝到宿主机的 `/c/Users/tangramor/Workspace/tars_node/web` 目录下。
-    
-    运行 `docker exec -it tars-node bash` 进入容器 **tars-node**，`cd /data/web` 来到web目录，然后执行 `wget https://raw.githubusercontent.com/Tencent/Tars/master/php/tarsclient/tars2php.php` 把 `tars2php.php` 文件下载到本地。然后执行 `php tars2php.php Hello.tars "TestApp.HelloServer.HelloObj"` ，我们可以在 web 目录下看到 TestApp 目录被创建出来，`TestApp/HelloServer/HelloObj` 目录下是生成的PHP的客户端文件。
-    
-    在 web 目录下再创建一个 `composer.json` 文件，内容如下：
-    
-    ```
-    {
-      "name": "demo",
-      "description": "demo",
-      "authors": [
-        {
-          "name": "Tangramor",
-          "email": "tangramor@qq.com"
-        }
-      ],
-      "require": {
-        "php": ">=5.3",
-        "phptars/tars-assistant" : "0.2.1"
-      },
-      "autoload": {
-        "psr-4": {
-          "TestApp\\": "TestApp/"
-        }
+  C++的客户端可以参考官方的 [客户端同步/异步调用服务](https://github.com/Tencent/Tars/blob/master/docs/tars_cpp_quickstart.md#54-%E5%AE%A2%E6%88%B7%E7%AB%AF%E5%90%8C%E6%AD%A5%E5%BC%82%E6%AD%A5%E8%B0%83%E7%94%A8%E6%9C%8D%E5%8A%A1)。注意如果要把C++的客户端部署到 tars-node 容器里，那么不要混用 minideb 标签和 latest、php7 标签的镜像，因为会有依赖问题。
+  
+  这里主要讲一下PHP的客户端开发与部署。
+  
+  首先使用docker命令启动**php7**标签的容器，这里我们可以用 `tangramor/tars-node:php7` ：
+  
+  ```
+  docker run -d -it --name tars-node --link tars:tars -p 80:80 -v /c/Users/tangramor/Workspace/tars_node:/data tangramor/tars-node:php7
+  ```
+  
+  这个命令启动了 `tangramor/tars-node:php7` 容器 **tars-node** 并将本地的一个目录 `/c/Users/tangramor/Workspace/tars_node` 挂载为容器的 /data 目录，同时它连接了命名为 **tars** 的服务端容器，还把 80 端口暴露出来了。
+  
+  我们可以在宿主机的 `/c/Users/tangramor/Workspace/tars_node` 目录下看到有三个子目录被创建出来了：log、tars 和 web。前两个都是日志目录，最后一个在容器中被链接为 `/var/www/html`，也就是Apache服务器的根目录。并且在 web 目录下可以看到 phpinfo.php 文件。我们使用浏览器访问 http://127.0.0.1/phpinfo.php （linux、mac）或 http://192.168.99.100/phpinfo.php （windows）就可以看到PHP的信息页面了。
+  
+  我们从宿主机的 `/c/Users/tangramor/Workspace/tars_data/TestApp/HelloServer` 目录里找到 `Hello.tars` 文件，将它拷贝到宿主机的 `/c/Users/tangramor/Workspace/tars_node/web` 目录下。
+  
+  运行 `docker exec -it tars-node bash` 进入容器 **tars-node**，`cd /data/web` 来到web目录，然后执行 `wget https://raw.githubusercontent.com/Tencent/Tars/master/php/tarsclient/tars2php.php` 把 `tars2php.php` 文件下载到本地。然后执行 `php tars2php.php Hello.tars "TestApp.HelloServer.HelloObj"` ，我们可以在 web 目录下看到 TestApp 目录被创建出来，`TestApp/HelloServer/HelloObj` 目录下是生成的PHP的客户端文件。
+  
+  在 web 目录下再创建一个 `composer.json` 文件，内容如下：
+  
+  ```
+  {
+    "name": "demo",
+    "description": "demo",
+    "authors": [
+      {
+        "name": "Tangramor",
+        "email": "tangramor@qq.com"
+      }
+    ],
+    "require": {
+      "php": ">=5.3",
+      "phptars/tars-assistant" : "0.2.1"
+    },
+    "autoload": {
+      "psr-4": {
+        "TestApp\\": "TestApp/"
       }
     }
-    ```
-    
-    然后运行 `composer install` 命令，`vendor` 目录被创建出来了。这表明我们可以在PHP文件里使用 autoload 来加载 phptars。在 web 目录下新建 `index.php` 文件，内容如下：
-    
-    ```
-    <?php
-        require_once("./vendor/autoload.php");
-        // 指定主控
-        $host = "tars";
-        $port = 20001;
-    
-        $start = microtime();
-    
-        try {
-            $servant = new TestApp\HelloServer\HelloObj\Hello($host, $port);
-    
-            $in1 = "Hello";
-    
-            $intVal = $servant->testHello($in1,$out1);
-    
-            echo "服务器返回：".$out1;
-    
-        } catch(phptars\TarsException $e) {
-            // 错误处理
-            echo "Error: ".$e;
-        }
-    
-        $end = microtime();
-    
-        echo "<p>耗时：".($end - $start)." 秒</p>";
-    ```
-    
-    在宿主机上使用浏览器访问 http://127.0.0.1/index.php （linux、mac）或 http://192.168.99.100/index.php （windows），如果没有意外，页面应该返回类似下面的内容：
-    
-    ```
-    服务器返回：Hello World!
-    
-    耗时：0.051169 秒
-    ```
+  }
+  ```
+  
+  然后运行 `composer install` 命令，`vendor` 目录被创建出来了。这表明我们可以在PHP文件里使用 autoload 来加载 phptars。在 web 目录下新建 `index.php` 文件，内容如下：
+  
+  ```
+  <?php
+      require_once("./vendor/autoload.php");
+      // 指定主控
+      $host = "tars";
+      $port = 20001;
+  
+      $start = microtime();
+  
+      try {
+          $servant = new TestApp\HelloServer\HelloObj\Hello($host, $port);
+  
+          $in1 = "Hello";
+  
+          $intVal = $servant->testHello($in1,$out1);
+  
+          echo "服务器返回：".$out1;
+  
+      } catch(phptars\TarsException $e) {
+          // 错误处理
+          echo "Error: ".$e;
+      }
+  
+      $end = microtime();
+  
+      echo "<p>耗时：".($end - $start)." 秒</p>";
+  ```
+  
+  在宿主机上使用浏览器访问 http://127.0.0.1/index.php （linux、mac）或 http://192.168.99.100/index.php （windows），如果没有意外，页面应该返回类似下面的内容：
+  
+  ```
+  服务器返回：Hello World!
+  
+  耗时：0.051169 秒
+  ```
 
+3. **开发PHP服务端**
+
+  我们使用标签为 `php7mysql8` 的 `tangramor/docker-tars` 镜像来进行PHP服务端的开发（假设你用的是Windows）： 
+  
+  ```
+  docker run --name mysql8 -e MYSQL_ROOT_PASSWORD=password -d -p 3306:3306 -v /c/Users/tangramor/mysql8_data:/var/lib/mysql mysql:8 --sql_mode="" --innodb_use_native_aio=0
+  
+  docker run -d -it --name tars_mysql8 --link mysql8 --env DBIP=mysql8 --env DBPort=3306 --env DBUser=root --env DBPassword=password -p 8080:8080 -p 80:80 -v /c/Users/tangramor/tars_mysql8_data:/data tangramor/docker-tars:php7mysql8
+  ```
+  
+  这两个命令分别启动了mysql容器（8.0版）和  `tangramor/docker-tars:php7mysql8` 容器 **tars_mysql8**，并将本地的一个目录 `/c/Users/tangramor/Workspace/tars_mysql8_data` 挂载为容器的 /data 目录，同时它还把 8080 和 80 端口暴露出来了。
+  
+  我们进入 `/c/Users/tangramor/Workspace/tars_mysql8_data/web` 目录，在其下创建对应的目录结构： `scripts`、`src` 和 `tars`，
+  
+  ![DevPHPTest1](docs/images/DevPHPTest1.png)
+  
+  运行 `docker exec -it tars_mysql8 bash` 进入容器 **tars_mysql8**，`cd /data/web` 进入工作目录。
+  
+  在 `tars` 目录下创建一个 `test.tars` 文件（参考[phptars分支例子](https://github.com/Tencent/Tars/blob/phptars/php/examples/tars-tcp-server/tars/example.tars)）：
+  
+  ```
+  module testtafserviceservant
+  {
+      struct SimpleStruct {
+          0 require long id=0;
+          1 require int count=0;
+          2 require short page=0;
+      };
+  
+      struct OutStruct {
+          0 require long id=0;
+          1 require int count=0;
+          2 require short page=0;
+          3 optional string str;
+      };
+  
+      struct ComplicatedStruct {
+          0 require vector<SimpleStruct> ss;
+          1 require SimpleStruct rs;
+          2 require map<string, SimpleStruct> mss;
+          3 optional string str;
+      }
+  
+      struct LotofTags {
+          0 require long id=0;
+          1 require int count=0;
+          2 require short page=0;
+          3 optional string str;
+          4 require vector<SimpleStruct> ss;
+          5 require SimpleStruct rs;
+          6 require map<string, SimpleStruct> mss;
+      }
+  
+      interface TestTafService
+      {
+  
+          void testTafServer();
+  
+          int testLofofTags(LotofTags tags, out LotofTags outtags);
+  
+          void sayHelloWorld(string name, out string outGreetings);
+  
+          int testBasic(bool a, int b, string c, out bool d, out int e, out string f);
+  
+          string testStruct(long a, SimpleStruct b, out OutStruct d);
+  
+          string testMap(short a, SimpleStruct b, map<string, string> m1, out OutStruct d, out map<int, SimpleStruct> m2);
+  
+          string testVector(int a, vector<string> v1, vector<SimpleStruct> v2, out vector<int> v3, out vector<OutStruct> v4);
+  
+          SimpleStruct testReturn();
+  
+          map<string,string> testReturn2();
+  
+          vector<SimpleStruct> testComplicatedStruct(ComplicatedStruct cs,vector<ComplicatedStruct> vcs, out ComplicatedStruct ocs,out vector<ComplicatedStruct> ovcs);
+  
+          map<string,ComplicatedStruct> testComplicatedMap(map<string,ComplicatedStruct> mcs, out map<string,ComplicatedStruct> omcs);
+  
+          int testEmpty(short a,out bool b1, out int in2, out OutStruct d, out vector<OutStruct> v3,out vector<int> v4);
+  
+          int testSelf();
+  
+          int testProperty();
+  
+      };
+  
+  }
+  ```
+  
+  然后再在 `tars` 目录下创建一个 `tars.proto.php` 文件：
+  
+  ```
+  <?php
+  
+    return array(
+        'appName' => 'PHPTest', //tars服务servant name 的第一部分
+        'serverName' => 'PHPServer', //tars服务servant name 的第二部分
+        'objName' => 'obj', //tars服务servant name 的第三部分
+        'withServant' => true,//决定是服务端,还是客户端的自动生成
+        'tarsFiles' => array(
+            './test.tars' //tars文件的地址
+        ),
+        'dstPath' => '../src/servant', //生成php文件的位置
+        'namespacePrefix' => 'Server\servant', //生成php文件的命名空间前缀
+    );
+  ```
+  
+  在 `scripts` 目录下创建 `tars2php.sh`，并赋予执行权限 `chmod u+x tars2php.sh`：
+  ```
+  cd ../tars/
+  
+  php /root/phptars/tars2php.php ./tars.proto.php
+  ```
+  
+  创建目录 `src/servant`，然后执行 `./scripts/tars2php.sh`，可以看到 `src/servant` 目录下面生成一个三级文件夹 `PHPTest/PHPServer/obj`，包含：
+  
+  * classes文件夹 - 存放tars中的struct生成的文件
+  * tars文件夹 - 存放tars文件
+  * TestTafServiceServant.php - interface文件
+  
+  ![DevPHPTest2](docs/images/DevPHPTest2.png)
+  
+  进入 `src` 目录，我们开始服务端代码的实现。因为使用的是官方例子，所以这里直接将例子的实现代码拷贝过来：
+  
+  ```
+  wget https://github.com/Tencent/Tars/raw/phptars/php/examples/tars-tcp-server/src/composer.json
+  wget https://github.com/Tencent/Tars/raw/phptars/php/examples/tars-tcp-server/src/index.php
+  wget https://github.com/Tencent/Tars/raw/phptars/php/examples/tars-tcp-server/src/services.php
+  mkdir impl && cd impl && wget https://github.com/Tencent/Tars/raw/phptars/php/examples/tars-tcp-server/src/impl/PHPServerServantImpl.php && cd ..
+  mkdir conf && cd conf && wget https://github.com/Tencent/Tars/raw/phptars/php/examples/tars-tcp-server/src/conf/ENVConf.php && cd ..
+  ```
+  
+  - conf: 业务需要的配置，这里只是给出一个demo，如果从平台下发配置，默认也会写入到这个文件夹中；
+  - impl: 业务实际的实现代码，是对interface的对应实现，具体实现的文件路径需要写入到services.php中；
+  - composer.json: 项目的依赖；
+  - index.php: 整个服务的入口文件。可以自定义，但是必须要更改平台上的私有模板，在server下面增加entrance这个字段；
+  - services.php: 声明interface的地址，声明实际实现的地址，这个两个地址会被分别用作实例化调用和注解解析。
+  
+  修改一下 `conf/ENVConf.php` 的配置信息。在 `src` 目录下运行 `composer install` 加载对应的依赖包，然后执行 `composer run-script deploy` 进行代码打包，一个名字类似 `PHPServer_20180523105340.tar.gz` 的包就打好了。
+  
+  ![DevPHPTest3](docs/images/DevPHPTest3.png)
+  
+  在 `/data` 目录下创建一个 `logs` 目录，因为这个例子会在这下面写文件。
+  
+  将打好的包发布到Tars平台，记得选择php方式，模版使用 `tars.tarsphp.default` 或者自己根据需求新建一个模版：
+  
+  ![DeployPHPTest1](docs/images/DeployPHPTest1.png)
+  
+  ![DeployPHPTest2](docs/images/DeployPHPTest2.png)
+  
+  发布成功后，在系统里执行 `ps -ef` 会发现相关的进程。
+  
+  ![DeployPHPTest3](docs/images/DeployPHPTest3.png)
+
+
+4. **开发PHP客户端**
+
+  我们在同一个容器里进行上面服务端的客户端开发和测试，当然你也可以自己创建一个新的容器来尝试。
+  
+  我们进入 `/c/Users/tangramor/Workspace/tars_mysql8_data/web` 目录，在其下创建对应的目录 `client`。
+  
+  运行 `docker exec -it tars_mysql8 bash` 进入容器 **tars_mysql8**，`cd /data/web/client` 进入工作目录。
+  
+  将 3. **开发PHP服务端** 里创建的test.tars文件拷贝到当前目录，然后创建一个文件 `tarsclient.proto.php`：
+  
+  ```
+  <?php
+  
+    return array(
+        'appName' => 'PHPTest',
+        'serverName' => 'PHPServer',
+        'objName' => 'obj',
+        'withServant' => false,//决定是服务端,还是客户端的自动生成
+        'tarsFiles' => array(
+            './test.tars'
+        ),
+        'dstPath' => './',
+        'namespacePrefix' => 'Client\servant',
+    );
+  ```
+  
+  运行 `php /root/phptars/tars2php.php ./tarsclient.proto.php` ，可以看到在当前目录下生成了一个三级文件夹 `PHPTest/PHPServer/obj`，包含：
+  
+  * classes文件夹 - 存放tars中的struct生成的文件
+  * tars文件夹 - 存放tars文件
+  * TestTafServiceServant.php - 客户端类 TestTafServiceServant 文件
+  
+  在当前目录创建一个 `composer.json` 文件：
+  
+  ```
+  {
+    "name": "demo",
+    "description": "demo",
+    "authors": [
+      {
+        "name": "Tangramor",
+        "email": "tangramor@qq.com"
+      }
+    ],
+    "require": {
+      "php": ">=5.3",
+      "phptars/tars-client" : "0.1.0"
+    },
+    "autoload": {
+      "psr-4": {
+        "Client\\servant\\": "./"
+      }
+    },
+    "repositories": {
+      "tars": {
+        "type": "composer",
+        "url": "https://raw.githubusercontent.com/Tencent/Tars/phptars/php/dist/tarsphp.json"
+      }
+    }
+  }
+  
+  ```
+  
+  然后再创建一个 `index.php` 文件：
+  ```
+  <?php
+    require_once("./vendor/autoload.php");
+  
+    // 指定主控ip、port
+    $config = new \Tars\client\CommunicatorConfig();
+    $config->setLocator('tars.tarsregistry.QueryObj@tcp -h 172.17.0.3 -p 17890');
+    $config->setModuleName('PHPTest.PHPServer');
+    $config->setCharsetName('UTF-8');
+  
+    $servant = new Client\servant\PHPTest\PHPServer\obj\TestTafServiceServant($config);
+  
+    $name = 'ted';
+    $intVal = $servant->sayHelloWorld($name, $greetings);
+  
+    echo '<p>'.$greetings.'</p>';
+  ```
+  
+  执行 `composer install` 命令加载对应的依赖包，然后运行 `php index.php` 来测试客户端，如果一切顺利，应该输出：`<p>hello world!</p>` 。我们使用浏览器来访问 http://192.168.99.100/client/index.php ，应该也能看到：
+  
+  ![DevPHPTest4](docs/images/DevPHPTest4.png)
+  
+  在 `/data/logs` 目录下查看 `ted.log`，应该有内容写入：`sayHelloWorld name:ted` 。
 
 
 Trouble Shooting
@@ -237,232 +491,9 @@ Trouble Shooting
 在启动容器后，可以 `docker exec -it tars bash` 进入容器，查看当前运行状态；如果 `/c/Users/<ACCOUNT>/tars_data/log/tars` 下面出现了 _log4j.log 文件，说明安装已经完成，resin运行起来了。
 
 
-
-English Vesion
-===============
-
-
-MySQL
------
-This image does not have MySQL, you can use a docker official image(5.6):
-```
-docker run --name mysql -e MYSQL_ROOT_PASSWORD=password -d -p 3306:3306 -v /c/Users/<ACCOUNT>/mysql_data:/var/lib/mysql mysql:5.6 --innodb_use_native_aio=0
-```
-
-Please be aware of option `--innodb_use_native_aio=0` appended in the command above. Because MySQL aio does not support Windows file system.
-
-
-If you use a **5.7** MySQL, you may need to add option `--sql_mode=NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION`. Because after 5.6 MySQL does not support zero date field ( https://dev.mysql.com/doc/refman/5.7/en/sql-mode.html#sqlmode_no_zero_date ).
-```
-docker run --name mysql -e MYSQL_ROOT_PASSWORD=password -d -p 3306:3306 -v /c/Users/<ACCOUNT>/mysql_data:/var/lib/mysql mysql:5.7 --sql_mode=NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION --innodb_use_native_aio=0
-```
-
-
-If use **8.0** MySQL, you need to set `--sql_mode=''`, that will disable the default strict mode ( https://dev.mysql.com/doc/refman/8.0/en/sql-mode.html )
-
-```
-docker run --name mysql -e MYSQL_ROOT_PASSWORD=password -d -p 3306:3306 -v /c/Users/<ACCOUNT>/mysql_data:/var/lib/mysql mysql:8 --sql_mode='' --innodb_use_native_aio=0
-```
-
-
-You can also use a customized my.cnf to add those options.
-
-
-Image
+感谢
 ------
-The docker image is built automatically by docker hub: https://hub.docker.com/r/tangramor/docker-tars/ . You can pull it by following command:
-```
-docker pull tangramor/docker-tars
-```
 
-The image with **php7** tag includes php7.2 and phptars extension, as well with MySQL C++ connector for development:
-```
-docker pull tangramor/docker-tars:php7
-```
-
-The image with **minideb** tag is based on minideb which is "a small image based on Debian designed for use in containers":
-```
-docker pull tangramor/docker-tars:minideb
-```
-
-The image with **php7mysql8** tag uses source code of TARS **[phptars](https://github.com/Tencent/Tars/tree/phptars)** branch, which support PHP server development, and it includes php7.2, JDK 10 and mysql8 related support:
-```
-docker pull tangramor/docker-tars:php7mysql8
-```
-
-The image **tars-master** removed Tars source code from the docker-tars image:
-```
-docker pull tangramor/tars-master
-```
-
-The image **tars-node** has only tarsnode service deployed, and does not have Tars source code either:
-```
-docker pull tangramor/tars-node
-```
-
-Environment Parameters
-----------------------
-### DBIP, DBPort, DBUser, DBPassword
-When running the container, you need to set the environment parameters:
-```
-DBIP mysql
-DBPort 3306
-DBUser root
-DBPassword password
-```
-
-### MOUNT_DATA
-If you are runing container under **Linux** or **Mac**, you can set the **environment parameter** `MOUNT_DATA` to `true`. This option is used to link the data folders of Tars sub systems to the folers under /data, which we often mount to a external volumn. So even we removed old container and started a new one, with the old data in /data folder and mysql database, our deployments will not lose. That meets the principle "container should be stateless". **BUT** We **CANNOT** use this option under **Windows** because of the [problem of Windows file system and virtualbox](https://discuss.elastic.co/t/filebeat-docker-running-on-windows-not-allowing-application-to-rotate-the-log/89616/11).
-
-### INET_NAME
-If you want to expose all the Tars services to the host OS, you can use `--net=host` option when execute docker (the default mode that docker uses is bridge). Here we need to know the ethernet interface name, and if it is not `eth0`, we need to set the **environment parameter** `INET_NAME` to the one that host OS uses, such as `--env INET_NAME=ens160`. Once you started container with this network mode, you can execute `netstat -anop |grep '8080\|10000\|10001' |grep LISTEN` unser host OS to check if these ports are listened correctly.
-
-### MASTER
-The tar node server should register itself to the master node. This **environment parameter** `MASTER` is only for **tars-node** docker image, and you should set it to the IP or hostname of the master node.
-
-The command in run_docker_tars.sh is like following, you should modify it accordingly:
-```
-docker run -d -it --name tars --link mysql --env DBIP=mysql --env DBPort=3306 --env DBUser=root --env DBPassword=PASS -p 8080:8080 -v /c/Users/<ACCOUNT>/tars_data:/data tangramor/docker-tars
-```
-
-### General basic service for framework
-In the Dockerfile I put the successfully built service packages tarslog.tgz, tarsnotify.tgz, tarsproperty.tgz, tarsqueryproperty.tgz, tarsquerystat.tgz and tarsstat.tgz to /data, which should be mounted from the host machine like `/c/Users/<ACCOUNT>/tars_data/`. You can refer to [Install general basic service for framework](https://github.com/Tencent/Tars/blob/master/Install.en.md#44-install-general-basic-service-for-framework) to install those services.
-
-
-Build Images
--------------
-Build command: `docker build -t tars .`
-
-Build command for tars-master: `docker build -t tars-master -f tars-master/Dockerfile .`
-
-Build command for tars-node: `docker build -t tars-node -f tars-node/Dockerfile .`
-
-
-Use The Image for Development
-------------------------------
-It should be easyer to do Tars related development with the docker image. My way is put the project files under the local folder which will be mounted as /data in the container, such as `/c/Users/<ACCOUNT>/tars_data`. And once you did and works in the project, you can use command `docker exec -it tars bash` to enter Tars environment and execute the compiling or testing works.
-
-### For Example:
-    
-1. **Server Side Development**
-
-    Start docker container with following command. Here we can use image `tangramor/tars-master` or `tangramor/docker-tars`.
-    
-    ```
-    docker run -d -it --name tars -p 8080:8080 -v /c/Users/tangramor/Workspace/tars_data:/data tangramor/tars-master
-    ```
-    
-    This command starts `tangramor/tars-master` to container **tars** and mount local folder `/c/Users/tangramor/Workspace/tars_data` as /data folder in the container. It also exposes port 8080.
-    
-    We can see that there are 2 new folders, log and tars, created under `/c/Users/tangramor/Workspace/tars_data` in our host OS. Folder log is to store resin log and folder tars contains the log folders of Tars sub systems. In the mean time we can find tgz packages under `/c/Users/tangramor/Workspace/tars_data` that need us to deploy manually according to [Install general basic service for framework](https://github.com/Tencent/Tars/blob/master/Install.en.md#44-install-general-basic-service-for-framework).
-    
-    Execute `docker exec -it tars bash` to enter container **tars**, `cd /data` to the work directory, and we can refer to [Service Development](https://github.com/Tencent/Tars/blob/master/docs/tars_cpp_quickstart.md#5-%E6%9C%8D%E5%8A%A1%E5%BC%80%E5%8F%91--) to develop TestApp.HelloServer. We need to modify method testHello to following:
-    
-    ```
-    int HelloImp::testHello(const std::string &sReq, std::string &sRsp, tars::TarsCurrentPtr current)
-    {
-        TLOGDEBUG("HelloImp::testHellosReq:"<<sReq<<endl);
-        sRsp = sReq + " World!";
-        return 0;
-    }
-    
-    ```
-    
-    Then we deploy the compiled HelloServer.tgz to our **tars** container.
-
-
-2. **PHP Client Development**
-
-    C++ client can be done by referring to [Sync/Async calling to Service from Client](https://github.com/Tencent/Tars/blob/master/docs/tars_cpp_quickstart.md#54-%E5%AE%A2%E6%88%B7%E7%AB%AF%E5%90%8C%E6%AD%A5%E5%BC%82%E6%AD%A5%E8%B0%83%E7%94%A8%E6%9C%8D%E5%8A%A1). Be aware that if you want to deploy C++ client to tars-node container, you should not mix `minideb` tag with `latest` and `php7` tags, because there will be dependency problem for different OSs.
-    
-    Here I will introduce how to develop PHP client and deploy it.
-    
-    Start a **php7** tag container, such as `tangramor/tars-node:php7`:
-    
-    ```
-    docker run -d -it --name tars-node --link tars:tars -p 80:80 -v /c/Users/tangramor/Workspace/tars_node:/data tangramor/tars-node:php7
-    ```
-    
-    This command starts `tangramor/tars-node:php7` to container **tars-node** and mount local folder `/c/Users/tangramor/Workspace/tars_node` as /data folder in the container. It also exposes port 80.
-    
-    We can see that where are 3 new folders, log, tars and web, created under `/c/Users/tangramor/Workspace/tars_node`. Folder log and tars are used to store logs, folder web is linked as `/var/www/html` in the container. We can find file phpinfo.php under web folder, and if you visit http://127.0.0.1/phpinfo.php (in Linux or Mac) or http://192.168.99.100/phpinfo.php (in Windows), you can see the PHP information page.
-    
-    Find `Hello.tars` from `/c/Users/tangramor/Workspace/tars_data/TestApp/HelloServer` in host OS, and copy it to `/c/Users/tangramor/Workspace/tars_node/web`.
-    
-    Execute `docker exec -it tars-node bash` to enter container **tars-node**, `cd /data/web` to web folder, and execute `wget https://raw.githubusercontent.com/Tencent/Tars/master/php/tarsclient/tars2php.php` to download `tars2php.php` here. Then run `php tars2php.php Hello.tars "TestApp.HelloServer.HelloObj"`, we can see that TestApp folder is created, and under `TestApp/HelloServer/HelloObj` we can find the generated client files.
-    
-    Create `composer.json` file under web folder:
-    
-    ```
-    {
-      "name": "demo",
-      "description": "demo",
-      "authors": [
-        {
-          "name": "Tangramor",
-          "email": "tangramor@qq.com"
-        }
-      ],
-      "require": {
-        "php": ">=5.3",
-        "phptars/tars-assistant" : "0.2.1"
-      },
-      "autoload": {
-        "psr-4": {
-          "TestApp\\": "TestApp/"
-        }
-      }
-    }
-    ```
-    
-    Execute `composer install`, we can see `vendor` folder is created. That means we can use autoload in PHP files to load phptars. Create a file named `index.php` under web folder:
-    
-    ```
-    <?php
-        require_once("./vendor/autoload.php");
-
-        $host = "tars";
-        $port = 20001;
-    
-        $start = microtime();
-    
-        try {
-            $servant = new TestApp\HelloServer\HelloObj\Hello($host, $port);
-    
-            $in1 = "Hello";
-    
-            $intVal = $servant->testHello($in1,$out1);
-    
-            echo "Server returns: ".$out1;
-    
-        } catch(phptars\TarsException $e) {
-            echo "Error: ".$e;
-        }
-    
-        $end = microtime();
-    
-        echo "<p>Elapsed time: ".($end - $start)." seconds</p>";
-    ```
-    
-    Use a browser in host OS to visit http://127.0.0.1/index.php (in Linux or Mac) or http://192.168.99.100/index.php (in Windows), you should see result like following:
-    
-    ```
-    Server returns: Hello World!
-    
-    Elapsed time: 0.051169 seconds
-    ```
-
-
-
-Trouble Shooting
-----------------
-Once you started up the container, you can enter it by command `docker exec -it tars bash` and then you can execute linux commands to check the status. If you see _log4j.log file under `/c/Users/<ACCOUNT>/tars_data/log/tars`, that means resin is up to work and the installation is done.
-
-
-
-
-感谢 / Thanks
----------------
 本镜像脚本根据 https://github.com/panjen/docker-tars 修改，最初版本来自 https://github.com/luocheng812/docker_tars 。
 
-The scripts of this image are based on project https://github.com/panjen/docker-tars, which is from https://github.com/luocheng812/docker_tars.
+
