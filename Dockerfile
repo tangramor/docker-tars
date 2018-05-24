@@ -4,11 +4,14 @@ WORKDIR /root/
 
 ##修改镜像时区 
 ENV TZ=Asia/Shanghai
-ENV LC_ALL zh_CN.UTF-8
+
 ENV DBIP 127.0.0.1
 ENV DBPort 3306
 ENV DBUser root
 ENV DBPassword password
+
+# Mysql里tars用户的密码，缺省为tars2015
+ENV DBTarsPass tars2015
 
 ##安装
 RUN install_packages build-essential cmake wget mariadb-client libmariadbclient-dev libmariadbclient18 unzip iproute flex bison libncurses5-dev zlib1g-dev ca-certificates vim rsync locales \
@@ -36,11 +39,11 @@ RUN install_packages build-essential cmake wget mariadb-client libmariadbclient-
 	&& echo "CLASSPATH=\$JAVA_HOME/lib/dt.jar:\$JAVA_HOME/lib/tools.jar" >> /etc/profile \
 	&& echo "PATH=\$JAVA_HOME/bin:\$PATH" >> /etc/profile \
 	&& echo "export PATH JAVA_HOME CLASSPATH" >> /etc/profile \
-	&& cd /usr/local/ && wget -c -t 0 http://mirrors.gigenet.com/apache/maven/maven-3/3.5.2/binaries/apache-maven-3.5.2-bin.tar.gz \
-	&& tar zxvf apache-maven-3.5.2-bin.tar.gz && echo "export MAVEN_HOME=/usr/local/apache-maven-3.5.2/" >> /etc/profile \
+	&& cd /usr/local/ && wget -c -t 0 http://mirrors.gigenet.com/apache/maven/maven-3/3.5.3/binaries/apache-maven-3.5.3-bin.tar.gz \
+	&& tar zxvf apache-maven-3.5.3-bin.tar.gz && echo "export MAVEN_HOME=/usr/local/apache-maven-3.5.3/" >> /etc/profile \
 	&& echo "export PATH=\$PATH:\$MAVEN_HOME/bin" >> /etc/profile && . /etc/profile && mvn -v \
-	&& rm -rf apache-maven-3.5.2-bin.tar.gz  \
-	&& cd /usr/local/ && wget -c -t 0 http://caucho.com/download/resin-4.0.51.tar.gz && tar zxvf resin-4.0.51.tar.gz && mv resin-4.0.51 resin && rm -rf resin-4.0.51.tar.gz \
+	&& rm -rf apache-maven-3.5.3-bin.tar.gz  \
+	&& cd /usr/local/ && wget -c -t 0 http://caucho.com/download/resin-4.0.56.tar.gz && tar zxvf resin-4.0.56.tar.gz && mv resin-4.0.56 resin && rm -rf resin-4.0.56.tar.gz \
 	&& cd /root/Tars/java && mvn clean install && mvn clean install -f core/client.pom.xml && mvn clean install -f core/server.pom.xml \
 	&& cd /root/Tars/web/ && mvn clean package \
 	&& cp /root/Tars/build/conf/resin.xml /usr/local/resin/conf/ \
@@ -50,7 +53,7 @@ RUN install_packages build-essential cmake wget mariadb-client libmariadbclient-
 
 ENV JAVA_HOME /usr/java/jdk1.8.0_131
 
-ENV MAVEN_HOME /usr/local/apache-maven-3.5.2
+ENV MAVEN_HOME /usr/local/apache-maven-3.5.3
 
 # 是否将Tars系统进程的data目录挂载到外部存储，缺省为false以支持windows下使用
 ENV MOUNT_DATA false
