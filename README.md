@@ -5,16 +5,17 @@
 * [MySQL](#mysql)
 * [镜像](#镜像)
 * [环境变量](#环境变量)
- * [DBIP, DBPort, DBUser, DBPassword](#dbip-dbport-dbuser-dbpassword)
- * [DBTarsPass](#dbtarspass)
- * [MOUNT_DATA](#mount_data)
- * [INET_NAME](#inet_name)
- * [MASTER](#master)
- * [框架普通基础服务](#框架普通基础服务)
+  * [DBIP, DBPort, DBUser, DBPassword](#dbip-dbport-dbuser-dbpassword)
+  * [DBTarsPass](#dbtarspass)
+  * [MOUNT_DATA](#mount_data)
+  * [INET_NAME](#inet_name)
+  * [MASTER](#master)
+  * [框架普通基础服务](#框架普通基础服务)
 * [自己构建镜像](#自己构建镜像)
 * [开发方式](#开发方式)
- * [举例说明：](#举例说明)
+  * [举例说明：](#举例说明)
 * [Trouble Shooting](#trouble-shooting)
+* [感谢](#感谢)
 
 MySQL
 -----
@@ -135,6 +136,7 @@ tars-node 镜像构建命令：`docker build -t tars-node -f tars-node/Dockerfil
 ### 举例说明：
     
 1. **开发C++服务端**
+
   首先使用docker命令启动容器，这里我们可以用 `tangramor/tars-master`  或者 `tangramor/docker-tars`：
   ```
   docker run -d -it --name tars -p 8080:8080 -v /c/Users/tangramor/Workspace/tars_data:/data tangramor/tars-master
@@ -392,6 +394,7 @@ tars-node 镜像构建命令：`docker build -t tars-node -f tars-node/Dockerfil
   发布成功后，在系统里执行 `ps -ef` 会发现相关的进程。
   
   ![DeployPHPTest3](docs/images/DeployPHPTest3.png)
+
 
 4. **开发PHP客户端**
 
