@@ -47,10 +47,10 @@ RUN install_packages build-essential cmake wget mariadb-client libmariadbclient-
 	&& cd /root && rm -rf v2.1.3.tar.gz swoole-src-2.1.3 \
 	# 获取并安装JDK
 	&& mkdir -p /root/init && cd /root/init/ \
-	&& wget -c -t 0 --header "Cookie: oraclelicense=accept" -c --no-check-certificate http://download.oracle.com/otn-pub/java/jdk/8u131-b11/d54c1d3a095b4ff2b6607d096fa80163/jdk-8u131-linux-x64.tar.gz \
-	&& tar zxf /root/init/jdk-8u131-linux-x64.tar.gz && rm -rf /root/init/jdk-8u131-linux-x64.tar.gz \
-	&& mkdir /usr/java && mv /root/init/jdk1.8.0_131 /usr/java \
-	&& echo "export JAVA_HOME=/usr/java/jdk1.8.0_131" >> /etc/profile \
+	&& wget -c -t 0 --header "Cookie: oraclelicense=accept" -c --no-check-certificate http://download.oracle.com/otn-pub/java/jdk/10.0.1+10/fb4372174a714e6b8c52526dc134031e/jdk-10.0.1_linux-x64_bin.tar.gz \
+	&& tar zxf /root/init/jdk-10.0.1_linux-x64_bin.tar.gz && rm -rf /root/init/jdk-10.0.1_linux-x64_bin.tar.gz \
+	&& mkdir /usr/java && mv /root/init/jdk-10.0.1 /usr/java \
+	&& echo "export JAVA_HOME=/usr/java/jdk-10.0.1" >> /etc/profile \
 	&& echo "CLASSPATH=\$JAVA_HOME/lib/dt.jar:\$JAVA_HOME/lib/tools.jar" >> /etc/profile \
 	&& echo "PATH=\$JAVA_HOME/bin:\$PATH" >> /etc/profile \
 	&& echo "export PATH JAVA_HOME CLASSPATH" >> /etc/profile \
@@ -66,7 +66,7 @@ RUN install_packages build-essential cmake wget mariadb-client libmariadbclient-
 	&& cd /root/Tars/cpp/build/ && ./build.sh cleanall \
 	&& apt-get -y autoclean && apt-get -y autoremove
 
-ENV JAVA_HOME /usr/java/jdk1.8.0_131
+ENV JAVA_HOME /usr/java/jdk-10.0.1
 
 ENV MAVEN_HOME /usr/local/apache-maven-3.5.3
 
