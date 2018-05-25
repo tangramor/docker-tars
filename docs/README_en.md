@@ -74,6 +74,11 @@ The image **tars-node** has only tarsnode service deployed, and does not have Ta
 docker pull tangramor/tars-node
 ```
 
+### Notice
+
+The docker images are built based on Tars official source code, after the container started, it will launch an automatical installation process because the it need to modify the configurations in the official build according to the container's IP and environment parameters. That will need some minutes, and you may check the resin log `_log4j.log` under `/data/log/tars` to see if resin has started, or you can run `ps -ef` in container to check if all the processes have started.
+
+
 Environment Parameters
 ----------------------
 ### DBIP, DBPort, DBUser, DBPassword
