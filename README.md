@@ -4,6 +4,7 @@
 
 * [MySQL](#mysql)
 * [镜像](#镜像)
+  * [注意：](#注意)
 * [环境变量](#环境变量)
   * [DBIP, DBPort, DBUser, DBPassword](#dbip-dbport-dbuser-dbpassword)
   * [DBTarsPass](#dbtarspass)
@@ -76,6 +77,10 @@ docker pull tangramor/tars-master
 ```
 docker pull tangramor/tars-node
 ```
+
+### 注意：
+
+镜像使用的是官方Tars的源码编译构建的，容器启动后，还会有一个自动化的安装过程，因为原版的Tars代码里设置是需要修改的，容器必须根据启动后获得的IP、环境变量等信息修改设置文件，包括resin，需要重新对Tars管理应用打包，所以会花费一定的时间。可以通过监测 `/data/log/tars` 目录下的resin日志 `_log4j.log` 来查看resin是否完成了启动；还可以进入容器运行 `ps -ef` 命令查看进程信息来判断系统是否已经启动完成。
 
 
 环境变量
