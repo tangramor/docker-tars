@@ -4,7 +4,7 @@
 
 * [MySQL](#mysql)
 * [镜像](#镜像)
-  * [注意](#注意)
+  * [注意：](#注意)
 * [环境变量](#环境变量)
   * [DBIP, DBPort, DBUser, DBPassword](#dbip-dbport-dbuser-dbpassword)
   * [DBTarsPass](#dbtarspass)
@@ -78,7 +78,7 @@ docker pull tangramor/tars-master
 docker pull tangramor/tars-node
 ```
 
-### 注意
+### 注意：
 
 镜像使用的是官方Tars的源码编译构建的，容器启动后，还会有一个自动化的安装过程，因为原版的Tars代码里设置是需要修改的，容器必须根据启动后获得的IP、环境变量等信息修改设置文件，包括resin，需要重新对Tars管理应用打包，所以会花费一定的时间。可以通过监测 `/data/log/tars` 目录下的resin日志 `_log4j.log` 来查看resin是否完成了启动；还可以进入容器运行 `ps -ef` 命令查看进程信息来判断系统是否已经启动完成。
 
@@ -260,7 +260,7 @@ tars-node 镜像构建命令：`docker build -t tars-node -f tars-node/Dockerfil
   
   我们进入 `/c/Users/tangramor/Workspace/tars_mysql8_data/web` 目录，在其下创建对应的目录结构： `scripts`、`src` 和 `tars`，
   
-  ![DevPHPTest1](docs/images/DevPHPTest1.png)
+  ![DevPHPTest1](https://raw.githubusercontent.com/tangramor/docker-tars/master/docs/images/DevPHPTest1.png)
   
   运行 `docker exec -it tars_mysql8 bash` 进入容器 **tars_mysql8**，`cd /data/web` 进入工作目录。
   
@@ -366,7 +366,7 @@ tars-node 镜像构建命令：`docker build -t tars-node -f tars-node/Dockerfil
   * tars文件夹 - 存放tars文件
   * TestTafServiceServant.php - interface文件
   
-  ![DevPHPTest2](docs/images/DevPHPTest2.png)
+  ![DevPHPTest2](https://raw.githubusercontent.com/tangramor/docker-tars/master/docs/images/DevPHPTest2.png)
   
   进入 `src` 目录，我们开始服务端代码的实现。因为使用的是官方例子，所以这里直接将例子的实现代码拷贝过来：
   
@@ -386,19 +386,19 @@ tars-node 镜像构建命令：`docker build -t tars-node -f tars-node/Dockerfil
   
   修改一下 `conf/ENVConf.php` 的配置信息。在 `src` 目录下运行 `composer install` 加载对应的依赖包，然后执行 `composer run-script deploy` 进行代码打包，一个名字类似 `PHPServer_20180523105340.tar.gz` 的包就打好了。
   
-  ![DevPHPTest3](docs/images/DevPHPTest3.png)
+  ![DevPHPTest3](https://raw.githubusercontent.com/tangramor/docker-tars/master/docs/images/DevPHPTest3.png)
   
   在 `/data` 目录下创建一个 `logs` 目录，因为这个例子会在这下面写文件。
   
   将打好的包发布到Tars平台，记得选择php方式，模版使用 `tars.tarsphp.default` 或者自己根据需求新建一个模版：
   
-  ![DeployPHPTest1](docs/images/DeployPHPTest1.png)
+  ![DeployPHPTest1](https://raw.githubusercontent.com/tangramor/docker-tars/master/docs/images/DeployPHPTest1.png)
   
-  ![DeployPHPTest2](docs/images/DeployPHPTest2.png)
+  ![DeployPHPTest2](https://raw.githubusercontent.com/tangramor/docker-tars/master/docs/images/DeployPHPTest2.png)
   
   发布成功后，在系统里执行 `ps -ef` 会发现相关的进程。
   
-  ![DeployPHPTest3](docs/images/DeployPHPTest3.png)
+  ![DeployPHPTest3](https://raw.githubusercontent.com/tangramor/docker-tars/master/docs/images/DeployPHPTest3.png)
 
 
 4. **开发PHP客户端**
@@ -447,7 +447,7 @@ tars-node 镜像构建命令：`docker build -t tars-node -f tars-node/Dockerfil
     ],
     "require": {
       "php": ">=5.3",
-      "phptars/tars-client" : "0.1.0"
+      "phptars/tars-client" : "0.1.1"
     },
     "autoload": {
       "psr-4": {
@@ -485,7 +485,7 @@ tars-node 镜像构建命令：`docker build -t tars-node -f tars-node/Dockerfil
   
   执行 `composer install` 命令加载对应的依赖包，然后运行 `php index.php` 来测试客户端，如果一切顺利，应该输出：`<p>hello world!</p>` 。我们使用浏览器来访问 http://192.168.99.100/client/index.php ，应该也能看到：
   
-  ![DevPHPTest4](docs/images/DevPHPTest4.png)
+  ![DevPHPTest4](https://raw.githubusercontent.com/tangramor/docker-tars/master/docs/images/DevPHPTest4.png)
   
   在 `/data/logs` 目录下查看 `ted.log`，应该有内容写入：`sayHelloWorld name:ted` 。
 
