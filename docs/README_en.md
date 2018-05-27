@@ -3,6 +3,7 @@ TOC
 
 * [MySQL](#mysql)
 * [Image](#image)
+   * [Notice](#notice)
 * [Environment Parameters](#environment-parameters)
    * [DBIP, DBPort, DBUser, DBPassword](#dbip-dbport-dbuser-dbpassword)
    * [MOUNT_DATA](#mount_data)
@@ -383,7 +384,6 @@ It should be easyer to do Tars related development with the docker image. My way
     Once the deployment is successfully completed, you will see related processes when run `ps -ef`.
     
     ![DeployPHPTest3](https://raw.githubusercontent.com/tangramor/docker-tars/master/docs/images/DeployPHPTest3.png)
-
 
 4. **PHP Client Side Development**
 
