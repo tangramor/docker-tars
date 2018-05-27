@@ -50,7 +50,7 @@ The docker image is built automatically by docker hub: https://hub.docker.com/r/
 docker pull tangramor/docker-tars
 ```
 
-The image with **php7** tag includes php7.2 and phptars extension, as well with MySQL C++ connector for development:
+The image with **php7** tag uses source code of TARS **[phptars](https://github.com/Tencent/Tars/tree/phptars)** branch, which support PHP server development, and it includes php7.2 and phptars extension, as well with MySQL C++ connector for development:
 ```
 docker pull tangramor/docker-tars:php7
 ```
@@ -116,6 +116,23 @@ Build command: `docker build -t tars .`
 Build command for tars-master: `docker build -t tars-master -f tars-master/Dockerfile .`
 
 Build command for tars-node: `docker build -t tars-node -f tars-node/Dockerfile .`
+
+To build image of [tars-master](https://github.com/tangramor/tars-master) , you need to checkout tars-master and run docker build command:
+
+```
+git clone https://github.com/tangramor/tars-master.git
+cd tars-master
+docker build -t tars-master -f Dockerfile .
+```
+
+
+To build image of [tars-node](https://github.com/tangramor/tars-node) , you need to checkout tars-node and run docker build command:
+
+```
+git clone https://github.com/tangramor/tars-node.git
+cd tars-node
+docker build -t tars-node -f Dockerfile .
+```
 
 
 Use The Image for Development
