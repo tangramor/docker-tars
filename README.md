@@ -53,7 +53,7 @@ docker镜像已经由docker hub自动构建：https://hub.docker.com/r/tangramor
 docker pull tangramor/docker-tars
 ```
 
-tag 为 **php7** 的镜像包含了php7.2环境和phptars扩展，也添加了MySQL C++ connector以方便开发：
+tag 为 **php7** 的镜像使用了 TARS 的 **[phptars](https://github.com/Tencent/Tars/tree/phptars)** 分支的代码，支持PHP服务端开发，包含了php7.2环境和phptars扩展，也添加了MySQL C++ connector以方便开发：
 ```
 docker pull tangramor/docker-tars:php7
 ```
@@ -129,9 +129,23 @@ docker run -d -it --name tars --link mysql --env MOUNT_DATA=false --env DBIP=mys
 
 镜像构建命令：`docker build -t tars .`
 
-tars-master 镜像构建命令：`docker build -t tars-master -f tars-master/Dockerfile .`
 
-tars-node 镜像构建命令：`docker build -t tars-node -f tars-node/Dockerfile .`
+[tars-master](https://github.com/tangramor/tars-master) 镜像构建，请检出 tars-master 项目后执行命令：
+
+```
+git clone https://github.com/tangramor/tars-master.git
+cd tars-master
+docker build -t tars-master -f Dockerfile .
+```
+
+
+[tars-node](https://github.com/tangramor/tars-node) 镜像构建，请检出 tars-node 项目后执行命令：
+
+```
+git clone https://github.com/tangramor/tars-node.git
+cd tars-node
+docker build -t tars-node -f Dockerfile .
+```
 
 
 开发方式
