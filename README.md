@@ -400,7 +400,6 @@ tars-node 镜像构建命令：`docker build -t tars-node -f tars-node/Dockerfil
   
   ![DeployPHPTest3](https://raw.githubusercontent.com/tangramor/docker-tars/master/docs/images/DeployPHPTest3.png)
 
-
 4. **开发PHP客户端**
 
   我们在同一个容器里进行上面服务端的客户端开发和测试，当然你也可以自己创建一个新的容器来尝试。
