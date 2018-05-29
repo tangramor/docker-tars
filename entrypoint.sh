@@ -20,7 +20,9 @@ case ${1} in
 		/usr/sbin/init
 		source /etc/profile
 		cd /usr/local/app/tars && ./tars_install.sh
+		rm -f /var/run/redis_6379.pid
 		redis-server /etc/redis.conf
+		rm -rf /var/run/httpd/*
 		httpd
 		exec /usr/local/resin/bin/resin.sh console
 		;;
