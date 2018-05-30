@@ -61,6 +61,7 @@ install_base_services(){
 		mkdir -p /data/tarsnode_data && ln -s /data/tarsnode_data /usr/local/app/tars/tarsnode/data
 		mkdir -p /data/tarspatch_data && ln -s /data/tarspatch_data /usr/local/app/tars/tarspatch/data
 		mkdir -p /data/tarsregistry_data && ln -s /data/tarsregistry_data /usr/local/app/tars/tarsregistry/data
+		mkdir -p /data/tars_patchs && ln -s /data/tars_patchs /usr/local/app/patchs
 	fi
 
 	chmod u+x tarspatch/util/init.sh
