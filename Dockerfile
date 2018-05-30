@@ -47,6 +47,8 @@ RUN install_packages build-essential cmake wget mariadb-client libmariadbclient-
 	&& cd /root/Tars/java && mvn clean install && mvn clean install -f core/client.pom.xml && mvn clean install -f core/server.pom.xml \
 	&& cd /root/Tars/web/ && mvn clean package \
 	&& cp /root/Tars/build/conf/resin.xml /usr/local/resin/conf/ \
+	&& sed -i 's/servlet-class="com.caucho.servlets.FileServlet"\/>/servlet-class="com.caucho.servlets.FileServlet">\n\t<init>\n\t\t<character-encoding>utf-8<\/character-encoding>\n\t<\/init>\n<\/servlet>/g' /usr/local/resin/conf/app-default.xml \
+	&& sed -i 's/<page-cache-max>1024<\/page-cache-max>/<page-cache-max>1024<\/page-cache-max>\n\t\t<character-encoding>utf-8<\/character-encoding>/g' /usr/local/resin/conf/app-default.xml \
 	&& cp /root/Tars/web/target/tars.war /usr/local/resin/webapps/ \
 	&& cd /root/Tars/cpp/build/ && ./build.sh cleanall \
 	&& apt-get -y autoclean && apt-get -y autoremove
