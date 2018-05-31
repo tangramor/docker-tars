@@ -36,6 +36,59 @@ install_base_services(){
 	cd /root/
 	mv t*.tgz /data
 
+	if [ ${MOUNT_DATA} = true ];
+	then
+		mkdir -p /data/tarsconfig_data && ln -s /data/tarsconfig_data /usr/local/app/tars/tarsconfig/data
+		mkdir -p /data/tarsnode_data && ln -s /data/tarsnode_data /usr/local/app/tars/tarsnode/data
+		mkdir -p /data/tarspatch_data && ln -s /data/tarspatch_data /usr/local/app/tars/tarspatch/data
+		mkdir -p /data/tarsregistry_data && ln -s /data/tarsregistry_data /usr/local/app/tars/tarsregistry/data
+		mkdir -p /data/tars_patchs && rm -rf /usr/local/app/patchs && ln -s /data/tars_patchs /usr/local/app/patchs
+	fi
+
+	# 安装 tarsnotify、tarsstat、tarsproperty、tarslog、tarsquerystat、tarsqueryproperty
+	mkdir -p /usr/local/app/tars/tarsnode/data/tars.tarsnotify/bin && mkdir -p /usr/local/app/tars/tarsnode/data/tars.tarsnotify/conf && mkdir -p /usr/local/app/tars/tarsnode/data/tars.tarsnotify/data
+	mkdir -p /usr/local/app/tars/tarsnode/data/tars.tarsstat && mkdir -p /usr/local/app/tars/tarsnode/data/tars.tarsstat/conf && mkdir -p /usr/local/app/tars/tarsnode/data/tars.tarsstat/data
+	mkdir -p /usr/local/app/tars/tarsnode/data/tars.tarsproperty && mkdir -p /usr/local/app/tars/tarsnode/data/tars.tarsproperty/conf && mkdir -p /usr/local/app/tars/tarsnode/data/tars.tarsproperty/data
+	mkdir -p /usr/local/app/tars/tarsnode/data/tars.tarslog && mkdir -p /usr/local/app/tars/tarsnode/data/tars.tarslog/conf && mkdir -p /usr/local/app/tars/tarsnode/data/tars.tarslog/data
+	mkdir -p /usr/local/app/tars/tarsnode/data/tars.tarsquerystat && mkdir -p /usr/local/app/tars/tarsnode/data/tars.tarsquerystat/conf && mkdir -p /usr/local/app/tars/tarsnode/data/tars.tarsquerystat/data
+	mkdir -p /usr/local/app/tars/tarsnode/data/tars.tarsqueryproperty && mkdir -p /usr/local/app/tars/tarsnode/data/tars.tarsqueryproperty/conf && mkdir -p /usr/local/app/tars/tarsnode/data/tars.tarsqueryproperty/data
+
+	cp /data/tarsnotify.tgz /usr/local/app/tars/tarsnode/data/tars.tarsnotify/ && cd /usr/local/app/tars/tarsnode/data/tars.tarsnotify/ && tar zxf tarsnotify.tgz && mv tarsnotify/* ./bin/ && rm -rf tarsnotify
+	echo '#!/bin/sh' > /usr/local/app/tars/tarsnode/data/tars.tarsnotify/bin/tars_start.sh
+	echo 'export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/app/tars/tarsnode/data/tars.tarsnotify/bin/:/usr/local/app/tars/tarsnode/data/lib/' >> /usr/local/app/tars/tarsnode/data/tars.tarsnotify/bin/tars_start.sh
+	echo '/usr/local/app/tars/tarsnode/data/tars.tarsnotify/bin/tarsnotify --config=/usr/local/app/tars/tarsnode/data/tars.tarsnotify/conf/tars.tarsnotify.config.conf  &' >> /usr/local/app/tars/tarsnode/data/tars.tarsnotify/bin/tars_start.sh
+	cp /root/confs/tars.tarsnotify.config.conf /usr/local/app/tars/tarsnode/data/tars.tarsnotify/conf/
+
+	cp /data/tarsstat.tgz /usr/local/app/tars/tarsnode/data/tars.tarsstat/ && cd /usr/local/app/tars/tarsnode/data/tars.tarsstat/ && tar zxf tarsstat.tgz && mv tarsstat/* ./bin/ && rm -rf tarsstat
+	echo '#!/bin/sh' > /usr/local/app/tars/tarsnode/data/tars.tarsstat/bin/tars_start.sh
+	echo 'export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/app/tars/tarsnode/data/tars.tarsstat/bin/:/usr/local/app/tars/tarsnode/data/lib/' >> /usr/local/app/tars/tarsnode/data/tars.tarsstat/bin/tars_start.sh
+	echo '/usr/local/app/tars/tarsnode/data/tars.tarsstat/bin/tarsstat --config=/usr/local/app/tars/tarsnode/data/tars.tarsstat/conf/tars.tarsstat.config.conf  &' >> /usr/local/app/tars/tarsnode/data/tars.tarsstat/bin/tars_start.sh
+	cp /root/confs/tars.tarsstat.config.conf /usr/local/app/tars/tarsnode/data/tars.tarsstat/conf/
+
+	cp /data/tarsproperty.tgz /usr/local/app/tars/tarsnode/data/tars.tarsproperty/ && cd /usr/local/app/tars/tarsnode/data/tars.tarsproperty/ && tar zxf tarsproperty.tgz && mv tarsproperty/* ./bin/ && rm -rf tarsproperty
+	echo '#!/bin/sh' > /usr/local/app/tars/tarsnode/data/tars.tarsproperty/bin/tars_start.sh
+	echo 'export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/app/tars/tarsnode/data/tars.tarsproperty/bin/:/usr/local/app/tars/tarsnode/data/lib/' >> /usr/local/app/tars/tarsnode/data/tars.tarsproperty/bin/tars_start.sh
+	echo '/usr/local/app/tars/tarsnode/data/tars.tarsproperty/bin/tarsproperty --config=/usr/local/app/tars/tarsnode/data/tars.tarsproperty/conf/tars.tarsproperty.config.conf  &' >> /usr/local/app/tars/tarsnode/data/tars.tarsproperty/bin/tars_start.sh
+	cp /root/confs/tars.tarsproperty.config.conf /usr/local/app/tars/tarsnode/data/tars.tarsproperty/conf/
+
+	cp /data/tarslog.tgz /usr/local/app/tars/tarsnode/data/tars.tarslog/ && cd /usr/local/app/tars/tarsnode/data/tars.tarslog/ && tar zxf tarslog.tgz && mv tarslog/* ./bin/ && rm -rf tarslog
+	echo '#!/bin/sh' > /usr/local/app/tars/tarsnode/data/tars.tarslog/bin/tars_start.sh
+	echo 'export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/app/tars/tarsnode/data/tars.tarslog/bin/:/usr/local/app/tars/tarsnode/data/lib/' >> /usr/local/app/tars/tarsnode/data/tars.tarslog/bin/tars_start.sh
+	echo '/usr/local/app/tars/tarsnode/data/tars.tarslog/bin/tarslog --config=/usr/local/app/tars/tarsnode/data/tars.tarslog/conf/tars.tarslog.config.conf  &' >> /usr/local/app/tars/tarsnode/data/tars.tarslog/bin/tars_start.sh
+	cp /root/confs/tars.tarslog.config.conf /usr/local/app/tars/tarsnode/data/tars.tarslog/conf/
+
+	cp /data/tarsquerystat.tgz /usr/local/app/tars/tarsnode/data/tars.tarsquerystat/ && cd /usr/local/app/tars/tarsnode/data/tars.tarsquerystat/ && tar zxf tarsquerystat.tgz && mv tarsquerystat/* ./bin/ && rm -rf tarsquerystat
+	echo '#!/bin/sh' > /usr/local/app/tars/tarsnode/data/tars.tarsquerystat/bin/tars_start.sh
+	echo 'export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/app/tars/tarsnode/data/tars.tarsquerystat/bin/:/usr/local/app/tars/tarsnode/data/lib/' >> /usr/local/app/tars/tarsnode/data/tars.tarsquerystat/bin/tars_start.sh
+	echo '/usr/local/app/tars/tarsnode/data/tars.tarsquerystat/bin/tarsquerystat --config=/usr/local/app/tars/tarsnode/data/tars.tarsquerystat/conf/tars.tarsquerystat.config.conf  &' >> /usr/local/app/tars/tarsnode/data/tars.tarsquerystat/bin/tars_start.sh
+	cp /root/confs/tars.tarsquerystat.config.conf /usr/local/app/tars/tarsnode/data/tars.tarsquerystat/conf/
+
+	cp /data/tarsqueryproperty.tgz /usr/local/app/tars/tarsnode/data/tars.tarsqueryproperty/ && cd /usr/local/app/tars/tarsnode/data/tars.tarsqueryproperty/ && tar zxf tarsqueryproperty.tgz && mv tarsqueryproperty/* ./bin/ && rm -rf tarsqueryproperty
+	echo '#!/bin/sh' > /usr/local/app/tars/tarsnode/data/tars.tarsqueryproperty/bin/tars_start.sh
+	echo 'export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/app/tars/tarsnode/data/tars.tarsqueryproperty/bin/:/usr/local/app/tars/tarsnode/data/lib/' >> /usr/local/app/tars/tarsnode/data/tars.tarsqueryproperty/bin/tars_start.sh
+	echo '/usr/local/app/tars/tarsnode/data/tars.tarsqueryproperty/bin/tarsqueryproperty --config=/usr/local/app/tars/tarsnode/data/tars.tarsqueryproperty/conf/tars.tarsqueryproperty.config.conf  &' >> /usr/local/app/tars/tarsnode/data/tars.tarsqueryproperty/bin/tars_start.sh
+	cp /root/confs/tars.tarsqueryproperty.config.conf /usr/local/app/tars/tarsnode/data/tars.tarsqueryproperty/conf/
+
 	##核心基础服务配置修改
 	cd /usr/local/app/tars
 
@@ -50,15 +103,6 @@ install_base_services(){
 
 	chmod u+x tars_install.sh
 	#./tars_install.sh
-
-	if [ ${MOUNT_DATA} = true ];
-	then
-		mkdir -p /data/tarsconfig_data && ln -s /data/tarsconfig_data /usr/local/app/tars/tarsconfig/data
-		mkdir -p /data/tarsnode_data && ln -s /data/tarsnode_data /usr/local/app/tars/tarsnode/data
-		mkdir -p /data/tarspatch_data && ln -s /data/tarspatch_data /usr/local/app/tars/tarspatch/data
-		mkdir -p /data/tarsregistry_data && ln -s /data/tarsregistry_data /usr/local/app/tars/tarsregistry/data
-		mkdir -p /data/tars_patchs && ln -s /data/tars_patchs /usr/local/app/patchs
-	fi
 
 	chmod u+x tarspatch/util/init.sh
 	./tarspatch/util/init.sh
