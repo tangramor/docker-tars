@@ -78,6 +78,8 @@ VOLUME ["/data"]
 COPY install.sh /root/init/
 COPY entrypoint.sh /sbin/
 
+ADD confs /root/confs
+
 ENTRYPOINT ["/bin/bash","/sbin/entrypoint.sh"]
 
 CMD ["start"]
