@@ -1,6 +1,7 @@
 TOC
 -----
 
+* [Stipulation](#stipulation)
 * [MySQL](#mysql)
 * [Image](#image)
    * [Notice](#notice)
