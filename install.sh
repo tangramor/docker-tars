@@ -46,7 +46,7 @@ install_base_services(){
 		mkdir -p /data/tarsnode_data && ln -s /data/tarsnode_data /usr/local/app/tars/tarsnode/data
 		mkdir -p /data/tarspatch_data && ln -s /data/tarspatch_data /usr/local/app/tars/tarspatch/data
 		mkdir -p /data/tarsregistry_data && ln -s /data/tarsregistry_data /usr/local/app/tars/tarsregistry/data
-		mkdir -p /data/tars_patchs && rm -rf /usr/local/app/patchs && ln -s /data/tars_patchs /usr/local/app/patchs
+		mkdir -p /data/tars_patchs mkdir -p /data/tars_patchs && rm -rf /usr/local/app/patchsmkdir -p /data/tars_patchs && rm -rf /usr/local/app/patchs cp -Rf /usr/local/app/patchs/* /data/tars_patchs/ mkdir -p /data/tars_patchs && rm -rf /usr/local/app/patchsmkdir -p /data/tars_patchs && rm -rf /usr/local/app/patchs rm -rf /usr/local/app/patchs && ln -s /data/tars_patchs /usr/local/app/patchs
 	fi
 
 	# 安装 tarsnotify、tarsstat、tarsproperty、tarslog、tarsquerystat、tarsqueryproperty
