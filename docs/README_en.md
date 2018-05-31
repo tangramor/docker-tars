@@ -1,6 +1,7 @@
 TOC
 -----
 
+* [Stipulation](#stipulation)
 * [MySQL](#mysql)
 * [Image](#image)
    * [Notice](#notice)
@@ -15,6 +16,11 @@ TOC
    * [For Example:](#for-example)
 * [Trouble Shooting](#trouble-shooting)
 * [Thanks](#thanks)
+
+
+Stipulation
+------------
+In this doc, we assume that you are working in **Windows**. Because the command line environment of docker in Windows will map disk driver C:, D: to `/c/` and `/d/`, just like under *nix, we will use `/c/Users/` to describe the User folder in driver C:.
 
 
 MySQL
@@ -176,7 +182,7 @@ It should be easyer to do Tars related development with the docker image. My way
     Start a **php7** tag container, such as `tangramor/tars-node:php7`:
     
     ```
-    docker run -d -it --name tars-node --link tars:tars -p 80:80 -v /c/Users/tangramor/Workspace/tars_node:/data tangramor/tars-node:php7
+    docker run -d -it --name tars-node --link tars:tars -e MASTER=tars -p 80:80 -v /c/Users/tangramor/Workspace/tars_node:/data tangramor/tars-node:php7
     ```
     
     This command starts `tangramor/tars-node:php7` to container **tars-node** and mount local folder `/c/Users/tangramor/Workspace/tars_node` as /data folder in the container. It also exposes port 80.
@@ -185,29 +191,53 @@ It should be easyer to do Tars related development with the docker image. My way
     
     Find `Hello.tars` from `/c/Users/tangramor/Workspace/tars_data/TestApp/HelloServer` in host OS, and copy it to `/c/Users/tangramor/Workspace/tars_node/web`.
     
-    Execute `docker exec -it tars-node bash` to enter container **tars-node**, `cd /data/web` to web folder, and execute `wget https://raw.githubusercontent.com/Tencent/Tars/master/php/tarsclient/tars2php.php` to download `tars2php.php` here. Then run `php tars2php.php Hello.tars "TestApp.HelloServer.HelloObj"`, we can see that TestApp folder is created, and under `TestApp/HelloServer/HelloObj` we can find the generated client files.
+    Execute `docker exec -it tars-node bash` to enter container **tars-node**, `cd /data/web` to web folder, and create a file with name `tarsclient.proto.php`:
+
+    ```
+    <?php
+
+      return array(
+          'appName' => 'TestApp',
+          'serverName' => 'HelloServer',
+          'objName' => 'HelloObj',
+          'withServant' => false,  //true to generate server side code, false for client side code
+          'tarsFiles' => array(
+              './Hello.tars'
+          ),
+          'dstPath' => './',
+          'namespacePrefix' => '',
+      );
+    ```
+
+    Then run `php /root/phptars/tars2php.php ./tarsclient.proto.php`, we can see that TestApp folder is created, and under `TestApp/HelloServer/HelloObj` we can find the generated client files.
     
     Create `composer.json` file under web folder:
     
     ```
     {
-      "name": "demo",
-      "description": "demo",
-      "authors": [
-        {
-          "name": "Tangramor",
-          "email": "tangramor@qq.com"
+        "name": "demo",
+        "description": "demo",
+        "authors": [
+          {
+            "name": "Tangramor",
+            "email": "tangramor@qq.com"
+          }
+        ],
+        "require": {
+          "php": ">=5.3",
+          "phptars/tars-client" : "0.1.1"
+        },
+        "autoload": {
+          "psr-4": {
+            "TestApp\\": "TestApp/"
+          }
+        },
+        "repositories": {
+          "tars": {
+            "type": "composer",
+            "url": "https://raw.githubusercontent.com/Tencent/Tars/phptars/php/dist/tarsphp.json"
+          }
         }
-      ],
-      "require": {
-        "php": ">=5.3",
-        "phptars/tars-assistant" : "0.2.1"
-      },
-      "autoload": {
-        "psr-4": {
-          "TestApp\\": "TestApp/"
-        }
-      }
     }
     ```
     
@@ -217,14 +247,15 @@ It should be easyer to do Tars related development with the docker image. My way
     <?php
         require_once("./vendor/autoload.php");
     
-        $host = "tars";
-        $port = 20001;
+        $config = new \Tars\client\CommunicatorConfig();
+        $config->setLocator("tars.tarsregistry.QueryObj@tcp -h 172.17.0.3 -p 17890");
+        $config->setModuleName("TestApp.HelloServer");
+        $config->setCharsetName("UTF-8");
+        $servant = new \TestApp\HelloServer\HelloObj\HelloServant($config);
     
         $start = microtime();
     
-        try {
-            $servant = new TestApp\HelloServer\HelloObj\Hello($host, $port);
-    
+        try {    
             $in1 = "Hello";
     
             $intVal = $servant->testHello($in1,$out1);
