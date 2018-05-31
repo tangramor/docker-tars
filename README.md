@@ -2,6 +2,7 @@
 
 ## [Click to Read English Version](https://github.com/tangramor/docker-tars/blob/master/docs/README_en.md)
 
+* [约定](#约定)
 * [MySQL](#mysql)
 * [镜像](#镜像)
   * [注意：](#注意)
@@ -17,6 +18,13 @@
   * [举例说明：](#举例说明)
 * [Trouble Shooting](#trouble-shooting)
 * [感谢](#感谢)
+
+
+约定
+-----
+
+本文档假定你的工作环境为**Windows**，因为Windows下的docker命令行环境会把C:盘、D:盘等盘符映射为 `/c/`、`/d/` 这样的目录形式，所以在文档中会直接使用 `/c/Users/` 这样的写法来描述C:盘的用户目录。
+
 
 MySQL
 -----
@@ -153,7 +161,7 @@ docker build -t tars-node -f Dockerfile .
 使用docker镜像进行Tars相关的开发就方便很多了，我的做法是把项目放置在被挂载到镜像 /data 目录的本地目录下，例如 `/c/Users/<ACCOUNT>/tars_data` 。在本地使用编辑器或IDE对项目文件进行开发，然后开启命令行：`docker exec -it tars bash` 进入Tars环境进行编译或测试。
 
 ### 举例说明：
-    
+
 1. **开发C++服务端**
 
   首先使用docker命令启动容器，这里我们可以用 `tangramor/tars-master`  或者 `tangramor/docker-tars`：
@@ -187,7 +195,7 @@ docker build -t tars-node -f Dockerfile .
   首先使用docker命令启动**php7**标签的容器，这里我们可以用 `tangramor/tars-node:php7` ：
   
   ```
-  docker run -d -it --name tars-node --link tars:tars -p 80:80 -v /c/Users/tangramor/Workspace/tars_node:/data tangramor/tars-node:php7
+  docker run -d -it --name tars-node --link tars:tars -e MASTER=tars -p 80:80 -v /c/Users/tangramor/Workspace/tars_node:/data tangramor/tars-node:php7
   ```
   
   这个命令启动了 `tangramor/tars-node:php7` 容器 **tars-node** 并将本地的一个目录 `/c/Users/tangramor/Workspace/tars_node` 挂载为容器的 /data 目录，同时它连接了命名为 **tars** 的服务端容器，还把 80 端口暴露出来了。
@@ -196,7 +204,25 @@ docker build -t tars-node -f Dockerfile .
   
   我们从宿主机的 `/c/Users/tangramor/Workspace/tars_data/TestApp/HelloServer` 目录里找到 `Hello.tars` 文件，将它拷贝到宿主机的 `/c/Users/tangramor/Workspace/tars_node/web` 目录下。
   
-  运行 `docker exec -it tars-node bash` 进入容器 **tars-node**，`cd /data/web` 来到web目录，然后执行 `wget https://raw.githubusercontent.com/Tencent/Tars/master/php/tarsclient/tars2php.php` 把 `tars2php.php` 文件下载到本地。然后执行 `php tars2php.php Hello.tars "TestApp.HelloServer.HelloObj"` ，我们可以在 web 目录下看到 TestApp 目录被创建出来，`TestApp/HelloServer/HelloObj` 目录下是生成的PHP的客户端文件。
+  运行 `docker exec -it tars-node bash` 进入容器 **tars-node**，`cd /data/web` 来到web目录，创建一个名为 `tarsclient.proto.php` 的文件：
+
+  ```
+  <?php
+
+      return array(
+          'appName' => 'TestApp',
+          'serverName' => 'HelloServer',
+          'objName' => 'HelloObj',
+          'withServant' => false, //决定是服务端,还是客户端的自动生成
+          'tarsFiles' => array(
+              './Hello.tars'
+          ),
+          'dstPath' => './',
+          'namespacePrefix' => '',
+      );
+  ```
+
+  然后执行 `php /root/phptars/tars2php.php ./tarsclient.proto.php` ，我们可以在 web 目录下看到 TestApp 目录被创建出来，`TestApp/HelloServer/HelloObj` 目录下是生成的PHP的客户端类文件。
   
   在 web 目录下再创建一个 `composer.json` 文件，内容如下：
   
@@ -212,11 +238,17 @@ docker build -t tars-node -f Dockerfile .
     ],
     "require": {
       "php": ">=5.3",
-      "phptars/tars-assistant" : "0.2.1"
+      "phptars/tars-client" : "0.1.1"
     },
     "autoload": {
       "psr-4": {
         "TestApp\\": "TestApp/"
+      }
+    },
+    "repositories": {
+      "tars": {
+        "type": "composer",
+        "url": "https://raw.githubusercontent.com/Tencent/Tars/phptars/php/dist/tarsphp.json"
       }
     }
   }
@@ -227,15 +259,17 @@ docker build -t tars-node -f Dockerfile .
   ```
   <?php
       require_once("./vendor/autoload.php");
+      
       // 指定主控
-      $host = "tars";
-      $port = 20001;
+      $config = new \Tars\client\CommunicatorConfig();
+      $config->setLocator("tars.tarsregistry.QueryObj@tcp -h 172.17.0.3 -p 17890");
+      $config->setModuleName("TestApp.HelloServer");
+      $config->setCharsetName("UTF-8");
+      $servant = new \TestApp\HelloServer\HelloObj\HelloServant($config);
   
       $start = microtime();
   
-      try {
-          $servant = new TestApp\HelloServer\HelloObj\Hello($host, $port);
-  
+      try {  
           $in1 = "Hello";
   
           $intVal = $servant->testHello($in1,$out1);
