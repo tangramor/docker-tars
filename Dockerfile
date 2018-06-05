@@ -42,10 +42,10 @@ RUN yum -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.n
 	&& ./configure --enable-phptars --with-php-config=/usr/bin/php-config && make && make install \
 	&& echo "extension=phptars.so" > /etc/php.d/phptars.ini \
 	# 安装PHP swoole模块
-	&& cd /root && wget -c -t 0 https://github.com/swoole/swoole-src/archive/v2.1.3.tar.gz \
-	&& tar zxf v2.1.3.tar.gz && cd swoole-src-2.1.3 && phpize && ./configure && make && make install \
+	&& cd /root && wget -c -t 0 https://github.com/swoole/swoole-src/archive/v2.2.0.tar.gz \
+	&& tar zxf v2.2.0.tar.gz && cd swoole-src-2.2.0 && phpize && ./configure && make && make install \
 	&& echo "extension=swoole.so" > /etc/php.d/swoole.ini \
-	&& cd /root && rm -rf v2.1.3.tar.gz swoole-src-2.1.3 \
+	&& cd /root && rm -rf v2.2.0.tar.gz swoole-src-2.2.0 \
 	&& mkdir -p /root/phptars && cp -f /root/Tars/php/tars2php/src/tars2php.php /root/phptars \
 	&& mkdir -p /root/init && cd /root/init/ \
 	&& wget -c -t 0 --header "Cookie: oraclelicense=accept" -c --no-check-certificate http://download.oracle.com/otn-pub/java/jdk/8u131-b11/d54c1d3a095b4ff2b6607d096fa80163/jdk-8u131-linux-x64.rpm \
