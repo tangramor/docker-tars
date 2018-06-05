@@ -39,12 +39,12 @@ RUN install_packages build-essential cmake wget mariadb-client libmariadbclient-
 	&& ln -s /etc/php/7.0/mods-available/phptars.ini /etc/php/7.0/apache2/conf.d/20-phptars.ini \
 	&& ln -s /etc/php/7.0/mods-available/phptars.ini /etc/php/7.0/cli/conf.d/20-phptars.ini \
 	# 安装PHP swoole模块
-	&& cd /root && wget -c -t 0 https://github.com/swoole/swoole-src/archive/v2.1.3.tar.gz \
-	&& tar zxf v2.1.3.tar.gz && cd swoole-src-2.1.3 && phpize && ./configure && make && make install \
+	&& cd /root && wget -c -t 0 https://github.com/swoole/swoole-src/archive/v2.2.0.tar.gz \
+	&& tar zxf v2.2.0.tar.gz && cd swoole-src-2.2.0 && phpize && ./configure && make && make install \
 	&& echo "extension=swoole.so" > /etc/php/7.0/mods-available/swoole.ini \
 	&& ln -s /etc/php/7.0/mods-available/swoole.ini /etc/php/7.0/apache2/conf.d/20-swoole.ini \
 	&& ln -s /etc/php/7.0/mods-available/swoole.ini /etc/php/7.0/cli/conf.d/20-swoole.ini \
-	&& cd /root && rm -rf v2.1.3.tar.gz swoole-src-2.1.3 \
+	&& cd /root && rm -rf v2.2.0.tar.gz swoole-src-2.2.0 \
 	# 获取并安装JDK
 	&& mkdir -p /root/init && cd /root/init/ \
 	&& wget -c -t 0 --header "Cookie: oraclelicense=accept" -c --no-check-certificate http://download.oracle.com/otn-pub/java/jdk/10.0.1+10/fb4372174a714e6b8c52526dc134031e/jdk-10.0.1_linux-x64_bin.tar.gz \
