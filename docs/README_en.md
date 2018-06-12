@@ -1,3 +1,7 @@
+
+![Docker Pulls](https://img.shields.io/docker/pulls/tangramor/docker-tars.svg) ![Docker Automated build](https://img.shields.io/docker/automated/tangramor/docker-tars.svg) ![Docker Build Status](https://img.shields.io/docker/build/tangramor/docker-tars.svg)
+
+
 TOC
 -----
 
@@ -6,6 +10,7 @@ TOC
 * [Image](#image)
    * [Notice](#notice)
 * [Environment Parameters](#environment-parameters)
+   * [TZ](#tz)
    * [DBIP, DBPort, DBUser, DBPassword](#dbip-dbport-dbuser-dbpassword)
    * [MOUNT_DATA](#mount_data)
    * [INET_NAME](#inet_name)
@@ -25,7 +30,7 @@ In this doc, we assume that you are working in **Windows**. Because the command 
 
 MySQL
 -----
-This image does not have MySQL, you can use a docker official image(5.6):
+This image does **NOT** have MySQL, you can use a docker official image(5.6):
 ```
 docker run --name mysql -e MYSQL_ROOT_PASSWORD=password -d -p 3306:3306 -v /c/Users/<ACCOUNT>/mysql_data:/var/lib/mysql mysql:5.6 --innodb_use_native_aio=0
 ```
@@ -61,17 +66,22 @@ The image with **php7** tag uses source code of TARS **[phptars](https://github.
 docker pull tangramor/docker-tars:php7
 ```
 
-The image with **minideb** tag is based on minideb which is "a small image based on Debian designed for use in containers":
-```
-docker pull tangramor/docker-tars:minideb
-```
-
 The image with **php7mysql8** tag uses source code of TARS **[phptars](https://github.com/Tencent/Tars/tree/phptars)** branch, which support PHP server development, and it includes php7.2, JDK 10 and mysql8 related support:
 ```
 docker pull tangramor/docker-tars:php7mysql8
 ```
 
-The image **tars-master** removed Tars source code from the docker-tars image:
+The image with **minideb** tag is based on minideb which is "a small image based on Debian designed for use in containers":
+```
+docker pull tangramor/docker-tars:minideb
+```
+
+The image with **php7deb** tag is based on minideb, uses source code of TARS **[phptars](https://github.com/Tencent/Tars/tree/phptars)** branch, which support PHP server development, and it includes php7.2 and phptars extension, as well with MySQL C++ connector for development:
+```
+docker pull tangramor/docker-tars:php7deb
+```
+
+The image **tars-master** removed Tars source code from the docker-tars image, has same tags as **docker-tars**:
 ```
 docker pull tangramor/tars-master
 ```
@@ -88,6 +98,10 @@ The docker images are built based on Tars official source code, after the contai
 
 Environment Parameters
 ----------------------
+### TZ
+The timezone definition, default: `Asia/Shanghai`.
+
+
 ### DBIP, DBPort, DBUser, DBPassword
 When running the container, you need to set the environment parameters:
 ```
