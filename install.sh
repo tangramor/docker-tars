@@ -129,6 +129,8 @@ build_web_mgr(){
 	sed -i "s/registry1.tars.com/${MachineIp}/g" `grep registry1.tars.com -rl ./WEB-INF/classes/tars.conf`
 	sed -i "s/registry2.tars.com/${MachineIp}/g" `grep registry2.tars.com -rl ./WEB-INF/classes/tars.conf`
 	sed -i "s/DEBUG/INFO/g" `grep DEBUG -rl ./WEB-INF/classes/log4j.properties`
+	# 修改Mysql里tars用户密码
+	sed -i "s/tars2015/${DBTarsPass}/g" `grep tars2015 -rl ./WEB-INF/classes/app.config.properties`
 	
 	jar -uvf ../tars.war .
 	cd ..
