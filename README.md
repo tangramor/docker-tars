@@ -1,5 +1,7 @@
 # Tencent Tars 的Docker镜像脚本与使用
 
+![Docker Pulls](https://img.shields.io/docker/pulls/tangramor/docker-tars.svg) ![Docker Automated build](https://img.shields.io/docker/automated/tangramor/docker-tars.svg) ![Docker Build Status](https://img.shields.io/docker/build/tangramor/docker-tars.svg)
+
 ## [Click to Read English Version](https://github.com/tangramor/docker-tars/blob/master/docs/README_en.md)
 
 * [约定](#约定)
@@ -7,6 +9,7 @@
 * [镜像](#镜像)
   * [注意：](#注意)
 * [环境变量](#环境变量)
+  * [TZ](#tz)
   * [DBIP, DBPort, DBUser, DBPassword](#dbip-dbport-dbuser-dbpassword)
   * [DBTarsPass](#dbtarspass)
   * [MOUNT_DATA](#mount_data)
@@ -29,7 +32,7 @@
 MySQL
 -----
 
-本镜像是Tars的docker版本，未安装mysql，可以使用官方mysql镜像（5.6）：
+本镜像是Tars的docker版本，**未安装mysql**，可以使用官方mysql镜像（5.6）：
 ```
 docker run --name mysql -e MYSQL_ROOT_PASSWORD=password -d -p 3306:3306 -v /c/Users/<ACCOUNT>/mysql_data:/var/lib/mysql mysql:5.6 --innodb_use_native_aio=0
 ```
@@ -66,17 +69,22 @@ tag 为 **php7** 的镜像使用了 TARS 的 **[phptars](https://github.com/Tenc
 docker pull tangramor/docker-tars:php7
 ```
 
-tag 为 **minideb** 的镜像是使用名为 minideb 的精简版 debian 作为基础镜像的版本：
-```
-docker pull tangramor/docker-tars:minideb
-```
-
 tag 为 **php7mysql8** 的镜像使用了 TARS 的 **[phptars](https://github.com/Tencent/Tars/tree/phptars)** 分支的代码，支持PHP服务端开发，包含php7.2、JDK 10以及mysql8相关的支持修改（对TARS配置做了修改）：
 ```
 docker pull tangramor/docker-tars:php7mysql8
 ```
 
-**tars-master** 之下是在镜像中删除了Tars源码的脚本，使用下面命令即可获取：
+tag 为 **minideb** 的镜像是使用名为 minideb 的精简版 debian 作为基础镜像的版本：
+```
+docker pull tangramor/docker-tars:minideb
+```
+
+tag 为 **php7deb** 的镜像是使用名为 minideb 的精简版 debian 作为基础镜像的版本，使用了 TARS 的 **[phptars](https://github.com/Tencent/Tars/tree/phptars)** 分支的代码，支持PHP服务端开发，包含了php7.2环境和phptars扩展：
+```
+docker pull tangramor/docker-tars:minideb
+```
+
+**tars-master** 之下是在镜像中删除了Tars源码的脚本，有跟 **docker-tars** 一致的tag，使用下面命令即可获取：
 ```
 docker pull tangramor/tars-master
 ```
@@ -93,6 +101,11 @@ docker pull tangramor/tars-node
 
 环境变量
 --------
+### TZ
+
+时区设置，缺省为 `Asia/Shanghai` 。
+
+
 ### DBIP, DBPort, DBUser, DBPassword
 
 在运行容器时需要指定数据库的**环境变量**，例如：
