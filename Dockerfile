@@ -22,6 +22,7 @@ RUN yum -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.n
 	&& ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone \
 	&& localedef -c -f UTF-8 -i zh_CN zh_CN.utf8 \
 	&& sed -i "s@;date.timezone =@date.timezone = ${TZ}@" /etc/php.ini \
+	&& sed -i "s@AllowOverride None@AllowOverride All@g" /etc/httpd/conf/httpd.conf \
 	# 获取最新TARS源码(phptars分支)
 	&& wget -c -t 0 https://github.com/Tencent/Tars/archive/phptars.zip -O phptars.zip \
 	&& unzip -a phptars.zip && mv Tars-phptars Tars && rm -f /root/phptars.zip \
