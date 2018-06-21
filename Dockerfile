@@ -23,9 +23,9 @@ RUN yum -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.n
 	&& localedef -c -f UTF-8 -i zh_CN zh_CN.utf8 \
 	&& sed -i "s@;date.timezone =@date.timezone = ${TZ}@" /etc/php.ini \
 	&& sed -i "s@AllowOverride None@AllowOverride All@g" /etc/httpd/conf/httpd.conf \
-	# 获取最新TARS源码(phptars分支)
-	&& wget -c -t 0 https://github.com/Tencent/Tars/archive/phptars.zip -O phptars.zip \
-	&& unzip -a phptars.zip && mv Tars-phptars Tars && rm -f /root/phptars.zip \
+	# 获取最新TARS源码
+	&& wget -c -t 0 https://github.com/Tencent/Tars/archive/master.zip -O master.zip \
+	&& unzip -a master.zip && mv Tars-master Tars && rm -f /root/master.zip \
 	&& mkdir -p /usr/local/mysql && ln -s /usr/lib64/mysql /usr/local/mysql/lib && ln -s /usr/include/mysql /usr/local/mysql/include && echo "/usr/local/mysql/lib/" >> /etc/ld.so.conf && ldconfig \
 	&& cd /usr/local/mysql/lib/ && ln -s libmysqlclient.so.*.*.* libmysqlclient.a \
 	&& cd /root/Tars/cpp/thirdparty && wget -c -t 0 https://github.com/Tencent/rapidjson/archive/master.zip -O master.zip \
