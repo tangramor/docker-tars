@@ -28,7 +28,7 @@ RUN rpm -Uvh https://repo.mysql.com/mysql57-community-release-el7-11.noarch.rpm 
 	# 以下对源码配置进行mysql8对应的修改
 	&& sed -i '11s/rt/rt crypto ssl/' /root/Tars/cpp/framework/CMakeLists.txt && sed -i '20s/5.1.14/8.0.11/' /root/Tars/web/pom.xml \
 	&& sed -i '38 a\\t<jaxb-ap.version>2.3.0</jaxb-ap.version>' /root/Tars/web/pom.xml \
-	&& sed -i '290 a\\t<dependency>\n\t\t<groupId>javax.xml.bind</groupId>\n\t\t<artifactId>jaxb-api</artifactId>\n\t\t<version>${jaxb-ap.version}</version>\n\t</dependency>' /root/Tars/web/pom.xml \
+	&& sed -i '303 a\\t<dependency>\n\t\t<groupId>javax.xml.bind</groupId>\n\t\t<artifactId>jaxb-api</artifactId>\n\t\t<version>${jaxb-ap.version}</version>\n\t</dependency>' /root/Tars/web/pom.xml \
 	&& sed -i '25s/org.gjt.mm.mysql.Driver/com.mysql.cj.jdbc.Driver/' /root/Tars/web/src/main/resources/conf-spring/spring-context-datasource.xml \
 	&& sed -i '26s/convertToNull/CONVERT_TO_NULL/' /root/Tars/web/src/main/resources/conf-spring/spring-context-datasource.xml \
 	# 开始构建
