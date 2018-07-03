@@ -15,7 +15,7 @@ ENV DBTarsPass tars2015
 
 ##安装
 RUN rpm -Uvh https://repo.mysql.com/mysql57-community-release-el7-11.noarch.rpm \
-	&& yum --enablerepo=mysql80-community install -y git gcc gcc-c++ make wget cmake mysql mysql-devel unzip iproute which glibc-devel flex bison ncurses-devel zlib-devel kde-l10n-Chinese glibc-common \
+	&& yum --enablerepo=mysql80-community install -y git gcc gcc-c++ make wget cmake mysql mysql-devel unzip iproute which glibc-devel flex bison ncurses-devel protobuf-devel zlib-devel kde-l10n-Chinese glibc-common \
 	&& ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone \
 	&& localedef -c -f UTF-8 -i zh_CN zh_CN.utf8 \
 	&& wget -c -t 0 https://github.com/Tencent/Tars/archive/master.zip -O master.zip \
