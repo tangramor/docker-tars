@@ -64,7 +64,7 @@ RUN yum -y install https://repo.mysql.com/mysql57-community-release-el7-11.noarc
 	&& mkdir -p /root/phptars && cp -f /root/Tars/php/tars2php/src/tars2php.php /root/phptars \
 	# 获取并安装JDK
 	&& mkdir -p /root/init && cd /root/init/ \
-	&& wget -c -t 0 --header "Cookie: oraclelicense=accept" -c --no-check-certificate http://download.oracle.com/otn-pub/java/jdk/10.0.1+10/fb4372174a714e6b8c52526dc134031e/jdk-10.0.1_linux-x64_bin.rpm \
+	&& wget -c -t 0 --header "Cookie: oraclelicense=accept" -c --no-check-certificate http://download.oracle.com/otn-pub/java/jdk/10.0.2+13/19aef61b38124481863b1413dce1855f/jdk-10.0.2_linux-x64_bin.rpm \
 	&& rpm -ivh /root/init/jdk-10.0.1_linux-x64_bin.rpm && rm -rf /root/init/jdk-10.0.1_linux-x64_bin.rpm \
 	&& echo "export JAVA_HOME=/usr/java/jdk-10.0.1" >> /etc/profile \
 	&& echo "CLASSPATH=\$JAVA_HOME/lib/dt.jar:\$JAVA_HOME/lib/tools.jar" >> /etc/profile \
@@ -87,7 +87,7 @@ RUN yum -y install https://repo.mysql.com/mysql57-community-release-el7-11.noarc
 	&& cd /root/Tars/cpp/build/ && ./build.sh cleanall \
 	&& yum clean all && rm -rf /var/cache/yum
 
-ENV JAVA_HOME /usr/java/jdk-10.0.1
+ENV JAVA_HOME /usr/java/jdk-10.0.2
 
 ENV MAVEN_HOME /usr/local/apache-maven-3.5.3
 
