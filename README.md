@@ -64,12 +64,12 @@ docker镜像已经由docker hub自动构建：https://hub.docker.com/r/tangramor
 docker pull tangramor/docker-tars
 ```
 
-tag 为 **php7** 的镜像使用了 TARS 的 **[phptars](https://github.com/Tencent/Tars/tree/phptars)** 分支的代码，支持PHP服务端开发，包含了php7.2环境和phptars扩展，也添加了MySQL C++ connector以方便开发：
+tag 为 **php7** 的镜像支持PHP服务端开发，包含了php7.2环境和phptars扩展，也添加了MySQL C++ connector以方便开发：
 ```
 docker pull tangramor/docker-tars:php7
 ```
 
-tag 为 **php7mysql8** 的镜像使用了 TARS 的 **[phptars](https://github.com/Tencent/Tars/tree/phptars)** 分支的代码，支持PHP服务端开发，包含php7.2、JDK 10以及mysql8相关的支持修改（对TARS配置做了修改）：
+tag 为 **php7mysql8** 的镜像支持PHP服务端开发，包含php7.2、JDK 10以及mysql8相关的支持修改（对TARS配置做了修改）：
 ```
 docker pull tangramor/docker-tars:php7mysql8
 ```
@@ -79,7 +79,7 @@ tag 为 **minideb** 的镜像是使用名为 minideb 的精简版 debian 作为�
 docker pull tangramor/docker-tars:minideb
 ```
 
-tag 为 **php7deb** 的镜像是使用名为 minideb 的精简版 debian 作为基础镜像的版本，使用了 TARS 的 **[phptars](https://github.com/Tencent/Tars/tree/phptars)** 分支的代码，支持PHP服务端开发，包含了php7.2环境和phptars扩展：
+tag 为 **php7deb** 的镜像是使用名为 minideb 的精简版 debian 作为基础镜像的版本，支持PHP服务端开发，包含了php7.2环境和phptars扩展：
 ```
 docker pull tangramor/docker-tars:minideb
 ```
@@ -261,7 +261,7 @@ docker build -t tars-node -f Dockerfile .
     "repositories": {
       "tars": {
         "type": "composer",
-        "url": "https://raw.githubusercontent.com/Tencent/Tars/phptars/php/dist/tarsphp.json"
+        "url": "https://raw.githubusercontent.com/Tencent/Tars/master/php/dist/tarsphp.json"
       }
     }
   }
@@ -325,7 +325,7 @@ docker build -t tars-node -f Dockerfile .
   
   运行 `docker exec -it tars_mysql8 bash` 进入容器 **tars_mysql8**，`cd /data/web` 进入工作目录。
   
-  在 `tars` 目录下创建一个 `test.tars` 文件（参考[phptars分支例子](https://github.com/Tencent/Tars/blob/phptars/php/examples/tars-tcp-server/tars/example.tars)）：
+  在 `tars` 目录下创建一个 `test.tars` 文件（参考[phptars例子](https://github.com/Tencent/Tars/blob/master/php/examples/tars-tcp-server/tars/example.tars)）：
   
   ```
   module testtafserviceservant
@@ -432,11 +432,11 @@ docker build -t tars-node -f Dockerfile .
   进入 `src` 目录，我们开始服务端代码的实现。因为使用的是官方例子，所以这里直接将例子的实现代码拷贝过来：
   
   ```
-  wget https://github.com/Tencent/Tars/raw/phptars/php/examples/tars-tcp-server/src/composer.json
-  wget https://github.com/Tencent/Tars/raw/phptars/php/examples/tars-tcp-server/src/index.php
-  wget https://github.com/Tencent/Tars/raw/phptars/php/examples/tars-tcp-server/src/services.php
-  mkdir impl && cd impl && wget https://github.com/Tencent/Tars/raw/phptars/php/examples/tars-tcp-server/src/impl/PHPServerServantImpl.php && cd ..
-  mkdir conf && cd conf && wget https://github.com/Tencent/Tars/raw/phptars/php/examples/tars-tcp-server/src/conf/ENVConf.php && cd ..
+  wget https://github.com/Tencent/Tars/raw/master/php/examples/tars-tcp-server/src/composer.json
+  wget https://github.com/Tencent/Tars/raw/master/php/examples/tars-tcp-server/src/index.php
+  wget https://github.com/Tencent/Tars/raw/master/php/examples/tars-tcp-server/src/services.php
+  mkdir impl && cd impl && wget https://github.com/Tencent/Tars/raw/master/php/examples/tars-tcp-server/src/impl/PHPServerServantImpl.php && cd ..
+  mkdir conf && cd conf && wget https://github.com/Tencent/Tars/raw/master/php/examples/tars-tcp-server/src/conf/ENVConf.php && cd ..
   ```
   
   - conf: 业务需要的配置，这里只是给出一个demo，如果从平台下发配置，默认也会写入到这个文件夹中；
@@ -517,7 +517,7 @@ docker build -t tars-node -f Dockerfile .
     "repositories": {
       "tars": {
         "type": "composer",
-        "url": "https://raw.githubusercontent.com/Tencent/Tars/phptars/php/dist/tarsphp.json"
+        "url": "https://raw.githubusercontent.com/Tencent/Tars/master/php/dist/tarsphp.json"
       }
     }
   }
