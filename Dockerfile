@@ -20,9 +20,10 @@ RUN yum -y install https://repo.mysql.com/mysql57-community-release-el7-11.noarc
 	&& cp -Rf include/jdbc/* /usr/include/mysql/ && cp -Rf include/mysqlx/* /usr/include/mysql/ && cp -Rf lib64/* /usr/lib64/mysql/ \
 	&& cd /root && rm -rf mysql-connector* \
 	&& mkdir -p /usr/local/mysql && ln -s /usr/lib64/mysql /usr/local/mysql/lib && ln -s /usr/include/mysql /usr/local/mysql/include && echo "/usr/local/mysql/lib/" >> /etc/ld.so.conf && ldconfig \
-	&& cd /usr/local/mysql/lib/ && rm -f libmysqlclient.a && ln -s libmysqlclient.so.*.*.* libmysqlclient.a \
-	# 获取最新TARS源码
-	&& cd /root/ && git clone https://github.com/TarsCloud/Tars \
+	&& cd /usr/local/mysql/lib/ && rm -f libmysqlclient.a && ln -s libmysqlclient.so.*.*.* libmysqlclient.a
+
+# 获取最新TARS源码
+RUN cd /root/ && git clone https://github.com/TarsCloud/Tars \
 	&& cd /root/Tars/ && git submodule update --init --recursive framework \
 	&& git submodule update --init --recursive web \
 	&& git submodule update --init --recursive php \
