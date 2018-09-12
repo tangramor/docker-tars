@@ -64,6 +64,7 @@ RUN yum -y install https://repo.mysql.com/mysql57-community-release-el7-11.noarc
 	&& source ~/.bashrc && nvm install v8.11.3 \
 	&& cd /root/Tars/ && git submodule update --init --recursive web \
 	&& cp -Rf /root/Tars/web /usr/local/tarsweb && npm install -g pm2 --registry=https://registry.npm.taobao.org \
+	&& cd /usr/local/tarsweb/ && npm install --registry=https://registry.npm.taobao.org \
 	&& mkdir -p /root/sql && cp -rf /root/Tars/framework/sql/* /root/sql/ \
 	&& cd /root/Tars/framework/build/ && ./build.sh cleanall \
 	&& yum clean all && rm -rf /var/cache/yum
@@ -92,5 +93,5 @@ ENTRYPOINT [ "/sbin/pid1" ]
 CMD bash -c '/sbin/entrypoint.sh start'
 
 #Expose ports
-EXPOSE 8080
+EXPOSE 3000
 EXPOSE 80

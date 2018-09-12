@@ -127,6 +127,9 @@ build_web_mgr(){
 	sed -i "s/tars2015/${DBTarsPass}/g" `grep tars2015 -rl ./config/*`
 	sed -i "s/DEBUG/INFO/g" `grep DEBUG -rl ./config/*`
 
+	mysql -h${DBIP} -P${DBPort} -u${DBUser} -p${DBPassword} -e "create database db_tars_web"
+	mysql -h${DBIP} -P${DBPort} -u${DBUser} -p${DBPassword} db_tars_web < /usr/local/tarsweb/sql/db_tars_web.sql
+	
 	npm install --registry=https://registry.npm.taobao.org
 	npm run prd
 }
