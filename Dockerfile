@@ -80,8 +80,12 @@ COPY --from=builder /home/tarsproto /home/tarsproto
 COPY --from=builder /root/t*.tgz /root/
 COPY --from=builder /root/Tars/framework/sql /root/sql
 COPY --from=builder /root/phptars /root/phptars
+COPY --from=builder /usr/lib64/php/modules/phptars.so /usr/lib64/php/modules/phptars.so
 COPY --from=builder /usr/lib64/php/modules/swoole.so /usr/lib64/php/modules/swoole.so
+COPY --from=builder /etc/php.d/phptars.ini /etc/php.d/phptars.ini
 COPY --from=builder /etc/php.d/swoole.ini /etc/php.d/swoole.ini
+COPY --from=builder /usr/include/mysql /usr/include/mysql
+COPY --from=builder /usr/lib64/mysql /usr/lib64/mysql
 
 RUN yum -y install https://repo.mysql.com/mysql57-community-release-el7-11.noarch.rpm \
 	&& yum -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm \
@@ -90,11 +94,12 @@ RUN yum -y install https://repo.mysql.com/mysql57-community-release-el7-11.noarc
 	&& yum --enablerepo=mysql80-community -y install wget mysql unzip iproute which flex bison protobuf zlib kde-l10n-Chinese glibc-common boost php-cli php-mcrypt php-mbstring php-cli php-gd php-curl php-mysql php-zip php-fileinfo php-phpiredis php-seld-phar-utils tzdata \
 	&& ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone \
 	&& localedef -c -f UTF-8 -i zh_CN zh_CN.utf8 \
-	&& mkdir -p /usr/local/mysql && ln -s /usr/lib64/mysql /usr/local/mysql/lib && echo "/usr/local/mysql/lib/" >> /etc/ld.so.conf && ldconfig \
-	&& cd /usr/local/mysql/lib/ && ln -s libmysqlclient.so.*.*.* libmysqlclient.a \
+	&& mkdir -p /usr/local/mysql && ln -s /usr/lib64/mysql /usr/local/mysql/lib && ln -s /usr/include/mysql /usr/local/mysql/include && echo "/usr/local/mysql/lib/" >> /etc/ld.so.conf && ldconfig \
+	&& cd /usr/local/mysql/lib/ && rm -f libmysqlclient.a && ln -s libmysqlclient.so.*.*.* libmysqlclient.a \
 	&& wget -qO- https://raw.githubusercontent.com/creationix/nvm/v0.33.11/install.sh | bash \
 	&& source ~/.bashrc && nvm install v8.11.3 \
-	&& cd /usr/local/tarsweb/ && npm install -g pm2 --registry=https://registry.npm.taobao.org
+	&& cd /usr/local/tarsweb/ && npm install -g pm2 --registry=https://registry.npm.taobao.org \
+	&& yum clean all && rm -rf /var/cache/yum
 
 
 # 是否将Tars系统进程的data目录挂载到外部存储，缺省为false以支持windows下使用
