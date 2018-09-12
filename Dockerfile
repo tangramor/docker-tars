@@ -22,6 +22,9 @@ RUN yum install -y git gcc gcc-c++ make wget cmake mysql mysql-devel unzip iprou
 	&& cd /root/ && git clone https://github.com/TarsCloud/Tars \
 	&& cd /root/Tars/ && git submodule update --init --recursive framework \
 	&& mkdir -p /data && chmod u+x /root/Tars/framework/build/build.sh \
+	# 临时bug fix
+	&& sed -i 's/""/"" ""/g' /root/Tars/framework/tarscpp/servant/tup/CMakeLists.txt \
+	# 结束bug fix
 	&& cd /root/Tars/framework/build/ && ./build.sh all \
 	&& ./build.sh install \
 	&& cd /root/Tars/framework/build/ && make framework-tar \
