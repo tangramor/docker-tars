@@ -39,7 +39,7 @@ RUN yum -y install https://repo.mysql.com/mysql57-community-release-el7-11.noarc
 	&& sed -i 's/""/"" ""/g' /root/Tars/framework/tarscpp/servant/tup/CMakeLists.txt \
 	# 结束bug fix
 	# 以下对源码配置进行mysql8对应的修改
-	&& sed -i '32s/rt/rt crypto ssl/' /root/Tars/framework/CMakeLists.txt
+	&& sed -i '32s/rt/rt crypto ssl/' /root/Tars/framework/CMakeLists.txt \
 	# 开始构建
 	&& cd /root/Tars/framework/build/ && ./build.sh all \
 	&& ./build.sh install \
