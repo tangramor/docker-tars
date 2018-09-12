@@ -37,6 +37,7 @@ RUN yum install -y git gcc gcc-c++ make wget cmake mysql mysql-devel unzip iprou
 	&& source ~/.bashrc && nvm install v8.11.3 \
 	&& cd /root/Tars/ && git submodule update --init --recursive web \
 	&& cp -Rf /root/Tars/web /usr/local/tarsweb && npm install -g pm2 --registry=https://registry.npm.taobao.org \
+	&& cd /usr/local/tarsweb/ && npm install --registry=https://registry.npm.taobao.org \
 	&& cd /root/Tars/framework/build/ && ./build.sh cleanall \
 	&& yum clean all && rm -rf /var/cache/yum
 
@@ -63,4 +64,4 @@ ENTRYPOINT [ "/sbin/pid1" ]
 CMD bash -c '/sbin/entrypoint.sh start'
 
 #Expose ports
-EXPOSE 8080
+EXPOSE 3000
