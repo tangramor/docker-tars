@@ -61,12 +61,12 @@ The docker image is built automatically by docker hub: https://hub.docker.com/r/
 docker pull tangramor/docker-tars
 ```
 
-The image with **php7** tag uses source code of TARS **[phptars](https://github.com/Tencent/Tars/tree/phptars)** branch, which support PHP server development, and it includes php7.2 and phptars extension, as well with MySQL C++ connector for development:
+The image with **php7** tag supports PHP server development, and it includes php7.2 and phptars extension, as well with MySQL C++ connector for development:
 ```
 docker pull tangramor/docker-tars:php7
 ```
 
-The image with **php7mysql8** tag uses source code of TARS **[phptars](https://github.com/Tencent/Tars/tree/phptars)** branch, which support PHP server development, and it includes php7.2, JDK 10 and mysql8 related support:
+The image with **php7mysql8** tag supports PHP server development, and it includes php7.2, JDK 10 and mysql8 related support:
 ```
 docker pull tangramor/docker-tars:php7mysql8
 ```
@@ -76,7 +76,7 @@ The image with **minideb** tag is based on minideb which is "a small image based
 docker pull tangramor/docker-tars:minideb
 ```
 
-The image with **php7deb** tag is based on minideb, uses source code of TARS **[phptars](https://github.com/Tencent/Tars/tree/phptars)** branch, which support PHP server development, and it includes php7.2 and phptars extension, as well with MySQL C++ connector for development:
+The image with **php7deb** tag is based on minideb, supports PHP server development, and it includes php7.2 and phptars extension, as well with MySQL C++ connector for development:
 ```
 docker pull tangramor/docker-tars:php7deb
 ```
@@ -249,7 +249,7 @@ It should be easyer to do Tars related development with the docker image. My way
         "repositories": {
           "tars": {
             "type": "composer",
-            "url": "https://raw.githubusercontent.com/Tencent/Tars/phptars/php/dist/tarsphp.json"
+            "url": "https://raw.githubusercontent.com/Tencent/Tars/master/php/dist/tarsphp.json"
           }
         }
     }
@@ -311,7 +311,7 @@ It should be easyer to do Tars related development with the docker image. My way
     
     Run `docker exec -it tars_mysql8 bash` to enter container **tars_mysql8** and `cd /data/web`.
     
-    Create file `test.tars` under `tars` folder ( Refer: [phptars example](https://github.com/Tencent/Tars/blob/phptars/php/examples/tars-tcp-server/tars/example.tars) ):
+    Create file `test.tars` under `tars` folder ( Refer: [phptars example](https://github.com/Tencent/Tars/blob/master/php/examples/tars-tcp-server/tars/example.tars) ):
     
     ```
     module testtafserviceservant
@@ -418,11 +418,11 @@ It should be easyer to do Tars related development with the docker image. My way
     Enter `src` folder, we begin to implemente the server side logic. Because we are using the official example, here we copy the source code directly from example project:
     
     ```
-    wget https://github.com/Tencent/Tars/raw/phptars/php/examples/tars-tcp-server/src/composer.json
-    wget https://github.com/Tencent/Tars/raw/phptars/php/examples/tars-tcp-server/src/index.php
-    wget https://github.com/Tencent/Tars/raw/phptars/php/examples/tars-tcp-server/src/services.php
-    mkdir impl && cd impl && wget https://github.com/Tencent/Tars/raw/phptars/php/examples/tars-tcp-server/src/impl/PHPServerServantImpl.php && cd ..
-    mkdir conf && cd conf && wget https://github.com/Tencent/Tars/raw/phptars/php/examples/tars-tcp-server/src/conf/ENVConf.php && cd ..
+    wget https://github.com/Tencent/Tars/raw/master/php/examples/tars-tcp-server/src/composer.json
+    wget https://github.com/Tencent/Tars/raw/master/php/examples/tars-tcp-server/src/index.php
+    wget https://github.com/Tencent/Tars/raw/master/php/examples/tars-tcp-server/src/services.php
+    mkdir impl && cd impl && wget https://github.com/Tencent/Tars/raw/master/php/examples/tars-tcp-server/src/impl/PHPServerServantImpl.php && cd ..
+    mkdir conf && cd conf && wget https://github.com/Tencent/Tars/raw/master/php/examples/tars-tcp-server/src/conf/ENVConf.php && cd ..
     ```
     
     - conf: configurations for implementation, here we just give a demo. If you push config from Tars platform, the file will be written into this folder.
@@ -503,7 +503,7 @@ It should be easyer to do Tars related development with the docker image. My way
       "repositories": {
         "tars": {
           "type": "composer",
-          "url": "https://raw.githubusercontent.com/Tencent/Tars/phptars/php/dist/tarsphp.json"
+          "url": "https://raw.githubusercontent.com/Tencent/Tars/master/php/dist/tarsphp.json"
         }
       }
     }
