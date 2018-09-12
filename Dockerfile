@@ -1,17 +1,9 @@
-FROM centos
+FROM centos as builder
 
 WORKDIR /root/
 
 ##修改镜像时区 
 ENV TZ=Asia/Shanghai
-
-ENV DBIP 127.0.0.1
-ENV DBPort 3306
-ENV DBUser root
-ENV DBPassword password
-
-# Mysql里tars用户的密码，缺省为tars2015
-ENV DBTarsPass tars2015
 
 ##安装
 RUN yum install -y git gcc gcc-c++ make wget cmake mysql mysql-devel unzip iproute which glibc-devel flex bison ncurses-devel protobuf-devel zlib-devel kde-l10n-Chinese glibc-common \
@@ -19,8 +11,9 @@ RUN yum install -y git gcc gcc-c++ make wget cmake mysql mysql-devel unzip iprou
 	&& localedef -c -f UTF-8 -i zh_CN zh_CN.utf8 \
 	&& mkdir -p /usr/local/mysql && ln -s /usr/lib64/mysql /usr/local/mysql/lib && ln -s /usr/include/mysql /usr/local/mysql/include && echo "/usr/local/mysql/lib/" >> /etc/ld.so.conf && ldconfig \
 	&& cd /usr/local/mysql/lib/ && ln -s libmysqlclient.so.*.*.* libmysqlclient.a \
+	# 克隆项目代码
 	&& cd /root/ && git clone https://github.com/TarsCloud/Tars \
-	&& cd /root/Tars/ && git submodule update --init --recursive framework \
+	&& cd /root/Tars/ && git submodule update --init --recursive framework && git submodule update --init --recursive web \
 	&& mkdir -p /data && chmod u+x /root/Tars/framework/build/build.sh \
 	# 临时bug fix
 	&& sed -i 's/""/"" ""/g' /root/Tars/framework/tarscpp/servant/tup/CMakeLists.txt \
@@ -35,11 +28,43 @@ RUN yum install -y git gcc gcc-c++ make wget cmake mysql mysql-devel unzip iprou
 	&& mkdir -p /root/init && cd /root/init/ \
 	&& wget -qO- https://raw.githubusercontent.com/creationix/nvm/v0.33.11/install.sh | bash \
 	&& source ~/.bashrc && nvm install v8.11.3 \
-	&& cd /root/Tars/ && git submodule update --init --recursive web \
-	&& cp -Rf /root/Tars/web /usr/local/tarsweb && npm install -g pm2 --registry=https://registry.npm.taobao.org \
+	&& cp -Rf /root/Tars/web /usr/local/tarsweb \
 	&& cd /usr/local/tarsweb/ && npm install --registry=https://registry.npm.taobao.org \
 	&& cd /root/Tars/framework/build/ && ./build.sh cleanall \
 	&& yum clean all && rm -rf /var/cache/yum
+
+
+
+FROM centos
+
+WORKDIR /root/
+
+##修改镜像时区 
+ENV TZ=Asia/Shanghai
+
+COPY --from=builder /usr/local/app /usr/local/app
+COPY --from=builder /usr/local/tarsweb /usr/local/tarsweb
+COPY --from=builder /home/tarsproto /home/tarsproto
+COPY --from=builder /root/t*.tgz /root/
+COPY --from=builder /root/Tars/framework/sql /root/sql
+
+RUN yum install -y wget mysql unzip iproute which flex bison protobuf zlib kde-l10n-Chinese glibc-common \
+	&& ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone \
+	&& localedef -c -f UTF-8 -i zh_CN zh_CN.utf8 \
+	&& mkdir -p /usr/local/mysql && ln -s /usr/lib64/mysql /usr/local/mysql/lib && echo "/usr/local/mysql/lib/" >> /etc/ld.so.conf && ldconfig \
+	&& cd /usr/local/mysql/lib/ && ln -s libmysqlclient.so.*.*.* libmysqlclient.a \
+	&& wget -qO- https://raw.githubusercontent.com/creationix/nvm/v0.33.11/install.sh | bash \
+	&& source ~/.bashrc && nvm install v8.11.3 \
+	&& cd /usr/local/tarsweb/ && npm install -g pm2 --registry=https://registry.npm.taobao.org
+	
+ENV DBIP 127.0.0.1
+ENV DBPort 3306
+ENV DBUser root
+ENV DBPassword password
+
+# Mysql里tars用户的密码，缺省为tars2015
+ENV DBTarsPass tars2015
+
 
 # 是否将Tars系统进程的data目录挂载到外部存储，缺省为false以支持windows下使用
 ENV MOUNT_DATA false
