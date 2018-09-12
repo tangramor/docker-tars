@@ -116,23 +116,15 @@ install_base_services(){
 build_web_mgr(){
 	echo "web manager ...."
 	
-	##web管理系统配置修改后重新打war包
-	cd /usr/local/resin/webapps/
-	mkdir tars
-	cd tars
-	jar -xvf ../tars.war
-	
-	sed -i "s/db.tars.com/${DBIP}/g" `grep db.tars.com -rl ./WEB-INF/classes/app.config.properties`
-	sed -i "s/3306/${DBPort}/g" `grep 3306 -rl ./WEB-INF/classes/app.config.properties`
-	sed -i "s/registry1.tars.com/${MachineIp}/g" `grep registry1.tars.com -rl ./WEB-INF/classes/tars.conf`
-	sed -i "s/registry2.tars.com/${MachineIp}/g" `grep registry2.tars.com -rl ./WEB-INF/classes/tars.conf`
-	sed -i "s/DEBUG/INFO/g" `grep DEBUG -rl ./WEB-INF/classes/log4j.properties`
-	# 修改Mysql里tars用户密码
-	sed -i "s/tars2015/${DBTarsPass}/g" `grep tars2015 -rl ./WEB-INF/classes/app.config.properties`
-	
-	jar -uvf ../tars.war .
-	cd ..
-	rm -rf tars
+	cd /usr/local/tarsweb/
+	sed -i "s/registry.tars.com/${MachineIp}/g" `grep registry1.tars.com -rl ./config/*`
+	sed -i "s/db.tars.com/${DBIP}/g" `grep db.tars.com -rl ./config/*`
+	sed -i "s/3306/${DBPort}/g" `grep 3306 -rl ./config/*`
+	sed -i "s/tars2015/${DBTarsPass}/g" `grep tars2015 -rl ./config/*`
+	sed -i "s/DEBUG/INFO/g" `grep DEBUG -rl ./config/*`
+
+	npm install --registry=https://registry.npm.taobao.org
+	npm run prd
 }
 
 
