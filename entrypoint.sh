@@ -24,7 +24,7 @@ case ${1} in
 		redis-server /etc/redis.conf
 		rm -rf /var/run/httpd/*
 		httpd
-		exec /usr/local/resin/bin/resin.sh console
+		cd /usr/local/tarsweb/ && npm run prd
 		;;
 	*)
 		exec "$@"
