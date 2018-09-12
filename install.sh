@@ -16,20 +16,20 @@ build_cpp_framework(){
 	mysql -h${DBIP} -P${DBPort} -u${DBUser} -p${DBPassword} -e "GRANT ALL ON *.* TO 'tars'@'${MachineIp}' WITH GRANT OPTION;"
 	mysql -h${DBIP} -P${DBPort} -u${DBUser} -p${DBPassword} -e "flush privileges;"
 
-	sed -i "s/192.168.2.131/${MachineIp}/g" `grep 192.168.2.131 -rl /root/Tars/cpp/framework/sql/*`
-	sed -i "s/db.tars.com/${DBIP}/g" `grep db.tars.com -rl /root/Tars/cpp/framework/sql/*`
+	sed -i "s/192.168.2.131/${MachineIp}/g" `grep 192.168.2.131 -rl /root/Tars/framework/sql/*`
+	sed -i "s/db.tars.com/${DBIP}/g" `grep db.tars.com -rl /root/Tars/framework/sql/*`
 
-	cd /root/Tars/cpp/framework/sql/
+	cd /root/Tars/framework/sql/
 	sed -i "s/proot@appinside/h${DBIP} -P${DBPort} -u${DBUser} -p${DBPassword} /g" `grep proot@appinside -rl ./exec-sql.sh`
 	
-	chmod u+x /root/Tars/cpp/framework/sql/exec-sql.sh
+	chmod u+x /root/Tars/framework/sql/exec-sql.sh
 	
 	CHECK=$(mysqlshow --user=${DBUser} --password=${DBPassword} --host=${DBIP} --port=${DBPort} db_tars | grep -v Wildcard | grep -o db_tars)
 	if [ "$CHECK" = "db_tars" -a ${MOUNT_DATA} = true ];
 	then
 		echo "DB db_tars already exists" > /root/DB_Exists.lock
 	else
-		cd /root/Tars/cpp/framework/sql && ./exec-sql.sh
+		cd /root/Tars/framework/sql && ./exec-sql.sh
 	fi
 }
 
