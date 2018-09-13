@@ -1,41 +1,36 @@
-FROM centos
+FROM centos as builder
 
 WORKDIR /root/
 
-##修改镜像时区 
+##镜像时区 
 ENV TZ=Asia/Shanghai
-
-ENV DBIP 127.0.0.1
-ENV DBPort 3306
-ENV DBUser root
-ENV DBPassword password
-
-# Mysql里tars用户的密码，缺省为tars2015
-ENV DBTarsPass tars2015
 
 ##安装
 RUN yum -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm \
 	&& yum -y install http://rpms.remirepo.net/enterprise/remi-release-7.rpm \
 	&& yum -y install yum-utils && yum-config-manager --enable remi-php72 \
-	&& yum -y install git gcc gcc-c++ make wget cmake mysql mysql-devel unzip iproute which glibc-devel flex bison ncurses-devel protobuf-devel zlib-devel kde-l10n-Chinese glibc-common hiredis-devel rapidjson-devel boost boost-devel redis php php-cli php-devel php-mcrypt php-gd php-curl php-mysql php-zip php-fileinfo php-phpiredis \
-	&& yum -y install https://dev.mysql.com/get/Downloads/Connector-C++/mysql-connector-c++-1.1.9-linux-el7-x86-64bit.rpm \
+	&& yum -y install git gcc gcc-c++ make wget cmake mysql mysql-devel unzip iproute which glibc-devel flex bison ncurses-devel protobuf-devel zlib-devel kde-l10n-Chinese glibc-common hiredis-devel rapidjson-devel boost boost-devel php php-cli php-devel php-mcrypt php-cli php-gd php-curl php-mysql php-zip php-fileinfo php-phpiredis php-seld-phar-utils tzdata \
+	# 设置时区与编码
 	&& ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone \
 	&& localedef -c -f UTF-8 -i zh_CN zh_CN.utf8 \
-	&& sed -i "s@;date.timezone =@date.timezone = ${TZ}@" /etc/php.ini \
-	&& sed -i "s@AllowOverride None@AllowOverride All@g" /etc/httpd/conf/httpd.conf \
-	# 获取最新TARS源码
-	&& wget -c -t 0 https://github.com/TarsCloud/Tars/archive/master.zip -O master.zip \
-	&& unzip -a master.zip && mv Tars-master Tars && rm -f /root/master.zip \
 	&& mkdir -p /usr/local/mysql && ln -s /usr/lib64/mysql /usr/local/mysql/lib && ln -s /usr/include/mysql /usr/local/mysql/include && echo "/usr/local/mysql/lib/" >> /etc/ld.so.conf && ldconfig \
-	&& cd /usr/local/mysql/lib/ && ln -s libmysqlclient.so.*.*.* libmysqlclient.a \
-	&& cd /root/Tars/cpp/thirdparty && wget -c -t 0 https://github.com/Tencent/rapidjson/archive/master.zip -O master.zip \
-	&& unzip -a master.zip && mv rapidjson-master rapidjson && rm -f master.zip \
-	&& mkdir -p /data && chmod u+x /root/Tars/cpp/build/build.sh \
-	&& cd /root/Tars/cpp/build/ && ./build.sh all \
+	&& cd /usr/local/mysql/lib/ && rm -f libmysqlclient.a && ln -s libmysqlclient.so.*.*.* libmysqlclient.a
+
+# 获取最新TARS源码
+RUN cd /root/ && git clone https://github.com/TarsCloud/Tars \
+	&& cd /root/Tars/ && git submodule update --init --recursive framework \
+	&& git submodule update --init --recursive web \
+	&& git submodule update --init --recursive php \
+	&& mkdir -p /data && chmod u+x /root/Tars/framework/build/build.sh \
+	# 临时bug fix
+	&& sed -i 's/""/"" ""/g' /root/Tars/framework/tarscpp/servant/tup/CMakeLists.txt \
+	# 结束bug fix
+	# 开始构建
+	&& cd /root/Tars/framework/build/ && ./build.sh all \
 	&& ./build.sh install \
-	&& cd /root/Tars/cpp/build/ && make framework-tar \
+	&& cd /root/Tars/framework/build/ && make framework-tar \
 	&& make tarsstat-tar && make tarsnotify-tar && make tarsproperty-tar && make tarslog-tar && make tarsquerystat-tar && make tarsqueryproperty-tar \
-	&& mkdir -p /usr/local/app/tars/ && cp /root/Tars/cpp/build/framework.tgz /usr/local/app/tars/ && cp /root/Tars/cpp/build/t*.tgz /root/ \
+	&& mkdir -p /usr/local/app/tars/ && cp /root/Tars/framework/build/framework.tgz /usr/local/app/tars/ && cp /root/Tars/framework/build/t*.tgz /root/ \
 	&& cd /usr/local/app/tars/ && tar xzfv framework.tgz && rm -rf framework.tgz \
 	&& mkdir -p /usr/local/app/patchs/tars.upload \
 	&& cd /tmp && curl -fsSL https://getcomposer.org/installer | php \
@@ -49,33 +44,56 @@ RUN yum -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.n
 	&& echo "extension=swoole.so" > /etc/php.d/swoole.ini \
 	&& cd /root && rm -rf v2.2.0.tar.gz swoole-src-2.2.0 \
 	&& mkdir -p /root/phptars && cp -f /root/Tars/php/tars2php/src/tars2php.php /root/phptars \
-	&& mkdir -p /root/init && cd /root/init/ \
-	&& wget -c -t 0 --header "Cookie: oraclelicense=accept" -c --no-check-certificate http://download.oracle.com/otn-pub/java/jdk/8u131-b11/d54c1d3a095b4ff2b6607d096fa80163/jdk-8u131-linux-x64.rpm \
-	&& rpm -ivh /root/init/jdk-8u131-linux-x64.rpm && rm -rf /root/init/jdk-8u131-linux-x64.rpm \
-	&& echo "export JAVA_HOME=/usr/java/jdk1.8.0_131" >> /etc/profile \
-	&& echo "CLASSPATH=\$JAVA_HOME/lib/dt.jar:\$JAVA_HOME/lib/tools.jar" >> /etc/profile \
-	&& echo "PATH=\$JAVA_HOME/bin:\$PATH" >> /etc/profile \
-	&& echo "export PATH JAVA_HOME CLASSPATH" >> /etc/profile \
-	&& cd /usr/local/ && wget -c -t 0 http://mirror.bit.edu.cn/apache/maven/maven-3/3.5.4/binaries/apache-maven-3.5.4-bin.tar.gz \
-	&& tar zxvf apache-maven-3.5.4-bin.tar.gz && echo "export MAVEN_HOME=/usr/local/apache-maven-3.5.4/" >> /etc/profile \
-	# 设置阿里云maven镜像
-	#&& sed -i '/<mirrors>/a\\t<mirror>\n\t\t<id>nexus-aliyun<\/id>\n\t\t<mirrorOf>*<\/mirrorOf>\n\t\t<name>Nexus aliyun<\/name>\n\t\t<url>http:\/\/maven.aliyun.com\/nexus\/content\/groups\/public<\/url>\n\t<\/mirror>' /usr/local/apache-maven-3.5.4/conf/settings.xml \
-	&& echo "export PATH=\$PATH:\$MAVEN_HOME/bin" >> /etc/profile && source /etc/profile && mvn -v \
-	&& rm -rf apache-maven-3.5.4-bin.tar.gz  \
-	&& cd /usr/local/ && wget -c -t 0 http://caucho.com/download/resin-4.0.56.tar.gz && tar zxvf resin-4.0.56.tar.gz && mv resin-4.0.56 resin && rm -rf resin-4.0.56.tar.gz \
-	&& source /etc/profile && cd /root/Tars/java && mvn clean install && mvn clean install -f core/client.pom.xml && mvn clean install -f core/server.pom.xml \
-	&& cd /root/Tars/web/ && source /etc/profile && mvn clean package \
-	&& cp /root/Tars/build/conf/resin.xml /usr/local/resin/conf/ \
-	&& sed -i 's/servlet-class="com.caucho.servlets.FileServlet"\/>/servlet-class="com.caucho.servlets.FileServlet">\n\t<init>\n\t\t<character-encoding>utf-8<\/character-encoding>\n\t<\/init>\n<\/servlet>/g' /usr/local/resin/conf/app-default.xml \
-	&& sed -i 's/<page-cache-max>1024<\/page-cache-max>/<page-cache-max>1024<\/page-cache-max>\n\t\t<character-encoding>utf-8<\/character-encoding>/g' /usr/local/resin/conf/app-default.xml \
-	&& cp /root/Tars/web/target/tars.war /usr/local/resin/webapps/ \
-	&& mkdir -p /root/sql && cp -rf /root/Tars/cpp/framework/sql/* /root/sql/ \
-	&& cd /root/Tars/cpp/build/ && ./build.sh cleanall \
+	# 获取并安装nodejs
+	&& wget -qO- https://raw.githubusercontent.com/creationix/nvm/v0.33.11/install.sh | bash \
+	&& source ~/.bashrc && nvm install v8.11.3 \
+	&& cp -Rf /root/Tars/web /usr/local/tarsweb && npm install -g pm2 --registry=https://registry.npm.taobao.org \
+	&& cd /usr/local/tarsweb/ && npm install --registry=https://registry.npm.taobao.org \
+	&& mkdir -p /root/sql && cp -rf /root/Tars/framework/sql/* /root/sql/ \
+	&& cd /root/Tars/framework/build/ && ./build.sh cleanall \
 	&& yum clean all && rm -rf /var/cache/yum
 
-ENV JAVA_HOME /usr/java/jdk1.8.0_131
 
-ENV MAVEN_HOME /usr/local/apache-maven-3.5.4
+FROM centos
+
+##镜像时区 
+ENV TZ=Asia/Shanghai
+
+ENV DBIP 127.0.0.1
+ENV DBPort 3306
+ENV DBUser root
+ENV DBPassword password
+
+# Mysql里tars用户的密码，缺省为tars2015
+ENV DBTarsPass tars2015
+
+COPY --from=builder /usr/local/app /usr/local/app
+COPY --from=builder /usr/local/tarsweb /usr/local/tarsweb
+COPY --from=builder /home/tarsproto /home/tarsproto
+COPY --from=builder /root/t*.tgz /root/
+COPY --from=builder /root/Tars/framework/sql /root/sql
+COPY --from=builder /root/phptars /root/phptars
+COPY --from=builder /usr/lib64/php/modules/phptars.so /usr/lib64/php/modules/phptars.so
+COPY --from=builder /usr/lib64/php/modules/swoole.so /usr/lib64/php/modules/swoole.so
+COPY --from=builder /etc/php.d/phptars.ini /etc/php.d/phptars.ini
+COPY --from=builder /etc/php.d/swoole.ini /etc/php.d/swoole.ini
+COPY --from=builder /usr/include/mysql /usr/include/mysql
+COPY --from=builder /usr/lib64/mysql /usr/lib64/mysql
+
+RUN yum -y install https://repo.mysql.com/mysql57-community-release-el7-11.noarch.rpm \
+	&& yum -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm \
+	&& yum -y install http://rpms.remirepo.net/enterprise/remi-release-7.rpm \
+	&& yum -y install yum-utils && yum-config-manager --enable remi-php72 \
+	&& yum --enablerepo=mysql80-community -y install wget mysql unzip iproute which flex bison protobuf zlib kde-l10n-Chinese glibc-common boost php-cli php-mcrypt php-mbstring php-cli php-gd php-curl php-mysql php-zip php-fileinfo php-phpiredis php-seld-phar-utils tzdata \
+	&& ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone \
+	&& localedef -c -f UTF-8 -i zh_CN zh_CN.utf8 \
+	&& mkdir -p /usr/local/mysql && ln -s /usr/lib64/mysql /usr/local/mysql/lib && ln -s /usr/include/mysql /usr/local/mysql/include && echo "/usr/local/mysql/lib/" >> /etc/ld.so.conf && ldconfig \
+	&& cd /usr/local/mysql/lib/ && rm -f libmysqlclient.a && ln -s libmysqlclient.so.*.*.* libmysqlclient.a \
+	&& wget -qO- https://raw.githubusercontent.com/creationix/nvm/v0.33.11/install.sh | bash \
+	&& source ~/.bashrc && nvm install v8.11.3 \
+	&& cd /usr/local/tarsweb/ && npm install -g pm2 --registry=https://registry.npm.taobao.org \
+	&& yum clean all && rm -rf /var/cache/yum
+
 
 # 是否将Tars系统进程的data目录挂载到外部存储，缺省为false以支持windows下使用
 ENV MOUNT_DATA false
@@ -97,8 +115,9 @@ ADD confs /root/confs
 ADD pid1-0.1.0-amd64 /sbin/pid1
 RUN chmod 755 /sbin/pid1 /sbin/entrypoint.sh
 ENTRYPOINT [ "/sbin/pid1" ]
+
 CMD bash -c '/sbin/entrypoint.sh start'
 
 #Expose ports
-EXPOSE 8080
+EXPOSE 3000
 EXPOSE 80
