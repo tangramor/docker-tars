@@ -102,6 +102,8 @@ RUN yum -y install https://repo.mysql.com/mysql57-community-release-el7-11.noarc
 	&& cd /usr/local/tarsweb/ && npm install -g pm2 --registry=https://registry.npm.taobao.org \
 	&& yum clean all && rm -rf /var/cache/yum
 
+# 是否将开启Tars的Web管理界面登录功能，预留，目前没用
+ENV ENABLE_LOGIN false
 
 # 是否将Tars系统进程的data目录挂载到外部存储，缺省为false以支持windows下使用
 ENV MOUNT_DATA false

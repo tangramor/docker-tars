@@ -123,13 +123,27 @@ install_base_services(){
 
 build_web_mgr(){
 	echo "web manager ...."
+
+	mkdir -p /data/logs
+	rm -rf /root/.pm2
+	mkdir -p /root/.pm2
+	ln -s /data/logs /root/.pm2/logs
 	
 	cd /usr/local/tarsweb/
-	sed -i "s/registry.tars.com/${MachineIp}/g" `grep registry1.tars.com -rl ./config/*`
+	sed -i "s/registry.tars.com/${MachineIp}/g" `grep registry.tars.com -rl ./config/*`
 	sed -i "s/db.tars.com/${DBIP}/g" `grep db.tars.com -rl ./config/*`
 	sed -i "s/3306/${DBPort}/g" `grep 3306 -rl ./config/*`
 	sed -i "s/tars2015/${DBTarsPass}/g" `grep tars2015 -rl ./config/*`
 	sed -i "s/DEBUG/INFO/g" `grep DEBUG -rl ./config/*`
+
+	if [ ${ENABLE_LOGIN} = true ];
+	then
+		echo "Enable Login"
+		sed -i "s/enableLogin: false/enableLogin: true/g" ./config/loginConf.js
+		sed -i "s/\/\/ let loginConf/let loginConf/g" ./app.js
+		sed -i "s/\/\/ loginConf.ignore/loginConf.ignore/g" ./app.js
+		sed -i "s/\/\/ app.use(loginMidware/app.use(loginMidware/g" ./app.js
+	fi
 
 	mysql -h${DBIP} -P${DBPort} -u${DBUser} -p${DBPassword} -e "create database db_tars_web"
 	mysql -h${DBIP} -P${DBPort} -u${DBUser} -p${DBPassword} db_tars_web < /usr/local/tarsweb/sql/db_tars_web.sql
