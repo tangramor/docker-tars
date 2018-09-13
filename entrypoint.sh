@@ -21,10 +21,6 @@ case ${1} in
 		source /etc/profile
 		source ~/.bashrc
 		cd /usr/local/app/tars && ./tars_install.sh
-		rm -f /var/run/redis_6379.pid
-		redis-server /etc/redis.conf
-		rm -rf /var/run/httpd/*
-		httpd
 		cd /usr/local/tarsweb/ && npm run prd
 		tail -f /dev/null
 		;;
