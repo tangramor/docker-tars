@@ -12,20 +12,25 @@ build_cpp_framework(){
 	mysql -h${DBIP} -P${DBPort} -u${DBUser} -p${DBPassword} -e "grant all on *.* to 'tars'@'${MachineIp}' identified by '${DBTarsPass}' with grant option;"
 	mysql -h${DBIP} -P${DBPort} -u${DBUser} -p${DBPassword} -e "flush privileges;"
 
-	sed -i "s/192.168.2.131/${MachineIp}/g" `grep 192.168.2.131 -rl /root/Tars/cpp/framework/sql/*`
-	sed -i "s/db.tars.com/${DBIP}/g" `grep db.tars.com -rl /root/Tars/cpp/framework/sql/*`
+	sed -i "s/192.168.2.131/${MachineIp}/g" `grep 192.168.2.131 -rl /root/sql/*`
+	sed -i "s/10.120.129.226/${MachineIp}/g" `grep 10.120.129.226 -rl /root/sql/*`
+	sed -i "s/db.tars.com/${DBIP}/g" `grep db.tars.com -rl /root/sql/*`
 
-	cd /root/Tars/cpp/framework/sql/
+	cd /root/sql/
 	sed -i "s/proot@appinside/h${DBIP} -P${DBPort} -u${DBUser} -p${DBPassword} /g" `grep proot@appinside -rl ./exec-sql.sh`
 	
-	chmod u+x /root/Tars/cpp/framework/sql/exec-sql.sh
+	chmod u+x /root/sql/exec-sql.sh
 	
 	CHECK=$(mysqlshow --user=${DBUser} --password=${DBPassword} --host=${DBIP} --port=${DBPort} db_tars | grep -v Wildcard | grep -o db_tars)
 	if [ "$CHECK" = "db_tars" -a ${MOUNT_DATA} = true ];
 	then
 		echo "DB db_tars already exists" > /root/DB_Exists.lock
 	else
-		/root/Tars/cpp/framework/sql/exec-sql.sh
+		/root/sql/exec-sql.sh
+
+		mysql -h${DBIP} -P${DBPort} -u${DBUser} -p${DBPassword} db_tars < /root/sql/tarsconfig.sql
+		mysql -h${DBIP} -P${DBPort} -u${DBUser} -p${DBPassword} db_tars < /root/sql/tarsnotify.sql
+		mysql -h${DBIP} -P${DBPort} -u${DBUser} -p${DBPassword} db_tars < /root/sql/tarspatch.sql
 	fi
 }
 
@@ -46,18 +51,18 @@ install_base_services(){
 	fi
 
 	# 安装 tarsnotify、tarsstat、tarsproperty、tarslog、tarsquerystat、tarsqueryproperty
-	rm -rf /usr/local/app/tars/tarsnode/data/tars.tarsnotify && mkdir -p /usr/local/app/tars/tarsnode/data/tars.tarsnotify/bin && mkdir -p /usr/local/app/tars/tarsnode/data/tars.tarsnotify/conf && mkdir -p /usr/local/app/tars/tarsnode/data/tars.tarsnotify/data
+	rm -rf /usr/local/app/tars/tarsnotify && mkdir -p /usr/local/app/tars/tarsnotify/bin && mkdir -p /usr/local/app/tars/tarsnotify/conf && mkdir -p /usr/local/app/tars/tarsnotify/data
 	rm -rf /usr/local/app/tars/tarsnode/data/tars.tarsstat && mkdir -p /usr/local/app/tars/tarsnode/data/tars.tarsstat/bin && mkdir -p /usr/local/app/tars/tarsnode/data/tars.tarsstat/conf && mkdir -p /usr/local/app/tars/tarsnode/data/tars.tarsstat/data
 	rm -rf /usr/local/app/tars/tarsnode/data/tars.tarsproperty && mkdir -p /usr/local/app/tars/tarsnode/data/tars.tarsproperty/bin && mkdir -p /usr/local/app/tars/tarsnode/data/tars.tarsproperty/conf && mkdir -p /usr/local/app/tars/tarsnode/data/tars.tarsproperty/data
 	rm -rf /usr/local/app/tars/tarsnode/data/tars.tarslog && mkdir -p /usr/local/app/tars/tarsnode/data/tars.tarslog/bin && mkdir -p /usr/local/app/tars/tarsnode/data/tars.tarslog/conf && mkdir -p /usr/local/app/tars/tarsnode/data/tars.tarslog/data
 	rm -rf /usr/local/app/tars/tarsnode/data/tars.tarsquerystat && mkdir -p /usr/local/app/tars/tarsnode/data/tars.tarsquerystat/bin && mkdir -p /usr/local/app/tars/tarsnode/data/tars.tarsquerystat/conf && mkdir -p /usr/local/app/tars/tarsnode/data/tars.tarsquerystat/data
 	rm -rf /usr/local/app/tars/tarsnode/data/tars.tarsqueryproperty && mkdir -p /usr/local/app/tars/tarsnode/data/tars.tarsqueryproperty/bin && mkdir -p /usr/local/app/tars/tarsnode/data/tars.tarsqueryproperty/conf && mkdir -p /usr/local/app/tars/tarsnode/data/tars.tarsqueryproperty/data
 
-	cd /data/ && tar zxf tarsnotify.tgz && mv /data/tarsnotify/tarsnotify /usr/local/app/tars/tarsnode/data/tars.tarsnotify/bin/ && rm -rf /data/tarsnotify
-	echo '#!/bin/sh' > /usr/local/app/tars/tarsnode/data/tars.tarsnotify/bin/tars_start.sh
-	echo 'export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/app/tars/tarsnode/data/tars.tarsnotify/bin/:/usr/local/app/tars/tarsnode/data/lib/' >> /usr/local/app/tars/tarsnode/data/tars.tarsnotify/bin/tars_start.sh
-	echo '/usr/local/app/tars/tarsnode/data/tars.tarsnotify/bin/tarsnotify --config=/usr/local/app/tars/tarsnode/data/tars.tarsnotify/conf/tars.tarsnotify.config.conf  &' >> /usr/local/app/tars/tarsnode/data/tars.tarsnotify/bin/tars_start.sh
-	cp /root/confs/tars.tarsnotify.config.conf /usr/local/app/tars/tarsnode/data/tars.tarsnotify/conf/
+	cd /data/ && tar zxf tarsnotify.tgz && mv /data/tarsnotify/tarsnotify /usr/local/app/tars/tarsnotify/bin/ && rm -rf /data/tarsnotify
+	echo '#!/bin/sh' > /usr/local/app/tars/tarsnotify/bin/tars_start.sh
+	echo 'export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/app/tars/tarsnotify/bin/:/usr/local/app/tars/tarsnode/data/lib/' >> /usr/local/app/tars/tarsnotify/bin/tars_start.sh
+	echo '/usr/local/app/tars/tarsnotify/bin/tarsnotify --config=/usr/local/app/tars/tarsnotify/conf/tars.tarsnotify.config.conf  &' >> /usr/local/app/tars/tarsnotify/bin/tars_start.sh
+	cp /root/confs/tars.tarsnotify.config.conf /usr/local/app/tars/tarsnotify/conf/
 
 	cd /data/ && tar zxf tarsstat.tgz && mv /data/tarsstat/tarsstat /usr/local/app/tars/tarsnode/data/tars.tarsstat/bin/ && rm -rf /data/tarsstat
 	echo '#!/bin/sh' > /usr/local/app/tars/tarsnode/data/tars.tarsstat/bin/tars_start.sh
@@ -116,37 +121,17 @@ install_base_services(){
 build_web_mgr(){
 	echo "web manager ...."
 	
-	##web管理系统配置修改后重新打war包
-	cd /usr/local/resin/webapps/
-	mkdir tars
-	cd tars
-	jar -xvf ../tars.war
-	
-	sed -i "s/db.tars.com/${DBIP}/g" `grep db.tars.com -rl ./WEB-INF/classes/app.config.properties`
-	sed -i "s/3306/${DBPort}/g" `grep 3306 -rl ./WEB-INF/classes/app.config.properties`
-	sed -i "s/registry1.tars.com/${MachineIp}/g" `grep registry1.tars.com -rl ./WEB-INF/classes/tars.conf`
-	sed -i "s/registry2.tars.com/${MachineIp}/g" `grep registry2.tars.com -rl ./WEB-INF/classes/tars.conf`
-	sed -i "s/DEBUG/INFO/g" `grep DEBUG -rl ./WEB-INF/classes/log4j.properties`
-	# 修改Mysql里tars用户密码
-	sed -i "s/tars2015/${DBTarsPass}/g" `grep tars2015 -rl ./WEB-INF/classes/app.config.properties`
-	
-	jar -uvf ../tars.war .
-	cd ..
-	rm -rf tars
-}
+	cd /usr/local/tarsweb/
+	sed -i "s/registry.tars.com/${MachineIp}/g" `grep registry1.tars.com -rl ./config/*`
+	sed -i "s/db.tars.com/${DBIP}/g" `grep db.tars.com -rl ./config/*`
+	sed -i "s/3306/${DBPort}/g" `grep 3306 -rl ./config/*`
+	sed -i "s/tars2015/${DBTarsPass}/g" `grep tars2015 -rl ./config/*`
+	sed -i "s/DEBUG/INFO/g" `grep DEBUG -rl ./config/*`
 
-start_redis() {
-	sed -i "s/daemonize no/daemonize yes/g" /etc/redis.conf
-	redis-server /etc/redis.conf
-}
-
-start_apache() {
-	mkdir /data/web
-	echo "<?php phpinfo(); ?>" > /data/web/phpinfo.php
-	rm -rf /var/www/html
-	rm -f /etc/httpd/conf.d/welcome.conf
-	ln -s /data/web /var/www/html
-	httpd
+	mysql -h${DBIP} -P${DBPort} -u${DBUser} -p${DBPassword} -e "create database db_tars_web"
+	mysql -h${DBIP} -P${DBPort} -u${DBUser} -p${DBPassword} db_tars_web < /usr/local/tarsweb/sql/db_tars_web.sql
+	
+	npm run prd
 }
 
 build_cpp_framework
@@ -154,7 +139,3 @@ build_cpp_framework
 install_base_services
 
 build_web_mgr
-
-start_redis
-
-start_apache
