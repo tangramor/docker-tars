@@ -19,7 +19,6 @@ TOC
 * [Build Images](#build-images)
 * [Use The Image for Development](#use-the-image-for-development)
    * [For Example:](#for-example)
-* [Trouble Shooting](#trouble-shooting)
 * [Thanks](#thanks)
 
 
@@ -56,34 +55,19 @@ You can also use a customized my.cnf to add those options.
 
 Image
 ------
-The docker image is built automatically by docker hub: https://hub.docker.com/r/tangramor/docker-tars/ . You can pull it by following command:
+The docker image is built automatically by docker hub: https://hub.docker.com/r/tarscloud/tars/ or https://hub.docker.com/r/tangramor/docker-tars/ . You can pull it by following command:
 ```
-docker pull tangramor/docker-tars
-```
-
-The image with **php7** tag supports PHP server development, and it includes php7.2 and phptars extension, as well with MySQL C++ connector for development:
-```
-docker pull tangramor/docker-tars:php7
+docker pull tarscloud/tars
 ```
 
-The image with **php7mysql8** tag supports PHP server development, and it includes php7.2, JDK 10 and mysql8 related support:
+The image with **php7** tag supports PHP server development, and it includes php7.2 and phptars extension:
 ```
-docker pull tangramor/docker-tars:php7mysql8
-```
-
-The image with **minideb** tag is based on minideb which is "a small image based on Debian designed for use in containers":
-```
-docker pull tangramor/docker-tars:minideb
+docker pull tarscloud/tars:php7
 ```
 
-The image with **php7deb** tag is based on minideb, supports PHP server development, and it includes php7.2 and phptars extension, as well with MySQL C++ connector for development:
+The image with **php7mysql8** tag supports PHP server development, and it includes php7.2 and mysql8 related support:
 ```
-docker pull tangramor/docker-tars:php7deb
-```
-
-The image **tars-master** removed Tars source code from the docker-tars image, has same tags as **docker-tars**:
-```
-docker pull tangramor/tars-master
+docker pull tarscloud/tars:php7mysql8
 ```
 
 The image **tars-node** has only tarsnode service deployed, and does not have Tars source code either:
@@ -133,17 +117,7 @@ Build Images
 -------------
 Build command: `docker build -t tars .`
 
-Build command for tars-master: `docker build -t tars-master -f tars-master/Dockerfile .`
-
 Build command for tars-node: `docker build -t tars-node -f tars-node/Dockerfile .`
-
-To build image of [tars-master](https://github.com/tangramor/tars-master) , you need to checkout tars-master and run docker build command:
-
-```
-git clone https://github.com/tangramor/tars-master.git
-cd tars-master
-docker build -t tars-master -f Dockerfile .
-```
 
 
 To build image of [tars-node](https://github.com/tangramor/tars-node) , you need to checkout tars-node and run docker build command:
@@ -166,12 +140,6 @@ It should be easyer to do Tars related development with the docker image. My way
 **[TARS PHP TCP Server & Client Development](https://github.com/tangramor/docker-tars/wiki/TARS-PHP-TCP-Server-&-Client-Development)**
 
 **[TARS PHP HTTP Server & Client Development](https://github.com/tangramor/docker-tars/wiki/TARS-PHP-HTTP-Server-&-Client-Development)**
-
-
-
-Trouble Shooting
-----------------
-Once you started up the container, you can enter it by command `docker exec -it tars bash` and then you can execute linux commands to check the status. If you see _log4j.log file under `/c/Users/<ACCOUNT>/tars_data/log/tars`, that means resin is up to work and the installation is done.
 
 
 

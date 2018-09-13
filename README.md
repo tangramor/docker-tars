@@ -19,7 +19,6 @@
 * [自己构建镜像](#自己构建镜像)
 * [开发方式](#开发方式)
   * [举例说明：](#举例说明)
-* [Trouble Shooting](#trouble-shooting)
 * [感谢](#感谢)
 
 
@@ -59,44 +58,29 @@ docker run --name mysql -e MYSQL_ROOT_PASSWORD=password -d -p 3306:3306 -v /c/Us
 镜像
 ----
 
-docker镜像已经由docker hub自动构建：https://hub.docker.com/r/tangramor/docker-tars/ ，使用下面命令即可获取：
+docker镜像已经由docker hub自动构建：https://hub.docker.com/r/tarscloud/tars/ 或 https://hub.docker.com/r/tangramor/docker-tars/ ，使用下面命令即可获取：
 ```
-docker pull tangramor/docker-tars
-```
-
-tag 为 **php7** 的镜像支持PHP服务端开发，包含了php7.2环境和phptars扩展，也添加了MySQL C++ connector以方便开发：
-```
-docker pull tangramor/docker-tars:php7
+docker pull tarscloud/tars
 ```
 
-tag 为 **php7mysql8** 的镜像支持PHP服务端开发，包含php7.2、JDK 10以及mysql8相关的支持修改（对TARS配置做了修改）：
+tag 为 **php7** 的镜像支持PHP服务端开发，包含了php7.2环境和phptars扩展：
 ```
-docker pull tangramor/docker-tars:php7mysql8
-```
-
-tag 为 **minideb** 的镜像是使用名为 minideb 的精简版 debian 作为基础镜像的版本：
-```
-docker pull tangramor/docker-tars:minideb
+docker pull tarscloud/tars:php7
 ```
 
-tag 为 **php7deb** 的镜像是使用名为 minideb 的精简版 debian 作为基础镜像的版本，支持PHP服务端开发，包含了php7.2环境和phptars扩展：
+tag 为 **php7mysql8** 的镜像支持PHP服务端开发，包含php7.2以及mysql8相关的支持修改：
 ```
-docker pull tangramor/docker-tars:minideb
-```
-
-**tars-master** 之下是在镜像中删除了Tars源码的脚本，有跟 **docker-tars** 一致的tag，使用下面命令即可获取：
-```
-docker pull tangramor/tars-master
+docker pull tarscloud/tars:php7mysql8
 ```
 
-**tars-node** 之下是只部署 tarsnode 服务的节点镜像脚本，也删除了Tars源码，使用下面命令即可获取：
+**tars-node** 之下是只部署 tarsnode 服务的节点镜像脚本，使用下面命令即可获取：
 ```
 docker pull tangramor/tars-node
 ```
 
 ### 注意：
 
-镜像使用的是官方Tars的源码编译构建的，容器启动后，还会有一个自动化的安装过程，因为原版的Tars代码里设置是需要修改的，容器必须根据启动后获得的IP、环境变量等信息修改设置文件，包括resin，需要重新对Tars管理应用打包，所以会花费一定的时间。可以通过监测 `/data/log/tars` 目录下的resin日志 `_log4j.log` 来查看resin是否完成了启动；还可以进入容器运行 `ps -ef` 命令查看进程信息来判断系统是否已经启动完成。
+镜像使用的是官方Tars的源码编译构建的，容器启动后，还会有一个自动化的安装过程，因为原版的Tars代码里设置是需要修改的，容器必须根据启动后获得的IP、环境变量等信息修改设置文件，所以会花费一定的时间。可以进入容器运行 `ps -ef` 命令查看进程信息来判断系统是否已经启动完成。
 
 
 环境变量
@@ -151,15 +135,6 @@ docker run -d -it --name tars --link mysql --env MOUNT_DATA=false --env DBIP=mys
 镜像构建命令：`docker build -t tars .`
 
 
-[tars-master](https://github.com/tangramor/tars-master) 镜像构建，请检出 tars-master 项目后执行命令：
-
-```
-git clone https://github.com/tangramor/tars-master.git
-cd tars-master
-docker build -t tars-master -f Dockerfile .
-```
-
-
 [tars-node](https://github.com/tangramor/tars-node) 镜像构建，请检出 tars-node 项目后执行命令：
 
 ```
@@ -181,11 +156,6 @@ docker build -t tars-node -f Dockerfile .
 
 **[TARS PHP HTTP服务端与客户端开发](https://github.com/tangramor/docker-tars/wiki/TARS-PHP-HTTP%E6%9C%8D%E5%8A%A1%E7%AB%AF%E4%B8%8E%E5%AE%A2%E6%88%B7%E7%AB%AF%E5%BC%80%E5%8F%91)**
 
-
-Trouble Shooting
-----------------
-
-在启动容器后，可以 `docker exec -it tars bash` 进入容器，查看当前运行状态；如果 `/c/Users/<ACCOUNT>/tars_data/log/tars` 下面出现了 _log4j.log 文件，说明安装已经完成，resin运行起来了。
 
 
 感谢
