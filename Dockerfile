@@ -41,6 +41,14 @@ WORKDIR /root/
 
 ##修改镜像时区 
 ENV TZ=Asia/Shanghai
+	
+ENV DBIP 127.0.0.1
+ENV DBPort 3306
+ENV DBUser root
+ENV DBPassword password
+
+# Mysql里tars用户的密码，缺省为tars2015
+ENV DBTarsPass tars2015
 
 COPY --from=builder /usr/local/app /usr/local/app
 COPY --from=builder /usr/local/tarsweb /usr/local/tarsweb
@@ -56,15 +64,9 @@ RUN yum install -y wget mysql unzip iproute which flex bison protobuf zlib kde-l
 	&& wget -qO- https://raw.githubusercontent.com/creationix/nvm/v0.33.11/install.sh | bash \
 	&& source ~/.bashrc && nvm install v8.11.3 \
 	&& cd /usr/local/tarsweb/ && npm install -g pm2 --registry=https://registry.npm.taobao.org
-	
-ENV DBIP 127.0.0.1
-ENV DBPort 3306
-ENV DBUser root
-ENV DBPassword password
 
-# Mysql里tars用户的密码，缺省为tars2015
-ENV DBTarsPass tars2015
-
+# 是否将开启Tars的Web管理界面登录功能，预留，目前没用
+ENV ENABLE_LOGIN false
 
 # 是否将Tars系统进程的data目录挂载到外部存储，缺省为false以支持windows下使用
 ENV MOUNT_DATA false
