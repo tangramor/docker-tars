@@ -62,7 +62,7 @@ RUN cd /root/ && git clone https://github.com/TarsCloud/Tars \
 	&& yum clean all && rm -rf /var/cache/yum
 
 
-FROM centos
+FROM centos/systemd
 
 ##镜像时区 
 ENV TZ=Asia/Shanghai
@@ -92,7 +92,7 @@ RUN yum -y install https://repo.mysql.com/mysql57-community-release-el7-11.noarc
 	&& yum -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm \
 	&& yum -y install http://rpms.remirepo.net/enterprise/remi-release-7.rpm \
 	&& yum -y install yum-utils && yum-config-manager --enable remi-php72 \
-	&& yum --enablerepo=mysql80-community -y install wget mysql unzip iproute which flex bison protobuf zlib kde-l10n-Chinese glibc-common boost php-cli php-mcrypt php-mbstring php-cli php-gd php-curl php-mysql php-zip php-fileinfo php-phpiredis php-seld-phar-utils tzdata \
+	&& yum --enablerepo=mysql80-community -y install wget mysql unzip iproute which flex bison protobuf zlib kde-l10n-Chinese glibc-common boost php-cli php-mcrypt php-mbstring php-cli php-gd php-curl php-mysql php-zip php-fileinfo php-phpiredis php-seld-phar-utils tzdata rsync \
 	&& ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone \
 	&& localedef -c -f UTF-8 -i zh_CN zh_CN.utf8 \
 	&& mkdir -p /usr/local/mysql && ln -s /usr/lib64/mysql /usr/local/mysql/lib && ln -s /usr/include/mysql /usr/local/mysql/include && echo "/usr/local/mysql/lib/" >> /etc/ld.so.conf && ldconfig \
@@ -122,11 +122,13 @@ COPY entrypoint.sh /sbin/
 
 ADD confs /root/confs
 
-ADD pid1-0.1.0-amd64 /sbin/pid1
-RUN chmod 755 /sbin/pid1 /sbin/entrypoint.sh
-ENTRYPOINT [ "/sbin/pid1" ]
+#ADD pid1-0.1.0-amd64 /sbin/pid1
+#RUN chmod 755 /sbin/pid1 /sbin/entrypoint.sh
+#ENTRYPOINT [ "/sbin/pid1" ]
 
-CMD bash -c '/sbin/entrypoint.sh start'
+RUN chmod 755 /sbin/entrypoint.sh
+ENTRYPOINT [ "/sbin/entrypoint.sh", "start" ]
+#CMD bash -c '/sbin/entrypoint.sh start'
 
 #Expose ports
 EXPOSE 3000
