@@ -2,31 +2,22 @@ FROM centos as builder
 
 WORKDIR /root/
 
-##镜像时区 
+##修改镜像时区 
 ENV TZ=Asia/Shanghai
 
-ENV GOPATH=/usr/local/go
-
 ##安装
-RUN yum -y install https://repo.mysql.com/mysql57-community-release-el7-11.noarch.rpm \
-	&& yum -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm \
-	&& yum -y install git gcc gcc-c++ make wget cmake mysql mysql-devel unzip iproute which glibc-devel flex bison ncurses-devel protobuf-devel zlib-devel kde-l10n-Chinese glibc-common hiredis-devel rapidjson-devel boost boost-devel tzdata go \
-	# 设置时区与编码
+RUN yum install -y git gcc gcc-c++ make wget cmake mysql mysql-devel unzip iproute which glibc-devel flex bison ncurses-devel protobuf-devel zlib-devel kde-l10n-Chinese glibc-common \
 	&& ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone \
 	&& localedef -c -f UTF-8 -i zh_CN zh_CN.utf8 \
 	&& mkdir -p /usr/local/mysql && ln -s /usr/lib64/mysql /usr/local/mysql/lib && ln -s /usr/include/mysql /usr/local/mysql/include && echo "/usr/local/mysql/lib/" >> /etc/ld.so.conf && ldconfig \
-	&& cd /usr/local/mysql/lib/ && rm -f libmysqlclient.a && ln -s libmysqlclient.so.*.*.* libmysqlclient.a
-
-# 获取最新TARS源码
-RUN cd /root/ && git clone https://github.com/TarsCloud/Tars \
-	&& cd /root/Tars/ && git submodule update --init --recursive framework \
-	&& git submodule update --init --recursive web \
-	&& git submodule update --init --recursive go \
+	&& cd /usr/local/mysql/lib/ && ln -s libmysqlclient.so.*.*.* libmysqlclient.a \
+	# 克隆项目代码
+	&& cd /root/ && git clone https://github.com/TarsCloud/Tars \
+	&& cd /root/Tars/ && git submodule update --init --recursive framework && git submodule update --init --recursive web \
 	&& mkdir -p /data && chmod u+x /root/Tars/framework/build/build.sh \
 	# 临时bug fix
 	&& sed -i 's/""/"" ""/g' /root/Tars/framework/tarscpp/servant/tup/CMakeLists.txt \
 	# 结束bug fix
-	# 开始构建
 	&& cd /root/Tars/framework/build/ && ./build.sh all \
 	&& ./build.sh install \
 	&& cd /root/Tars/framework/build/ && make framework-tar \
@@ -34,24 +25,23 @@ RUN cd /root/ && git clone https://github.com/TarsCloud/Tars \
 	&& mkdir -p /usr/local/app/tars/ && cp /root/Tars/framework/build/framework.tgz /usr/local/app/tars/ && cp /root/Tars/framework/build/t*.tgz /root/ \
 	&& cd /usr/local/app/tars/ && tar xzfv framework.tgz && rm -rf framework.tgz \
 	&& mkdir -p /usr/local/app/patchs/tars.upload \
-	# 安装tars go
-	&& go get github.com/TarsCloud/TarsGo/tars \
-	&& cd $GOPATH/src/github.com/TarsCloud/TarsGo/tars/tools/tars2go && go build . \
-	# 获取并安装nodejs
+	&& mkdir -p /root/init && cd /root/init/ \
 	&& wget -qO- https://raw.githubusercontent.com/creationix/nvm/v0.33.11/install.sh | bash \
 	&& source ~/.bashrc && nvm install v8.11.3 \
-	&& cp -Rf /root/Tars/web /usr/local/tarsweb && npm install -g pm2 --registry=https://registry.npm.taobao.org \
+	&& cp -Rf /root/Tars/web /usr/local/tarsweb \
 	&& cd /usr/local/tarsweb/ && npm install --registry=https://registry.npm.taobao.org \
-	&& mkdir -p /root/sql && cp -rf /root/Tars/framework/sql/* /root/sql/
+	&& cd /root/Tars/framework/build/ && ./build.sh cleanall \
+	&& yum clean all && rm -rf /var/cache/yum
 
 
-FROM centos/systemd
 
-##镜像时区 
+FROM centos
+
+WORKDIR /root/
+
+##修改镜像时区 
 ENV TZ=Asia/Shanghai
-
-ENV GOPATH=/usr/local/go
-
+	
 ENV DBIP 127.0.0.1
 ENV DBPort 3306
 ENV DBUser root
@@ -65,21 +55,15 @@ COPY --from=builder /usr/local/tarsweb /usr/local/tarsweb
 COPY --from=builder /home/tarsproto /home/tarsproto
 COPY --from=builder /root/t*.tgz /root/
 COPY --from=builder /root/Tars/framework/sql /root/sql
-COPY --from=builder /usr/local/mysql/lib /usr/local/mysql/lib
-COPY --from=builder $GOPATH $GOPATH
 
-RUN yum -y install https://repo.mysql.com/mysql57-community-release-el7-11.noarch.rpm \
-	&& yum -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm \
-	&& yum -y install wget mysql unzip iproute which flex bison protobuf zlib kde-l10n-Chinese glibc-common boost tzdata go \
+RUN yum install -y wget mysql unzip iproute which flex bison protobuf zlib kde-l10n-Chinese glibc-common \
 	&& ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone \
 	&& localedef -c -f UTF-8 -i zh_CN zh_CN.utf8 \
 	&& mkdir -p /usr/local/mysql && ln -s /usr/lib64/mysql /usr/local/mysql/lib && echo "/usr/local/mysql/lib/" >> /etc/ld.so.conf && ldconfig \
-	&& cd /usr/local/mysql/lib/ && rm -f libmysqlclient.a && ln -s libmysqlclient.so.*.*.* libmysqlclient.a \
-	&& cp $GOPATH/src/github.com/TarsCloud/TarsGo/tars/tools/tars2go/tars2go /usr/local/bin/ \
+	&& cd /usr/local/mysql/lib/ && ln -s libmysqlclient.so.*.*.* libmysqlclient.a \
 	&& wget -qO- https://raw.githubusercontent.com/creationix/nvm/v0.33.11/install.sh | bash \
 	&& source ~/.bashrc && nvm install v8.11.3 \
-	&& cd /usr/local/tarsweb/ && npm install -g pm2 --registry=https://registry.npm.taobao.org \
-	&& yum clean all && rm -rf /var/cache/yum
+	&& cd /usr/local/tarsweb/ && npm install -g pm2 --registry=https://registry.npm.taobao.org
 
 # 是否将开启Tars的Web管理界面登录功能，预留，目前没用
 ENV ENABLE_LOGIN false
@@ -101,9 +85,10 @@ COPY entrypoint.sh /sbin/
 
 ADD confs /root/confs
 
-RUN chmod 755 /sbin/entrypoint.sh
-ENTRYPOINT [ "/sbin/entrypoint.sh", "start" ]
+ADD pid1-0.1.0-amd64 /sbin/pid1
+RUN chmod 755 /sbin/pid1 /sbin/entrypoint.sh
+ENTRYPOINT [ "/sbin/pid1" ]
+CMD bash -c '/sbin/entrypoint.sh start'
 
 #Expose ports
 EXPOSE 3000
-EXPOSE 80

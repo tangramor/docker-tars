@@ -17,7 +17,6 @@ case ${1} in
 	init)
 		;;
 	start)
-		/usr/sbin/init
 		source /etc/profile
 		source ~/.bashrc
 		cd /usr/local/app/tars && ./tars_install.sh

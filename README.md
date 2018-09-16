@@ -121,7 +121,7 @@ DBPassword password
 
 run_docker_tars.sh 里的命令如下，请自己修改：
 ```
-docker run -d -it --name tars --link mysql --env MOUNT_DATA=false --env DBIP=mysql --env DBPort=3306 --env DBUser=root --env DBPassword=PASS -p 3000:3000 -v /c/Users/<ACCOUNT>/tars_data:/data tangramor/docker-tars
+docker run -d -it --name tars --link mysql --env MOUNT_DATA=false --env DBIP=mysql --env DBPort=3306 --env DBUser=root --env DBPassword=PASS -p 8080:8080 -v /c/Users/<ACCOUNT>/tars_data:/data tangramor/docker-tars
 ```
 
 ### 框架普通基础服务
