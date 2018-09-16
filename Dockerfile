@@ -122,13 +122,8 @@ COPY entrypoint.sh /sbin/
 
 ADD confs /root/confs
 
-#ADD pid1-0.1.0-amd64 /sbin/pid1
-#RUN chmod 755 /sbin/pid1 /sbin/entrypoint.sh
-#ENTRYPOINT [ "/sbin/pid1" ]
-
 RUN chmod 755 /sbin/entrypoint.sh
 ENTRYPOINT [ "/sbin/entrypoint.sh", "start" ]
-#CMD bash -c '/sbin/entrypoint.sh start'
 
 #Expose ports
 EXPOSE 3000
