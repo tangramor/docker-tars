@@ -54,7 +54,7 @@ RUN cd /root/ && git clone https://github.com/TarsCloud/Tars \
 	&& yum clean all && rm -rf /var/cache/yum
 
 
-FROM centos
+FROM centos/systemd
 
 ##镜像时区 
 ENV TZ=Asia/Shanghai
@@ -77,8 +77,7 @@ COPY --from=builder /usr/lib64/php/modules/phptars.so /usr/lib64/php/modules/php
 COPY --from=builder /usr/lib64/php/modules/swoole.so /usr/lib64/php/modules/swoole.so
 COPY --from=builder /etc/php.d/phptars.ini /etc/php.d/phptars.ini
 COPY --from=builder /etc/php.d/swoole.ini /etc/php.d/swoole.ini
-COPY --from=builder /usr/include/mysql /usr/include/mysql
-COPY --from=builder /usr/lib64/mysql /usr/lib64/mysql
+COPY --from=builder /usr/local/mysql/lib /usr/local/mysql/lib
 
 RUN yum -y install https://repo.mysql.com/mysql57-community-release-el7-11.noarch.rpm \
 	&& yum -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm \
@@ -114,11 +113,8 @@ COPY entrypoint.sh /sbin/
 
 ADD confs /root/confs
 
-ADD pid1-0.1.0-amd64 /sbin/pid1
-RUN chmod 755 /sbin/pid1 /sbin/entrypoint.sh
-ENTRYPOINT [ "/sbin/pid1" ]
-
-CMD bash -c '/sbin/entrypoint.sh start'
+RUN chmod 755 /sbin/entrypoint.sh
+ENTRYPOINT [ "/sbin/entrypoint.sh", "start" ]
 
 #Expose ports
 EXPOSE 3000
