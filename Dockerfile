@@ -10,10 +10,15 @@ RUN yum -y install https://repo.mysql.com/mysql57-community-release-el7-11.noarc
 	&& yum -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm \
 	&& yum -y install http://rpms.remirepo.net/enterprise/remi-release-7.rpm \
 	&& yum -y install yum-utils && yum-config-manager --enable remi-php72 \
-	&& yum -y install git gcc gcc-c++ make wget cmake mysql mysql-devel unzip iproute which glibc-devel flex bison ncurses-devel protobuf-devel zlib-devel kde-l10n-Chinese glibc-common hiredis-devel rapidjson-devel boost boost-devel php php-cli php-devel php-mcrypt php-cli php-gd php-curl php-mysql php-zip php-fileinfo php-phpiredis php-seld-phar-utils tzdata \
+	&& yum --enablerepo=mysql80-community -y install git gcc gcc-c++ make wget cmake mysql mysql-devel unzip iproute which glibc-devel flex bison ncurses-devel protobuf-devel zlib-devel kde-l10n-Chinese glibc-common hiredis-devel rapidjson-devel boost boost-devel php php-cli php-devel php-mcrypt php-cli php-gd php-curl php-mysql php-zip php-fileinfo php-phpiredis php-seld-phar-utils tzdata \
 	# 设置时区与编码
 	&& ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone \
 	&& localedef -c -f UTF-8 -i zh_CN zh_CN.utf8 \
+	# 安装Mysql8 C++ Connector
+	&& wget -c -t 0 https://dev.mysql.com/get/Downloads/Connector-C++/mysql-connector-c++-8.0.11-linux-el7-x86-64bit.tar.gz \
+	&& tar zxf mysql-connector-c++-8.0.11-linux-el7-x86-64bit.tar.gz && cd mysql-connector-c++-8.0.11-linux-el7-x86-64bit \
+	&& cp -Rf include/jdbc/* /usr/include/mysql/ && cp -Rf include/mysqlx/* /usr/include/mysql/ && cp -Rf lib64/* /usr/lib64/mysql/ \
+	&& cd /root && rm -rf mysql-connector* \
 	&& mkdir -p /usr/local/mysql && ln -s /usr/lib64/mysql /usr/local/mysql/lib && ln -s /usr/include/mysql /usr/local/mysql/include && echo "/usr/local/mysql/lib/" >> /etc/ld.so.conf && ldconfig \
 	&& cd /usr/local/mysql/lib/ && rm -f libmysqlclient.a && ln -s libmysqlclient.so.*.*.* libmysqlclient.a
 
@@ -26,6 +31,8 @@ RUN cd /root/ && git clone https://github.com/TarsCloud/Tars \
 	# 临时bug fix
 	&& sed -i 's/""/"" ""/g' /root/Tars/framework/tarscpp/servant/tup/CMakeLists.txt \
 	# 结束bug fix
+	# 以下对源码配置进行mysql8对应的修改
+	&& sed -i '32s/rt/rt crypto ssl/' /root/Tars/framework/CMakeLists.txt \
 	# 开始构建
 	&& cd /root/Tars/framework/build/ && ./build.sh all \
 	&& ./build.sh install \
@@ -50,7 +57,9 @@ RUN cd /root/ && git clone https://github.com/TarsCloud/Tars \
 	&& source ~/.bashrc && nvm install v8.11.3 \
 	&& cp -Rf /root/Tars/web /usr/local/tarsweb && npm install -g pm2 --registry=https://registry.npm.taobao.org \
 	&& cd /usr/local/tarsweb/ && npm install --registry=https://registry.npm.taobao.org \
-	&& mkdir -p /root/sql && cp -rf /root/Tars/framework/sql/* /root/sql/
+	&& mkdir -p /root/sql && cp -rf /root/Tars/framework/sql/* /root/sql/ \
+	&& cd /root/Tars/framework/build/ && ./build.sh cleanall \
+	&& yum clean all && rm -rf /var/cache/yum
 
 
 FROM centos/systemd
@@ -76,16 +85,17 @@ COPY --from=builder /usr/lib64/php/modules/phptars.so /usr/lib64/php/modules/php
 COPY --from=builder /usr/lib64/php/modules/swoole.so /usr/lib64/php/modules/swoole.so
 COPY --from=builder /etc/php.d/phptars.ini /etc/php.d/phptars.ini
 COPY --from=builder /etc/php.d/swoole.ini /etc/php.d/swoole.ini
-COPY --from=builder /usr/local/mysql/lib /usr/local/mysql/lib
+COPY --from=builder /usr/include/mysql /usr/include/mysql
+COPY --from=builder /usr/lib64/mysql /usr/lib64/mysql
 
 RUN yum -y install https://repo.mysql.com/mysql57-community-release-el7-11.noarch.rpm \
 	&& yum -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm \
 	&& yum -y install http://rpms.remirepo.net/enterprise/remi-release-7.rpm \
 	&& yum -y install yum-utils && yum-config-manager --enable remi-php72 \
-	&& yum -y install wget mysql unzip iproute which flex bison protobuf zlib kde-l10n-Chinese glibc-common boost php-cli php-mcrypt php-mbstring php-cli php-gd php-curl php-mysql php-zip php-fileinfo php-phpiredis php-seld-phar-utils tzdata \
+	&& yum --enablerepo=mysql80-community -y install wget mysql unzip iproute which flex bison protobuf zlib kde-l10n-Chinese glibc-common boost php-cli php-mcrypt php-mbstring php-cli php-gd php-curl php-mysql php-zip php-fileinfo php-phpiredis php-seld-phar-utils tzdata rsync \
 	&& ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone \
 	&& localedef -c -f UTF-8 -i zh_CN zh_CN.utf8 \
-	&& mkdir -p /usr/local/mysql && ln -s /usr/lib64/mysql /usr/local/mysql/lib && echo "/usr/local/mysql/lib/" >> /etc/ld.so.conf && ldconfig \
+	&& mkdir -p /usr/local/mysql && ln -s /usr/lib64/mysql /usr/local/mysql/lib && ln -s /usr/include/mysql /usr/local/mysql/include && echo "/usr/local/mysql/lib/" >> /etc/ld.so.conf && ldconfig \
 	&& cd /usr/local/mysql/lib/ && rm -f libmysqlclient.a && ln -s libmysqlclient.so.*.*.* libmysqlclient.a \
 	&& wget -qO- https://raw.githubusercontent.com/creationix/nvm/v0.33.11/install.sh | bash \
 	&& source ~/.bashrc && nvm install v8.11.3 \
