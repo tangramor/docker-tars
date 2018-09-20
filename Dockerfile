@@ -87,6 +87,7 @@ COPY --from=builder /etc/php.d/phptars.ini /etc/php.d/phptars.ini
 COPY --from=builder /etc/php.d/swoole.ini /etc/php.d/swoole.ini
 COPY --from=builder /usr/include/mysql /usr/include/mysql
 COPY --from=builder /usr/lib64/mysql /usr/lib64/mysql
+COPY --from=builder /usr/local/bin/composer /usr/local/bin/composer
 
 RUN yum -y install https://repo.mysql.com/mysql57-community-release-el7-11.noarch.rpm \
 	&& yum -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm \
