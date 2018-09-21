@@ -60,7 +60,7 @@ RUN yum install -y wget mysql unzip iproute which flex bison protobuf zlib kde-l
 	&& cd /usr/local/mysql/lib/ && ln -s libmysqlclient.so.*.*.* libmysqlclient.a \
 	&& wget -qO- https://raw.githubusercontent.com/creationix/nvm/v0.33.11/install.sh | bash \
 	&& source ~/.bashrc && nvm install v8.11.3 \
-	&& cd /usr/local/tarsweb/ && npm install -g pm2 --registry=https://registry.npm.taobao.org \
+	&& cd /usr/local/tarsweb/ && npm install -g pm2 @tars/deploy --registry=https://registry.npm.taobao.org \
 	&& yum clean all && rm -rf /var/cache/yum
 
 # 是否将开启Tars的Web管理界面登录功能，预留，目前没用
