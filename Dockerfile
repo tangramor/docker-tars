@@ -116,4 +116,3 @@ ENTRYPOINT [ "/sbin/entrypoint.sh", "start" ]
 
 #Expose ports
 EXPOSE 3000
-EXPOSE 80
