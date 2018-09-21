@@ -6,12 +6,6 @@ MachineName=$(cat /etc/hosts | grep ${MachineIp} | awk '{print $2}')
 build_cpp_framework(){
 	echo "build cpp framework ...."
 	##Tars数据库环境初始化
-<<<<<<< HEAD
-	mysql -h${DBIP} -P${DBPort} -u${DBUser} -p${DBPassword} -e "grant all on *.* to 'tars'@'%' identified by '${DBTarsPass}' with grant option;"
-	mysql -h${DBIP} -P${DBPort} -u${DBUser} -p${DBPassword} -e "grant all on *.* to 'tars'@'localhost' identified by '${DBTarsPass}' with grant option;"
-	mysql -h${DBIP} -P${DBPort} -u${DBUser} -p${DBPassword} -e "grant all on *.* to 'tars'@'${MachineName}' identified by '${DBTarsPass}' with grant option;"
-	mysql -h${DBIP} -P${DBPort} -u${DBUser} -p${DBPassword} -e "grant all on *.* to 'tars'@'${MachineIp}' identified by '${DBTarsPass}' with grant option;"
-=======
 	mysql -h${DBIP} -P${DBPort} -u${DBUser} -p${DBPassword} -e "CREATE USER 'tars'@'%' IDENTIFIED WITH mysql_native_password BY '${DBTarsPass}';"
 	mysql -h${DBIP} -P${DBPort} -u${DBUser} -p${DBPassword} -e "GRANT ALL ON *.* TO 'tars'@'%' WITH GRANT OPTION;"
 	mysql -h${DBIP} -P${DBPort} -u${DBUser} -p${DBPassword} -e "CREATE USER 'tars'@'localhost' IDENTIFIED WITH mysql_native_password BY '${DBTarsPass}';"
@@ -20,7 +14,6 @@ build_cpp_framework(){
 	mysql -h${DBIP} -P${DBPort} -u${DBUser} -p${DBPassword} -e "GRANT ALL ON *.* TO 'tars'@'${MachineName}' WITH GRANT OPTION;"
 	mysql -h${DBIP} -P${DBPort} -u${DBUser} -p${DBPassword} -e "CREATE USER 'tars'@'${MachineIp}' IDENTIFIED WITH mysql_native_password BY '${DBTarsPass}';"
 	mysql -h${DBIP} -P${DBPort} -u${DBUser} -p${DBPassword} -e "GRANT ALL ON *.* TO 'tars'@'${MachineIp}' WITH GRANT OPTION;"
->>>>>>> upstream/php7mysql8
 	mysql -h${DBIP} -P${DBPort} -u${DBUser} -p${DBPassword} -e "flush privileges;"
 
 	sed -i "s/192.168.2.131/${MachineIp}/g" `grep 192.168.2.131 -rl /root/sql/*`
@@ -39,11 +32,7 @@ build_cpp_framework(){
 	then
 		echo "DB db_tars already exists" > /root/DB_Exists.lock
 	else
-<<<<<<< HEAD
-		/root/sql/exec-sql.sh
-=======
 		cd /root/sql && ./exec-sql.sh
->>>>>>> upstream/php7mysql8
 
 		mysql -h${DBIP} -P${DBPort} -u${DBUser} -p${DBPassword} db_tars < /root/sql/tarsconfig.sql
 		mysql -h${DBIP} -P${DBPort} -u${DBUser} -p${DBPassword} db_tars < /root/sql/tarsnotify.sql
@@ -144,16 +133,15 @@ install_base_services(){
 
 	#mysql -h${DBIP} -P${DBPort} -u${DBUser} -p${DBPassword} -e "USE db_tars; INSERT INTO t_server_conf (id, application, server_name, node_group, node_name, registry_timestamp, base_path, exe_path, template_name, bak_flag, setting_state, present_state, process_id, patch_version, patch_time, patch_user, tars_version, posttime, lastuser, server_type, start_script_path, stop_script_path, monitor_script_path, enable_group, enable_set, set_name, set_area, set_group, ip_group_name, profile, config_center_port, async_thread_num, server_important_type, remote_log_reserve_time, remote_log_compress_time, remote_log_type) VALUES (23, 'tars', 'tarsstat', '', '${MachineIp}', '2018-05-29 23:14:19', '', '', 'tars.tarsstat', 0, 'active', 'inactive', 0, '59', '2018-05-29 12:28:37', '', '1.1.0', '2018-05-27 20:22:05', NULL, 'tars_cpp', NULL, NULL, NULL, 'N', 'N', NULL, NULL, NULL, NULL, NULL, 0, 3, '0', '65', '2', 0),(24, 'tars', 'tarsproperty', '', '${MachineIp}', '2018-05-29 23:14:19', '', '', 'tars.tarsproperty', 0, 'active', 'inactive', 0, '60', '2018-05-29 12:29:32', '', '1.1.0', '2018-05-27 20:22:24', NULL, 'tars_cpp', NULL, NULL, NULL, 'N', 'N', NULL, NULL, NULL, NULL, NULL, 0, 3, '0', '65', '2', 0),(25, 'tars', 'tarslog', '', '${MachineIp}', '2018-05-29 23:14:19', '', '', 'tars.tarslog', 0, 'active', 'inactive', 0, '61', '2018-05-29 12:29:54', '', '1.1.0', '2018-05-27 20:22:43', NULL, 'tars_cpp', NULL, NULL, NULL, 'N', 'N', NULL, NULL, NULL, NULL, NULL, 0, 3, '0', '65', '2', 0),(26, 'tars', 'tarsquerystat', '', '${MachineIp}', '2018-05-29 23:14:19', '', '', 'tars.tarsquerystat', 0, 'active', 'inactive', 0, '62', '2018-05-29 12:30:22', '', '1.1.0', '2018-05-27 20:23:08', NULL, 'tars_cpp', NULL, NULL, NULL, 'N', 'N', NULL, NULL, NULL, NULL, NULL, 0, 3, '0', '65', '2', 0),(27, 'tars', 'tarsqueryproperty', '', '${MachineIp}', '2018-05-29 23:14:19', '', '', 'tars.tarsqueryproperty', 0, 'active', 'inactive', 0, '63', '2018-05-29 12:30:55', '', '1.1.0', '2018-05-27 20:23:22', NULL, 'tars_cpp', NULL, NULL, NULL, 'N', 'N', NULL, NULL, NULL, NULL, NULL, 0, 3, '0', '65', '2', 0); ALTER TABLE t_server_patchs AUTO_INCREMENT = 64;"
 
-	chmod u+x tars_install.sh
-	#./tars_install.sh
-
 	chmod u+x tarspatch/util/init.sh
 	./tarspatch/util/init.sh
+
+	chmod u+x tars_install.sh
+	./tars_install.sh
 }
 
 build_web_mgr(){
 	echo "web manager ...."
-<<<<<<< HEAD
 
 	mkdir -p /data/logs
 	rm -rf /root/.pm2
@@ -179,36 +167,7 @@ build_web_mgr(){
 	mysql -h${DBIP} -P${DBPort} -u${DBUser} -p${DBPassword} -e "create database db_tars_web"
 	mysql -h${DBIP} -P${DBPort} -u${DBUser} -p${DBPassword} db_tars_web < /usr/local/tarsweb/sql/db_tars_web.sql
 }
-=======
 
-	mkdir -p /data/logs
-	rm -rf /root/.pm2
-	mkdir -p /root/.pm2
-	ln -s /data/logs /root/.pm2/logs
-	
-	cd /usr/local/tarsweb/
-	sed -i "s/registry.tars.com/${MachineIp}/g" `grep registry.tars.com -rl ./config/*`
-	sed -i "s/db.tars.com/${DBIP}/g" `grep db.tars.com -rl ./config/*`
-	sed -i "s/3306/${DBPort}/g" `grep 3306 -rl ./config/*`
-	sed -i "s/tars2015/${DBTarsPass}/g" `grep tars2015 -rl ./config/*`
-	sed -i "s/DEBUG/INFO/g" `grep DEBUG -rl ./config/*`
-
-	if [ ${ENABLE_LOGIN} = true ];
-	then
-		echo "Enable Login"
-		sed -i "s/enableLogin: false/enableLogin: true/g" ./config/loginConf.js
-		sed -i "s/\/\/ let loginConf/let loginConf/g" ./app.js
-		sed -i "s/\/\/ loginConf.ignore/loginConf.ignore/g" ./app.js
-		sed -i "s/\/\/ app.use(loginMidware/app.use(loginMidware/g" ./app.js
-	fi
-
-	mysql -h${DBIP} -P${DBPort} -u${DBUser} -p${DBPassword} -e "create database db_tars_web"
-	mysql -h${DBIP} -P${DBPort} -u${DBUser} -p${DBPassword} db_tars_web < /usr/local/tarsweb/sql/db_tars_web.sql
-	
-	#npm run prd
-}
-
->>>>>>> upstream/php7mysql8
 
 build_cpp_framework
 
