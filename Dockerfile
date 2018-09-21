@@ -29,13 +29,10 @@ RUN yum install -y git gcc gcc-c++ make wget cmake mysql mysql-devel unzip iprou
 	&& wget -qO- https://raw.githubusercontent.com/creationix/nvm/v0.33.11/install.sh | bash \
 	&& source ~/.bashrc && nvm install v8.11.3 \
 	&& cp -Rf /root/Tars/web /usr/local/tarsweb \
-	&& cd /usr/local/tarsweb/ && npm install --registry=https://registry.npm.taobao.org \
-	&& cd /root/Tars/framework/build/ && ./build.sh cleanall \
-	&& yum clean all && rm -rf /var/cache/yum
+	&& cd /usr/local/tarsweb/ && npm install --registry=https://registry.npm.taobao.org
 
 
-
-FROM centos
+FROM centos/systemd
 
 WORKDIR /root/
 
@@ -63,7 +60,8 @@ RUN yum install -y wget mysql unzip iproute which flex bison protobuf zlib kde-l
 	&& cd /usr/local/mysql/lib/ && ln -s libmysqlclient.so.*.*.* libmysqlclient.a \
 	&& wget -qO- https://raw.githubusercontent.com/creationix/nvm/v0.33.11/install.sh | bash \
 	&& source ~/.bashrc && nvm install v8.11.3 \
-	&& cd /usr/local/tarsweb/ && npm install -g pm2 --registry=https://registry.npm.taobao.org
+	&& cd /usr/local/tarsweb/ && npm install -g pm2 --registry=https://registry.npm.taobao.org \
+	&& yum clean all && rm -rf /var/cache/yum
 
 # 是否将开启Tars的Web管理界面登录功能，预留，目前没用
 ENV ENABLE_LOGIN false
@@ -85,10 +83,8 @@ COPY entrypoint.sh /sbin/
 
 ADD confs /root/confs
 
-ADD pid1-0.1.0-amd64 /sbin/pid1
-RUN chmod 755 /sbin/pid1 /sbin/entrypoint.sh
-ENTRYPOINT [ "/sbin/pid1" ]
-CMD bash -c '/sbin/entrypoint.sh start'
+RUN chmod 755 /sbin/entrypoint.sh
+ENTRYPOINT [ "/sbin/entrypoint.sh", "start" ]
 
 #Expose ports
 EXPOSE 3000
