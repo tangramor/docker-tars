@@ -22,7 +22,7 @@ build_cpp_framework(){
 	sed -i "s/-XX:+PrintGCApplicationStoppedTime/-XX:+PrintSafepointStatistics -XX:PrintSafepointStatisticsCount=1/g" /root/sql/db_tars.sql
 	sed -i "s/-XX:+PrintGCDateStamps //g" /root/sql/db_tars.sql
 	sed -i "s/-XX:+UseCMSCompactAtFullCollection //g" /root/sql/db_tars.sql
-	sed -i "s/-XX:CMSFullGCsBeforeCompaction\\\\=0 //g" /root/sql/db_tars.sql
+	sed -i 's/-XX:CMSFullGCsBeforeCompaction\\\\=0 //g' /root/sql/db_tars.sql
 	#end fix for Java 10
 
 	cd /root/sql/
