@@ -13,13 +13,12 @@ RUN yum -y install https://repo.mysql.com/mysql57-community-release-el7-11.noarc
 	&& ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone \
 	&& localedef -c -f UTF-8 -i zh_CN zh_CN.utf8 \
 	&& mkdir -p /usr/local/mysql && ln -s /usr/lib64/mysql /usr/local/mysql/lib && ln -s /usr/include/mysql /usr/local/mysql/include && echo "/usr/local/mysql/lib/" >> /etc/ld.so.conf && ldconfig \
-	&& cd /usr/local/mysql/lib/ && rm -f libmysqlclient.a && ln -s libmysqlclient.so.*.*.* libmysqlclient.a
-
-# 获取最新TARS源码
-RUN cd /root/ && git clone https://github.com/TarsCloud/Tars \
+	&& cd /usr/local/mysql/lib/ && rm -f libmysqlclient.a && ln -s libmysqlclient.so.*.*.* libmysqlclient.a \
+	# 获取最新TARS源码
+	&& cd /root/ && git clone https://github.com/TarsCloud/Tars \
 	&& cd /root/Tars/ && git submodule update --init --recursive framework \
 	&& git submodule update --init --recursive web \
-	#&& git submodule update --init --recursive java \
+	&& git submodule update --init --recursive java \
 	&& mkdir -p /data && chmod u+x /root/Tars/framework/build/build.sh \
 	# 临时bug fix
 	&& sed -i 's/""/"" ""/g' /root/Tars/framework/tarscpp/servant/tup/CMakeLists.txt \
@@ -46,14 +45,21 @@ RUN cd /root/ && git clone https://github.com/TarsCloud/Tars \
 	&& echo "CLASSPATH=\$JAVA_HOME/lib/dt.jar:\$JAVA_HOME/lib/tools.jar" >> /etc/profile \
 	&& echo "PATH=\$JAVA_HOME/bin:\$PATH" >> /etc/profile \
 	&& echo "export PATH JAVA_HOME CLASSPATH" >> /etc/profile \
+	&& echo "export JAVA_HOME=/usr/java/jdk-10.0.2" >> /root/.bashrc \
+	&& echo "CLASSPATH=\$JAVA_HOME/lib/dt.jar:\$JAVA_HOME/lib/tools.jar" >> /root/.bashrc \
+	&& echo "PATH=\$JAVA_HOME/bin:\$PATH" >> /root/.bashrc \
+	&& echo "export PATH JAVA_HOME CLASSPATH" >> /root/.bashrc \
 	&& cd /usr/local/ && wget -c -t 0 https://mirrors.tuna.tsinghua.edu.cn/apache/maven/maven-3/3.5.4/binaries/apache-maven-3.5.4-bin.tar.gz \
 	&& tar zxvf apache-maven-3.5.4-bin.tar.gz && echo "export MAVEN_HOME=/usr/local/apache-maven-3.5.4/" >> /etc/profile \
 	# 设置阿里云maven镜像
 	# && sed -i '/<mirrors>/a\\t<mirror>\n\t\t<id>nexus-aliyun<\/id>\n\t\t<mirrorOf>*<\/mirrorOf>\n\t\t<name>Nexus aliyun<\/name>\n\t\t<url>http:\/\/maven.aliyun.com\/nexus\/content\/groups\/public<\/url>\n\t<\/mirror>' /usr/local/apache-maven-3.5.4/conf/settings.xml \
-	&& echo "export PATH=\$PATH:\$MAVEN_HOME/bin" >> /etc/profile && source /etc/profile && mvn -v \
-	&& cd /root/Tars/java && mvn clean install && mvn clean install -f core/client.pom.xml \
-	&& mvn clean install -f core/server.pom.xml \
-	&& rm -rf apache-maven-3.5.4-bin.tar.gz 
+	&& echo "export PATH=\$PATH:\$MAVEN_HOME/bin" >> /etc/profile \
+	&& echo "export PATH=\$PATH:\$MAVEN_HOME/bin" >> /root/.bashrc \
+	&& source /etc/profile && mvn -v \
+	&& rm -rf apache-maven-3.5.4-bin.tar.gz \
+	&& cd /root/Tars/ && git submodule update --init --recursive java \
+	&& cd /root/Tars/java && source /etc/profile && mvn clean install && mvn clean install -f core/client.pom.xml \
+	&& mvn clean install -f core/server.pom.xml 
 
 
 FROM centos/systemd
@@ -86,6 +92,7 @@ COPY --from=builder $JAVA_HOME $JAVA_HOME
 COPY --from=builder $MAVEN_HOME $MAVEN_HOME
 COPY --from=builder /root/.m2 /root/.m2
 COPY --from=builder /etc/profile /etc/profile
+COPY --from=builder /root/.bashrc /root/.bashrc
 
 RUN yum -y install https://repo.mysql.com/mysql57-community-release-el7-11.noarch.rpm \
 	&& yum -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm \
