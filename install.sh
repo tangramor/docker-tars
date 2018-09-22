@@ -18,6 +18,13 @@ build_cpp_framework(){
 	sed -i "s/'65','2',0)/'65','2',0,'NORMAL')/g" `grep "'65','2',0)" -rl /root/sql/*`
 	sed -i "s/'65','2',0,'NORMAL');/'65','2',0,'NORMAL') ON DUPLICATE KEY UPDATE exe_path='\/usr\/local\/app\/tars\/tarsnotify\/bin\/tarsnotify';/g" /root/sql/tarsnotify.sql
 
+	#fix for Java 10
+	sed -i "s/-XX:+PrintGCApplicationStoppedTime/-XX:+PrintSafepointStatistics -XX:PrintSafepointStatisticsCount=1/g" /root/sql/db_tars.sql
+	sed -i "s/-XX:+PrintGCDateStamps //g" /root/sql/db_tars.sql
+	sed -i "s/-XX:+UseCMSCompactAtFullCollection //g" /root/sql/db_tars.sql
+	sed -i "s/-XX:CMSFullGCsBeforeCompaction\\\\=0 //g" /root/sql/db_tars.sql
+	#end fix for Java 10
+
 	cd /root/sql/
 	sed -i "s/proot@appinside/h${DBIP} -P${DBPort} -u${DBUser} -p${DBPassword} /g" `grep proot@appinside -rl ./exec-sql.sh`
 	

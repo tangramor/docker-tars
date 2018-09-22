@@ -57,9 +57,10 @@ RUN yum -y install https://repo.mysql.com/mysql57-community-release-el7-11.noarc
 	&& echo "export PATH=\$PATH:\$MAVEN_HOME/bin" >> /root/.bashrc \
 	&& source /etc/profile && mvn -v \
 	&& rm -rf apache-maven-3.5.4-bin.tar.gz \
-	&& cd /root/Tars/ && git submodule update --init --recursive java \
 	&& cd /root/Tars/java && source /etc/profile && mvn clean install && mvn clean install -f core/client.pom.xml \
-	&& mvn clean install -f core/server.pom.xml 
+	&& mvn clean install -f core/server.pom.xml \
+	&& cd /root/init && mvn archetype:generate -DgroupId=com.tangramor -DartifactId=TestJava -DarchetypeArtifactId=maven-archetype-webapp -DinteractiveMode=false \
+	&& cd /root/Tars/java/examples/quickstart-server/ && mvn tars:tars2java && mvn package
 
 
 FROM centos/systemd
