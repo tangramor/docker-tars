@@ -37,7 +37,7 @@ RUN cd /root/ && git clone https://github.com/TarsCloud/Tars \
 	&& source ~/.bashrc && nvm install v8.11.3 \
 	&& cp -Rf /root/Tars/web /usr/local/tarsweb && npm install -g pm2 --registry=https://registry.npm.taobao.org \
 	&& cd /usr/local/tarsweb/ && npm install --registry=https://registry.npm.taobao.org \
-	&& mkdir -p /root/sql && cp -rf /root/Tars/framework/sql/* /root/sql/
+	&& mkdir -p /root/sql && cp -rf /root/Tars/framework/sql/* /root/sql/ \
 	# 获取并安装JDK
 	&& mkdir -p /root/init && cd /root/init/ \
 	&& wget -c -t 0 --header "Cookie: oraclelicense=accept" -c --no-check-certificate http://download.oracle.com/otn-pub/java/jdk/10.0.2+13/19aef61b38124481863b1413dce1855f/jdk-10.0.2_linux-x64_bin.rpm \
