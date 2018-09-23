@@ -55,6 +55,8 @@ RUN cd /root/ && git clone https://github.com/TarsCloud/Tars \
 
 FROM centos/systemd
 
+WORKDIR /root/
+
 ##镜像时区 
 ENV TZ=Asia/Shanghai
 
