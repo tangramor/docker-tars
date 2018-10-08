@@ -67,6 +67,7 @@ ENV DBTarsPass tars2015
 
 COPY --from=builder /usr/local/app /usr/local/app
 COPY --from=builder /usr/local/tarsweb /usr/local/tarsweb
+COPY --from=builder /usr/local/tars /usr/local/tars
 COPY --from=builder /home/tarsproto /home/tarsproto
 COPY --from=builder /root/t*.tgz /root/
 COPY --from=builder /root/Tars/framework/sql /root/sql
