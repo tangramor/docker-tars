@@ -37,6 +37,7 @@ RUN yum -y install https://repo.mysql.com/mysql57-community-release-el7-11.noarc
 	&& git submodule update --init --recursive web \
 	&& git submodule update --init --recursive php \
 	&& git submodule update --init --recursive go \
+	&& git submodule update --init --recursive java \
 	&& mkdir -p /data && chmod u+x /root/Tars/framework/build/build.sh \
 	# 以下对源码配置进行mysql8对应的修改
 	&& sed -i '32s/rt/rt crypto ssl/' /root/Tars/framework/CMakeLists.txt \
@@ -67,6 +68,30 @@ RUN yum -y install https://repo.mysql.com/mysql57-community-release-el7-11.noarc
 	&& source ~/.bashrc && nvm install v8.11.3 \
 	&& cp -Rf /root/Tars/web /usr/local/tarsweb && npm install -g pm2 --registry=https://registry.npm.taobao.org \
 	&& cd /usr/local/tarsweb/ && npm install --registry=https://registry.npm.taobao.org \
+	# 获取并安装JDK
+	&& mkdir -p /root/init && cd /root/init/ \
+	&& wget -c -t 0 --header "Cookie: oraclelicense=accept" -c --no-check-certificate http://download.oracle.com/otn-pub/java/jdk/10.0.2+13/19aef61b38124481863b1413dce1855f/jdk-10.0.2_linux-x64_bin.rpm \
+	&& rpm -ivh /root/init/jdk-10.0.2_linux-x64_bin.rpm && rm -rf /root/init/jdk-10.0.2_linux-x64_bin.rpm \
+	&& echo "export JAVA_HOME=/usr/java/jdk-10.0.2" >> /etc/profile \
+	&& echo "CLASSPATH=\$JAVA_HOME/lib/dt.jar:\$JAVA_HOME/lib/tools.jar" >> /etc/profile \
+	&& echo "PATH=\$JAVA_HOME/bin:\$PATH" >> /etc/profile \
+	&& echo "export PATH JAVA_HOME CLASSPATH" >> /etc/profile \
+	&& echo "export JAVA_HOME=/usr/java/jdk-10.0.2" >> /root/.bashrc \
+	&& echo "CLASSPATH=\$JAVA_HOME/lib/dt.jar:\$JAVA_HOME/lib/tools.jar" >> /root/.bashrc \
+	&& echo "PATH=\$JAVA_HOME/bin:\$PATH" >> /root/.bashrc \
+	&& echo "export PATH JAVA_HOME CLASSPATH" >> /root/.bashrc \
+	&& cd /usr/local/ && wget -c -t 0 https://mirrors.tuna.tsinghua.edu.cn/apache/maven/maven-3/3.5.4/binaries/apache-maven-3.5.4-bin.tar.gz \
+	&& tar zxvf apache-maven-3.5.4-bin.tar.gz && echo "export MAVEN_HOME=/usr/local/apache-maven-3.5.4/" >> /etc/profile \
+	# 设置阿里云maven镜像
+	# && sed -i '/<mirrors>/a\\t<mirror>\n\t\t<id>nexus-aliyun<\/id>\n\t\t<mirrorOf>*<\/mirrorOf>\n\t\t<name>Nexus aliyun<\/name>\n\t\t<url>http:\/\/maven.aliyun.com\/nexus\/content\/groups\/public<\/url>\n\t<\/mirror>' /usr/local/apache-maven-3.5.4/conf/settings.xml \
+	&& echo "export PATH=\$PATH:\$MAVEN_HOME/bin" >> /etc/profile \
+	&& echo "export PATH=\$PATH:\$MAVEN_HOME/bin" >> /root/.bashrc \
+	&& source /etc/profile && mvn -v \
+	&& rm -rf apache-maven-3.5.4-bin.tar.gz \
+	&& cd /root/Tars/java && source /etc/profile && mvn clean install && mvn clean install -f core/client.pom.xml \
+	&& mvn clean install -f core/server.pom.xml \
+	&& cd /root/init && mvn archetype:generate -DgroupId=com.tangramor -DartifactId=TestJava -DarchetypeArtifactId=maven-archetype-webapp -DinteractiveMode=false \
+	&& cd /root/Tars/java/examples/quickstart-server/ && mvn tars:tars2java && mvn package \
 	&& mkdir -p /root/sql && cp -rf /root/Tars/framework/sql/* /root/sql/ \
 	&& cd /root/Tars/framework/build/ && ./build.sh cleanall \
 	&& yum clean all && rm -rf /var/cache/yum
@@ -83,6 +108,10 @@ ENV INET_NAME eth0
 
 # 中文字符集支持
 ENV LC_ALL "zh_CN.UTF-8"
+
+ENV JAVA_HOME /usr/java/jdk-10.0.2
+
+ENV MAVEN_HOME /usr/local/apache-maven-3.5.4
 
 VOLUME ["/data"]
 	
