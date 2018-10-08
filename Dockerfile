@@ -28,9 +28,6 @@ RUN cd /root/ && git clone https://github.com/TarsCloud/Tars \
 	&& git submodule update --init --recursive web \
 	&& git submodule update --init --recursive php \
 	&& mkdir -p /data && chmod u+x /root/Tars/framework/build/build.sh \
-	# 临时bug fix
-	&& sed -i 's/""/"" ""/g' /root/Tars/framework/tarscpp/servant/tup/CMakeLists.txt \
-	# 结束bug fix
 	# 以下对源码配置进行mysql8对应的修改
 	&& sed -i '32s/rt/rt crypto ssl/' /root/Tars/framework/CMakeLists.txt \
 	# 开始构建
