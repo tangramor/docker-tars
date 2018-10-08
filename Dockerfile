@@ -20,9 +20,6 @@ RUN yum -y install https://repo.mysql.com/mysql57-community-release-el7-11.noarc
 	&& git submodule update --init --recursive web \
 	&& git submodule update --init --recursive java \
 	&& mkdir -p /data && chmod u+x /root/Tars/framework/build/build.sh \
-	# 临时bug fix
-	&& sed -i 's/""/"" ""/g' /root/Tars/framework/tarscpp/servant/tup/CMakeLists.txt \
-	# 结束bug fix
 	# 开始构建
 	&& cd /root/Tars/framework/build/ && ./build.sh all \
 	&& ./build.sh install \
