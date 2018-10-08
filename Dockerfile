@@ -23,9 +23,6 @@ RUN cd /root/ && git clone https://github.com/TarsCloud/Tars \
 	&& git submodule update --init --recursive web \
 	&& git submodule update --init --recursive php \
 	&& mkdir -p /data && chmod u+x /root/Tars/framework/build/build.sh \
-	# 临时bug fix
-	&& sed -i 's/""/"" ""/g' /root/Tars/framework/tarscpp/servant/tup/CMakeLists.txt \
-	# 结束bug fix
 	# 开始构建
 	&& cd /root/Tars/framework/build/ && ./build.sh all \
 	&& ./build.sh install \
