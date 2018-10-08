@@ -1,9 +1,17 @@
-FROM centos as builder
+FROM centos/systemd
 
 WORKDIR /root/
 
 ##镜像时区 
 ENV TZ=Asia/Shanghai
+
+ENV DBIP 127.0.0.1
+ENV DBPort 3306
+ENV DBUser root
+ENV DBPassword password
+
+# Mysql里tars用户的密码，缺省为tars2015
+ENV DBTarsPass tars2015
 
 ##安装
 RUN yum -y install https://repo.mysql.com/mysql57-community-release-el7-11.noarch.rpm \
@@ -20,10 +28,9 @@ RUN yum -y install https://repo.mysql.com/mysql57-community-release-el7-11.noarc
 	&& cp -Rf include/jdbc/* /usr/include/mysql/ && cp -Rf include/mysqlx/* /usr/include/mysql/ && cp -Rf lib64/* /usr/lib64/mysql/ \
 	&& cd /root && rm -rf mysql-connector* \
 	&& mkdir -p /usr/local/mysql && ln -s /usr/lib64/mysql /usr/local/mysql/lib && ln -s /usr/include/mysql /usr/local/mysql/include && echo "/usr/local/mysql/lib/" >> /etc/ld.so.conf && ldconfig \
-	&& cd /usr/local/mysql/lib/ && rm -f libmysqlclient.a && ln -s libmysqlclient.so.*.*.* libmysqlclient.a
-
-# 获取最新TARS源码
-RUN cd /root/ && git clone https://github.com/TarsCloud/Tars \
+	&& cd /usr/local/mysql/lib/ && rm -f libmysqlclient.a && ln -s libmysqlclient.so.*.*.* libmysqlclient.a \
+	# 获取最新TARS源码
+	&& cd /root/ && git clone https://github.com/TarsCloud/Tars \
 	&& cd /root/Tars/ && git submodule update --init --recursive framework \
 	&& git submodule update --init --recursive web \
 	&& git submodule update --init --recursive php \
@@ -58,48 +65,6 @@ RUN cd /root/ && git clone https://github.com/TarsCloud/Tars \
 	&& cd /root/Tars/framework/build/ && ./build.sh cleanall \
 	&& yum clean all && rm -rf /var/cache/yum
 
-
-FROM centos/systemd
-
-##镜像时区 
-ENV TZ=Asia/Shanghai
-
-ENV DBIP 127.0.0.1
-ENV DBPort 3306
-ENV DBUser root
-ENV DBPassword password
-
-# Mysql里tars用户的密码，缺省为tars2015
-ENV DBTarsPass tars2015
-
-COPY --from=builder /usr/local/app /usr/local/app
-COPY --from=builder /usr/local/tarsweb /usr/local/tarsweb
-COPY --from=builder /usr/local/tars /usr/local/tars
-COPY --from=builder /home/tarsproto /home/tarsproto
-COPY --from=builder /root/t*.tgz /root/
-COPY --from=builder /root/Tars/framework/sql /root/sql
-COPY --from=builder /root/phptars /root/phptars
-COPY --from=builder /usr/lib64/php/modules/phptars.so /usr/lib64/php/modules/phptars.so
-COPY --from=builder /usr/lib64/php/modules/swoole.so /usr/lib64/php/modules/swoole.so
-COPY --from=builder /etc/php.d/phptars.ini /etc/php.d/phptars.ini
-COPY --from=builder /etc/php.d/swoole.ini /etc/php.d/swoole.ini
-COPY --from=builder /usr/include/mysql /usr/include/mysql
-COPY --from=builder /usr/lib64/mysql /usr/lib64/mysql
-COPY --from=builder /usr/local/bin/composer /usr/local/bin/composer
-
-RUN yum -y install https://repo.mysql.com/mysql57-community-release-el7-11.noarch.rpm \
-	&& yum -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm \
-	&& yum -y install http://rpms.remirepo.net/enterprise/remi-release-7.rpm \
-	&& yum -y install yum-utils && yum-config-manager --enable remi-php72 \
-	&& yum --enablerepo=mysql80-community -y install wget mysql unzip iproute which flex bison protobuf zlib kde-l10n-Chinese glibc-common boost php-cli php-mcrypt php-mbstring php-cli php-gd php-curl php-mysql php-zip php-fileinfo php-phpiredis php-seld-phar-utils tzdata rsync \
-	&& ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone \
-	&& localedef -c -f UTF-8 -i zh_CN zh_CN.utf8 \
-	&& mkdir -p /usr/local/mysql && ln -s /usr/lib64/mysql /usr/local/mysql/lib && ln -s /usr/include/mysql /usr/local/mysql/include && echo "/usr/local/mysql/lib/" >> /etc/ld.so.conf && ldconfig \
-	&& cd /usr/local/mysql/lib/ && rm -f libmysqlclient.a && ln -s libmysqlclient.so.*.*.* libmysqlclient.a \
-	&& wget -qO- https://raw.githubusercontent.com/creationix/nvm/v0.33.11/install.sh | bash \
-	&& source ~/.bashrc && nvm install v8.11.3 \
-	&& cd /usr/local/tarsweb/ && npm install -g pm2 --registry=https://registry.npm.taobao.org \
-	&& yum clean all && rm -rf /var/cache/yum
 
 # 是否将开启Tars的Web管理界面登录功能，预留，目前没用
 ENV ENABLE_LOGIN false
