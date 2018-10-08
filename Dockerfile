@@ -13,6 +13,8 @@ ENV DBPassword password
 # Mysql里tars用户的密码，缺省为tars2015
 ENV DBTarsPass tars2015
 
+ENV GOPATH=/usr/local/go
+
 ##安装
 RUN yum -y install https://repo.mysql.com/mysql57-community-release-el7-11.noarch.rpm \
 	&& yum -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm \
@@ -34,6 +36,7 @@ RUN yum -y install https://repo.mysql.com/mysql57-community-release-el7-11.noarc
 	&& cd /root/Tars/ && git submodule update --init --recursive framework \
 	&& git submodule update --init --recursive web \
 	&& git submodule update --init --recursive php \
+	&& git submodule update --init --recursive go \
 	&& mkdir -p /data && chmod u+x /root/Tars/framework/build/build.sh \
 	# 以下对源码配置进行mysql8对应的修改
 	&& sed -i '32s/rt/rt crypto ssl/' /root/Tars/framework/CMakeLists.txt \
@@ -56,6 +59,9 @@ RUN yum -y install https://repo.mysql.com/mysql57-community-release-el7-11.noarc
 	&& echo "extension=swoole.so" > /etc/php.d/swoole.ini \
 	&& cd /root && rm -rf v2.2.0.tar.gz swoole-src-2.2.0 \
 	&& mkdir -p /root/phptars && cp -f /root/Tars/php/tars2php/src/tars2php.php /root/phptars \
+	# 安装tars go
+	&& go get github.com/TarsCloud/TarsGo/tars \
+	&& cd $GOPATH/src/github.com/TarsCloud/TarsGo/tars/tools/tars2go && go build . \
 	# 获取并安装nodejs
 	&& wget -qO- https://raw.githubusercontent.com/creationix/nvm/v0.33.11/install.sh | bash \
 	&& source ~/.bashrc && nvm install v8.11.3 \
