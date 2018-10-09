@@ -16,11 +16,11 @@ ENV DBTarsPass tars2015
 ENV GOPATH=/usr/local/go
 
 ##安装
-RUN yum -y install https://repo.mysql.com/mysql57-community-release-el7-11.noarch.rpm \
+RUN yum -y install https://repo.mysql.com/yum/mysql-8.0-community/el/7/x86_64/mysql80-community-release-el7-1.noarch.rpm \
 	&& yum -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm \
 	&& yum -y install http://rpms.remirepo.net/enterprise/remi-release-7.rpm \
 	&& yum -y install yum-utils && yum-config-manager --enable remi-php72 \
-	&& yum --enablerepo=mysql80-community -y install git gcc gcc-c++ go make wget cmake mysql mysql-devel unzip iproute which glibc-devel flex bison ncurses-devel protobuf-devel zlib-devel kde-l10n-Chinese glibc-common hiredis-devel rapidjson-devel boost boost-devel php php-cli php-devel php-mcrypt php-cli php-gd php-curl php-mysql php-zip php-fileinfo php-phpiredis php-seld-phar-utils tzdata \
+	&& yum -y install git gcc gcc-c++ go make wget cmake mysql mysql-devel unzip iproute which glibc-devel flex bison ncurses-devel protobuf-devel zlib-devel kde-l10n-Chinese glibc-common hiredis-devel rapidjson-devel boost boost-devel php php-cli php-devel php-mcrypt php-cli php-gd php-curl php-mysql php-zip php-fileinfo php-phpiredis php-seld-phar-utils tzdata \
 	# 设置时区与编码
 	&& ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone \
 	&& localedef -c -f UTF-8 -i zh_CN zh_CN.utf8 \
