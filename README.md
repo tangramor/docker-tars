@@ -58,24 +58,21 @@ docker run --name mysql -e MYSQL_ROOT_PASSWORD=password -d -p 3306:3306 -v /c/Us
 镜像
 ----
 
-docker镜像已经由docker hub自动构建：https://hub.docker.com/r/tarscloud/tars/ 或 https://hub.docker.com/r/tangramor/docker-tars/ ，使用下面命令即可获取：
+docker镜像已经由docker hub自动构建：https://hub.docker.com/r/tarscloud/tars/ 或 https://hub.docker.com/r/tangramor/docker-tars/ ，使用下面命令即可获取（注意替换 `<tag>` ）：
 ```
-docker pull tarscloud/tars
+docker pull tarscloud/tars:<tag>
 ```
+* tag 为 **latest** 的镜像支持C++服务端，包含 CentOS7 的标准C++运行环境；
+* tag 为 **php** 的镜像支持PHP服务端，包含了 php 7.2 环境和 swoole、phptars 扩展；
+* tag 为 **java** 的镜像支持Java服务端，包含 JDK 10.0.2 以及 maven 等支持；
+* tag 为 **go** 的镜像支持Go语言服务端，包含 Golang 1.9.4；
+* tag 为 **nodejs** 的镜像支持Nodejs服务端，包含 nodejs 8.11.3；
+* tag 为 **dev** 的镜像包含了C++、PHP、Java、Go和Nodejs的服务端开发支持，用于开发，上述其它镜像则**不包含**make等开发工具以减小镜像体积。
 
-tag 为 **php7** 的镜像支持PHP服务端开发，包含了php7.2环境和phptars扩展：
-```
-docker pull tarscloud/tars:php7
-```
-
-tag 为 **php7mysql8** 的镜像支持PHP服务端开发，包含php7.2以及mysql8相关的支持修改：
-```
-docker pull tarscloud/tars:php7mysql8
-```
 
 **tars-node** 之下是只部署 tarsnode 服务的节点镜像脚本，使用下面命令即可获取：
 ```
-docker pull tangramor/tars-node
+docker pull tarscloud/tars-node:<tag>
 ```
 
 ### 注意：
@@ -121,11 +118,11 @@ DBPassword password
 
 run_docker_tars.sh 里的命令如下，请自己修改：
 ```
-docker run -d -it --name tars --link mysql --env MOUNT_DATA=false --env DBIP=mysql --env DBPort=3306 --env DBUser=root --env DBPassword=PASS -p 8080:8080 -v /c/Users/<ACCOUNT>/tars_data:/data tangramor/docker-tars
+docker run -d -it --name tars --link mysql --env MOUNT_DATA=false --env DBIP=mysql --env DBPort=3306 --env DBUser=root --env DBPassword=PASS -p 8080:8080 -v /c/Users/<ACCOUNT>/tars_data:/data tarscloud/tars
 ```
 
 ### 框架普通基础服务
-另外安装脚本把构建成功的 tarslog.tgz、tarsnotify.tgz、tarsproperty.tgz、tarsqueryproperty.tgz、tarsquerystat.tgz 和 tarsstat.tgz 都放到了 `/c/Users/<ACCOUNT>/tars_data/` 目录之下，镜像本身已经自动安装了这些服务。你也可以参考Tars官方文档的 [安装框架普通基础服务](https://github.com/Tencent/Tars/blob/master/Install.md#44-%E5%AE%89%E8%A3%85%E6%A1%86%E6%9E%B6%E6%99%AE%E9%80%9A%E5%9F%BA%E7%A1%80%E6%9C%8D%E5%8A%A1) 来了解这些服务。
+另外安装脚本把构建成功的 tarslog.tgz、tarsnotify.tgz、tarsproperty.tgz、tarsqueryproperty.tgz、tarsquerystat.tgz 和 tarsstat.tgz 都放到了 `/c/Users/<ACCOUNT>/tars_data/` 目录之下，镜像本身已经自动安装了这些服务。你也可以参考Tars官方文档的 [安装框架普通基础服务](https://github.com/TarsCloud/Tars/blob/master/Install.zh.md#44-%E5%AE%89%E8%A3%85%E6%A1%86%E6%9E%B6%E6%99%AE%E9%80%9A%E5%9F%BA%E7%A1%80%E6%9C%8D%E5%8A%A1) 来了解这些服务。
 
 
 
@@ -135,10 +132,10 @@ docker run -d -it --name tars --link mysql --env MOUNT_DATA=false --env DBIP=mys
 镜像构建命令：`docker build -t tars .`
 
 
-[tars-node](https://github.com/tangramor/tars-node) 镜像构建，请检出 tars-node 项目后执行命令：
+[tars-node](https://github.com/TarsDocker/tars-node) 镜像构建，请检出 tars-node 项目后执行命令：
 
 ```
-git clone https://github.com/tangramor/tars-node.git
+git clone https://github.com/TarsDocker/tars-node.git
 cd tars-node
 docker build -t tars-node -f Dockerfile .
 ```
