@@ -137,7 +137,6 @@ install_base_services(){
 	./tarspatch/util/init.sh
 
 	chmod u+x tars_install.sh
-	./tars_install.sh
 }
 
 build_web_mgr(){
