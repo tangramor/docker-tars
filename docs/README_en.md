@@ -55,24 +55,22 @@ You can also use a customized my.cnf to add those options.
 
 Image
 ------
-The docker image is built automatically by docker hub: https://hub.docker.com/r/tarscloud/tars/ or https://hub.docker.com/r/tangramor/docker-tars/ . You can pull it by following command:
+The docker image is built automatically by docker hub: https://hub.docker.com/r/tarscloud/tars/ or https://hub.docker.com/r/tangramor/docker-tars/ . You can pull it by following command (please change `<tag>` accordingly):
 ```
-docker pull tarscloud/tars
-```
-
-The image with **php7** tag supports PHP server development, and it includes php7.2 and phptars extension:
-```
-docker pull tarscloud/tars:php7
+docker pull tarscloud/tars:<tag>
 ```
 
-The image with **php7mysql8** tag supports PHP server development, and it includes php7.2 and mysql8 related support:
-```
-docker pull tarscloud/tars:php7mysql8
-```
+* **latest** tag supports C++ server, includes standard C++ env of CentOS7;
+* **php** tag supports PHP server, includes php 7.2 and swoole, phptars extensions;
+* **java** tag supports Java server, includes JDK 10.0.2 and maven;
+* **go** tag supports Go server, includes Golang 1.9.4;
+* **nodejs** tag supports Nodejs server, includes nodejs 8.11.3;
+* **dev** tag inludes C++, PHP, Java, Go and Nodejs server side development support. The above images **do not include** development tools like make to reduce image size.
+
 
 The image **tars-node** has only tarsnode service deployed, and does not have Tars source code either:
 ```
-docker pull tangramor/tars-node
+docker pull tarscloud/tars-node:<tag>
 ```
 
 ### Notice
@@ -110,7 +108,7 @@ docker run -d -it --name tars --link mysql --env DBIP=mysql --env DBPort=3306 --
 ```
 
 ### General basic service for framework
-In the Dockerfile I put the successfully built service packages tarslog.tgz, tarsnotify.tgz, tarsproperty.tgz, tarsqueryproperty.tgz, tarsquerystat.tgz and tarsstat.tgz to /data, which should be mounted from the host machine like `/c/Users/<ACCOUNT>/tars_data/`. These services have been automatically installed in the docker image. You can refer to [Install general basic service for framework](https://github.com/Tencent/Tars/blob/master/Install.en.md#44-install-general-basic-service-for-framework) to understand those services.
+In the Dockerfile I put the successfully built service packages tarslog.tgz, tarsnotify.tgz, tarsproperty.tgz, tarsqueryproperty.tgz, tarsquerystat.tgz and tarsstat.tgz to /data, which should be mounted from the host machine like `/c/Users/<ACCOUNT>/tars_data/`. These services have been automatically installed in the docker image. You can refer to [Install general basic service for framework](https://github.com/TarsCloud/Tars/blob/master/Install.md#44-install-general-basic-service-for-framework) to understand those services.
 
 
 Build Images
