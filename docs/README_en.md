@@ -1,5 +1,5 @@
 
-![Docker Pulls](https://img.shields.io/docker/pulls/tangramor/docker-tars.svg) ![Docker Automated build](https://img.shields.io/docker/automated/tangramor/docker-tars.svg) ![Docker Build Status](https://img.shields.io/docker/build/tangramor/docker-tars.svg)
+![Docker Pulls](https://img.shields.io/docker/pulls/tarscloud/tars.svg) ![Docker Automated build](https://img.shields.io/docker/automated/tarscloud/tars.svg) ![Docker Build Status](https://img.shields.io/docker/build/tarscloud/tars.svg)
 
 
 TOC
