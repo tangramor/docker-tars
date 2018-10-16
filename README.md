@@ -160,13 +160,13 @@ docker build -t tars-node -f Dockerfile .
 
 ### 举例说明（含PDF下载）：
 
-**[TARS C++服务端与客户端开发](https://tangramor.gitlab.io/tars-docker-guide/TARS-CPP--%E6%9C%8D%E5%8A%A1%E7%AB%AF%E4%B8%8E%E5%AE%A2%E6%88%B7%E7%AB%AF%E5%BC%80%E5%8F%91/)**
+**[TARS C++服务端与客户端开发](https://tangramor.gitlab.io/tars-docker-guide/1.TARS-CPP-%E6%9C%8D%E5%8A%A1%E7%AB%AF%E4%B8%8E%E5%AE%A2%E6%88%B7%E7%AB%AF%E5%BC%80%E5%8F%91/)**
 
-**[TARS PHP TCP服务端与客户端开发](https://tangramor.gitlab.io/tars-docker-guide/TARS-PHP-TCP%E6%9C%8D%E5%8A%A1%E7%AB%AF%E4%B8%8E%E5%AE%A2%E6%88%B7%E7%AB%AF%E5%BC%80%E5%8F%91/)**
+**[TARS PHP TCP服务端与客户端开发](https://tangramor.gitlab.io/tars-docker-guide/2.TARS-PHP-TCP%E6%9C%8D%E5%8A%A1%E7%AB%AF%E4%B8%8E%E5%AE%A2%E6%88%B7%E7%AB%AF%E5%BC%80%E5%8F%91/)**
 
-**[TARS PHP HTTP服务端与客户端开发](https://tangramor.gitlab.io/tars-docker-guide/TARS-PHP-HTTP%E6%9C%8D%E5%8A%A1%E7%AB%AF%E4%B8%8E%E5%AE%A2%E6%88%B7%E7%AB%AF%E5%BC%80%E5%8F%91/)**
+**[TARS PHP HTTP服务端与客户端开发](https://tangramor.gitlab.io/tars-docker-guide/3.TARS-PHP-HTTP%E6%9C%8D%E5%8A%A1%E7%AB%AF%E4%B8%8E%E5%AE%A2%E6%88%B7%E7%AB%AF%E5%BC%80%E5%8F%91/)**
 
-**[TARS JAVA服务端与客户端开发](https://tangramor.gitlab.io/tars-docker-guide/TARS-JAVA-%E6%9C%8D%E5%8A%A1%E7%AB%AF%E4%B8%8E%E5%AE%A2%E6%88%B7%E7%AB%AF%E5%BC%80%E5%8F%91/)**
+**[TARS JAVA服务端与客户端开发](https://tangramor.gitlab.io/tars-docker-guide/4.TARS-JAVA-%E6%9C%8D%E5%8A%A1%E7%AB%AF%E4%B8%8E%E5%AE%A2%E6%88%B7%E7%AB%AF%E5%BC%80%E5%8F%91/)**
 
 以上文档网站基于 https://github.com/tangramor/mkdocs 生成，支持 Gitlab Pages 和 PDF 导出（含中文）。
 
