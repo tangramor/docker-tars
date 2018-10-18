@@ -70,13 +70,13 @@ RUN yum -y install https://repo.mysql.com/yum/mysql-8.0-community/el/7/x86_64/my
 	&& npm install -g pm2 @tars/deploy @tars/stream @tars/rpc @tars/logs @tars/config @tars/monitor @tars/notify @tars/utils @tars/dyeing @tars/registry \
 	# 获取并安装JDK
 	&& mkdir -p /root/init && cd /root/init/ \
-	&& wget -c -t 0 --header "Cookie: oraclelicense=accept" -c --no-check-certificate http://download.oracle.com/otn-pub/java/jdk/10.0.2+13/19aef61b38124481863b1413dce1855f/jdk-10.0.2_linux-x64_bin.rpm \
-	&& rpm -ivh /root/init/jdk-10.0.2_linux-x64_bin.rpm && rm -rf /root/init/jdk-10.0.2_linux-x64_bin.rpm \
-	&& echo "export JAVA_HOME=/usr/java/jdk-10.0.2" >> /etc/profile \
+	&& wget -c -t 0 --header "Cookie: oraclelicense=accept" -c --no-check-certificate http://download.oracle.com/otn-pub/java/jdk/11.0.1+13/90cf5d8f270a4347a95050320eef3fb7/jdk-11.0.1_linux-x64_bin.rpm \
+	&& rpm -ivh /root/init/jdk-11.0.1_linux-x64_bin.rpm && rm -rf /root/init/jdk-11.0.1_linux-x64_bin.rpm \
+	&& echo "export JAVA_HOME=/usr/java/jdk-11.0.1" >> /etc/profile \
 	&& echo "CLASSPATH=\$JAVA_HOME/lib/dt.jar:\$JAVA_HOME/lib/tools.jar" >> /etc/profile \
 	&& echo "PATH=\$JAVA_HOME/bin:\$PATH" >> /etc/profile \
 	&& echo "export PATH JAVA_HOME CLASSPATH" >> /etc/profile \
-	&& echo "export JAVA_HOME=/usr/java/jdk-10.0.2" >> /root/.bashrc \
+	&& echo "export JAVA_HOME=/usr/java/jdk-11.0.1" >> /root/.bashrc \
 	&& echo "CLASSPATH=\$JAVA_HOME/lib/dt.jar:\$JAVA_HOME/lib/tools.jar" >> /root/.bashrc \
 	&& echo "PATH=\$JAVA_HOME/bin:\$PATH" >> /root/.bashrc \
 	&& echo "export PATH JAVA_HOME CLASSPATH" >> /root/.bashrc \
@@ -109,7 +109,7 @@ ENV INET_NAME eth0
 # 中文字符集支持
 ENV LC_ALL "zh_CN.UTF-8"
 
-ENV JAVA_HOME /usr/java/jdk-10.0.2
+ENV JAVA_HOME /usr/java/jdk-11.0.1
 
 ENV MAVEN_HOME /usr/local/apache-maven-3.5.4
 
