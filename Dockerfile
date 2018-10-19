@@ -13,6 +13,10 @@ ENV DBPassword password
 # Mysql里tars用户的密码，缺省为tars2015
 ENV DBTarsPass tars2015
 
+ENV JAVA_HOME /usr/java/jdk-10.0.2
+
+ENV MAVEN_HOME /usr/local/apache-maven-3.5.4
+
 ENV GOPATH=/usr/local/go
 
 COPY --from=tarscloud/tars:dev /usr/local/mysql/lib /usr/local/mysql/lib
@@ -78,10 +82,6 @@ ENV INET_NAME eth0
 
 # 中文字符集支持
 ENV LC_ALL "zh_CN.UTF-8"
-
-ENV JAVA_HOME /usr/java/jdk-10.0.2
-
-ENV MAVEN_HOME /usr/local/apache-maven-3.5.4
 
 VOLUME ["/data"]
 	
