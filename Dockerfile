@@ -15,6 +15,22 @@ ENV DBTarsPass tars2015
 
 ENV GOPATH=/usr/local/go
 
+COPY --from=tarscloud/tars:dev /usr/local/mysql/lib /usr/local/mysql/lib
+COPY --from=tarscloud/tars:dev $GOPATH $GOPATH
+COPY --from=tarscloud/tars:dev $JAVA_HOME $JAVA_HOME
+COPY --from=tarscloud/tars:dev $MAVEN_HOME $MAVEN_HOME
+COPY --from=tarscloud/tars:dev /root/.m2 /root/.m2
+COPY --from=tarscloud/tars:dev /etc/profile /etc/profile
+COPY --from=tarscloud/tars:dev /root/.bashrc /root/.bashrc
+COPY --from=tarscloud/tars:dev /root/phptars /root/phptars
+COPY --from=tarscloud/tars:dev /usr/lib64/php/modules/phptars.so /usr/lib64/php/modules/phptars.so
+COPY --from=tarscloud/tars:dev /usr/lib64/php/modules/swoole.so /usr/lib64/php/modules/swoole.so
+COPY --from=tarscloud/tars:dev /etc/php.d/phptars.ini /etc/php.d/phptars.ini
+COPY --from=tarscloud/tars:dev /etc/php.d/swoole.ini /etc/php.d/swoole.ini
+COPY --from=tarscloud/tars:dev /usr/include/mysql /usr/include/mysql
+COPY --from=tarscloud/tars:dev /usr/lib64/mysql /usr/lib64/mysql
+COPY --from=tarscloud/tars:dev /usr/local/bin/composer /usr/local/bin/composer
+
 ##安装
 RUN yum -y install https://repo.mysql.com/yum/mysql-8.0-community/el/7/x86_64/mysql80-community-release-el7-1.noarch.rpm \
 	&& yum -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm \
@@ -24,11 +40,6 @@ RUN yum -y install https://repo.mysql.com/yum/mysql-8.0-community/el/7/x86_64/my
 	# 设置时区与编码
 	&& ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone \
 	&& localedef -c -f UTF-8 -i zh_CN zh_CN.utf8 \
-	# 安装Mysql8 C++ Connector
-	&& wget -c -t 0 https://dev.mysql.com/get/Downloads/Connector-C++/mysql-connector-c++-8.0.11-linux-el7-x86-64bit.tar.gz \
-	&& tar zxf mysql-connector-c++-8.0.11-linux-el7-x86-64bit.tar.gz && cd mysql-connector-c++-8.0.11-linux-el7-x86-64bit \
-	&& cp -Rf include/jdbc/* /usr/include/mysql/ && cp -Rf include/mysqlx/* /usr/include/mysql/ && cp -Rf lib64/* /usr/lib64/mysql/ \
-	&& cd /root && rm -rf mysql-connector* \
 	&& mkdir -p /usr/local/mysql && ln -s /usr/lib64/mysql /usr/local/mysql/lib && ln -s /usr/include/mysql /usr/local/mysql/include && echo "/usr/local/mysql/lib/" >> /etc/ld.so.conf && ldconfig \
 	&& cd /usr/local/mysql/lib/ && rm -f libmysqlclient.a && ln -s libmysqlclient.so.*.*.* libmysqlclient.a \
 	# 获取最新TARS源码
@@ -49,49 +60,10 @@ RUN yum -y install https://repo.mysql.com/yum/mysql-8.0-community/el/7/x86_64/my
 	&& mkdir -p /usr/local/app/tars/ && cp /root/Tars/framework/build/framework.tgz /usr/local/app/tars/ && cp /root/Tars/framework/build/t*.tgz /root/ \
 	&& cd /usr/local/app/tars/ && tar xzfv framework.tgz && rm -rf framework.tgz \
 	&& mkdir -p /usr/local/app/patchs/tars.upload \
-	&& cd /tmp && curl -fsSL https://getcomposer.org/installer | php \
-	&& chmod +x composer.phar && mv composer.phar /usr/local/bin/composer \
-	&& cd /root/Tars/php/tars-extension/ && phpize --clean && phpize \
-	&& ./configure --enable-phptars --with-php-config=/usr/bin/php-config && make && make install \
-	&& echo "extension=phptars.so" > /etc/php.d/phptars.ini \
-	# 安装PHP swoole模块
-	&& cd /root && wget -c -t 0 https://github.com/swoole/swoole-src/archive/v2.2.0.tar.gz \
-	&& tar zxf v2.2.0.tar.gz && cd swoole-src-2.2.0 && phpize && ./configure && make && make install \
-	&& echo "extension=swoole.so" > /etc/php.d/swoole.ini \
-	&& cd /root && rm -rf v2.2.0.tar.gz swoole-src-2.2.0 \
-	&& mkdir -p /root/phptars && cp -f /root/Tars/php/tars2php/src/tars2php.php /root/phptars \
-	# 安装tars go
-	&& go get github.com/TarsCloud/TarsGo/tars \
-	&& cd $GOPATH/src/github.com/TarsCloud/TarsGo/tars/tools/tars2go && go build . \
-	# 获取并安装nodejs
 	&& wget -qO- https://raw.githubusercontent.com/creationix/nvm/v0.33.11/install.sh | bash \
 	&& source ~/.bashrc && nvm install v8.11.3 \
 	&& cp -Rf /root/Tars/web /usr/local/tarsweb && cd /usr/local/tarsweb/ && npm install \
 	&& npm install -g pm2 @tars/deploy @tars/stream @tars/rpc @tars/logs @tars/config @tars/monitor @tars/notify @tars/utils @tars/dyeing @tars/registry \
-	# 获取并安装JDK
-	&& mkdir -p /root/init && cd /root/init/ \
-	&& wget -c -t 0 --header "Cookie: oraclelicense=accept" -c --no-check-certificate http://download.oracle.com/otn-pub/java/jdk/11.0.1+13/90cf5d8f270a4347a95050320eef3fb7/jdk-11.0.1_linux-x64_bin.rpm \
-	&& rpm -ivh /root/init/jdk-11.0.1_linux-x64_bin.rpm && rm -rf /root/init/jdk-11.0.1_linux-x64_bin.rpm \
-	&& echo "export JAVA_HOME=/usr/java/jdk-11.0.1" >> /etc/profile \
-	&& echo "CLASSPATH=\$JAVA_HOME/lib/dt.jar:\$JAVA_HOME/lib/tools.jar" >> /etc/profile \
-	&& echo "PATH=\$JAVA_HOME/bin:\$PATH" >> /etc/profile \
-	&& echo "export PATH JAVA_HOME CLASSPATH" >> /etc/profile \
-	&& echo "export JAVA_HOME=/usr/java/jdk-11.0.1" >> /root/.bashrc \
-	&& echo "CLASSPATH=\$JAVA_HOME/lib/dt.jar:\$JAVA_HOME/lib/tools.jar" >> /root/.bashrc \
-	&& echo "PATH=\$JAVA_HOME/bin:\$PATH" >> /root/.bashrc \
-	&& echo "export PATH JAVA_HOME CLASSPATH" >> /root/.bashrc \
-	&& cd /usr/local/ && wget -c -t 0 https://mirrors.tuna.tsinghua.edu.cn/apache/maven/maven-3/3.5.4/binaries/apache-maven-3.5.4-bin.tar.gz \
-	&& tar zxvf apache-maven-3.5.4-bin.tar.gz && echo "export MAVEN_HOME=/usr/local/apache-maven-3.5.4/" >> /etc/profile \
-	# 设置阿里云maven镜像
-	# && sed -i '/<mirrors>/a\\t<mirror>\n\t\t<id>nexus-aliyun<\/id>\n\t\t<mirrorOf>*<\/mirrorOf>\n\t\t<name>Nexus aliyun<\/name>\n\t\t<url>http:\/\/maven.aliyun.com\/nexus\/content\/groups\/public<\/url>\n\t<\/mirror>' /usr/local/apache-maven-3.5.4/conf/settings.xml \
-	&& echo "export PATH=\$PATH:\$MAVEN_HOME/bin" >> /etc/profile \
-	&& echo "export PATH=\$PATH:\$MAVEN_HOME/bin" >> /root/.bashrc \
-	&& source /etc/profile && mvn -v \
-	&& rm -rf apache-maven-3.5.4-bin.tar.gz \
-	&& cd /root/Tars/java && source /etc/profile && mvn clean install && mvn clean install -f core/client.pom.xml \
-	&& mvn clean install -f core/server.pom.xml \
-	&& cd /root/init && mvn archetype:generate -DgroupId=com.tangramor -DartifactId=TestJava -DarchetypeArtifactId=maven-archetype-webapp -DinteractiveMode=false \
-	&& cd /root/Tars/java/examples/quickstart-server/ && mvn tars:tars2java && mvn package \
 	&& mkdir -p /root/sql && cp -rf /root/Tars/framework/sql/* /root/sql/ \
 	&& cd /root/Tars/framework/build/ && ./build.sh cleanall \
 	&& yum clean all && rm -rf /var/cache/yum
