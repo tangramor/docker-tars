@@ -47,10 +47,10 @@ RUN yum -y install https://repo.mysql.com/yum/mysql-8.0-community/el/7/x86_64/my
 	# 获取最新TARS源码
 	&& cd /root/ && git clone https://github.com/TarsCloud/Tars \
 	&& cd /root/Tars/ && git submodule update --init --recursive framework \
-	&& git submodule update --init --recursive web \
-	&& git submodule update --init --recursive php \
-	&& git submodule update --init --recursive go \
-	&& git submodule update --init --recursive java \
+	&& git submodule update --init --recursive web && cd web && git checkout master && git pull && cd .. \
+	&& git submodule update --init --recursive php && cd php && git checkout master && git pull && cd ..  \
+	&& git submodule update --init --recursive go && cd go && git checkout master && git pull && cd ..  \
+	&& git submodule update --init --recursive java && cd java && git checkout master && git pull && cd ..  \
 	&& mkdir -p /data && chmod u+x /root/Tars/framework/build/build.sh \
 	# 以下对源码配置进行mysql8对应的修改
 	&& sed -i '32s/rt/rt crypto ssl/' /root/Tars/framework/CMakeLists.txt \
