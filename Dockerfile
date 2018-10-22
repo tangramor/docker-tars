@@ -20,6 +20,7 @@ ENV MAVEN_HOME /usr/local/apache-maven-3.5.4
 ENV GOPATH=/usr/local/go
 
 COPY --from=tarscloud/tars:dev /usr/local/mysql/lib /usr/local/mysql/lib
+COPY --from=tarscloud/tars:dev /usr/include/mysql /usr/include/mysql
 COPY --from=tarscloud/tars:dev $GOPATH $GOPATH
 COPY --from=tarscloud/tars:dev $JAVA_HOME $JAVA_HOME
 COPY --from=tarscloud/tars:dev $MAVEN_HOME $MAVEN_HOME
@@ -42,7 +43,7 @@ RUN yum -y install https://repo.mysql.com/yum/mysql-8.0-community/el/7/x86_64/my
 	# 设置时区与编码
 	&& ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone \
 	&& localedef -c -f UTF-8 -i zh_CN zh_CN.utf8 \
-	&& mkdir -p /usr/local/mysql && ln -s /usr/lib64/mysql /usr/local/mysql/lib && ln -s /usr/include/mysql /usr/local/mysql/include && echo "/usr/local/mysql/lib/" >> /etc/ld.so.conf && ldconfig \
+	&& ln -s /usr/include/mysql /usr/local/mysql/include && echo "/usr/local/mysql/lib/" >> /etc/ld.so.conf && ldconfig \
 	&& cd /usr/local/mysql/lib/ && rm -f libmysqlclient.a && ln -s libmysqlclient.so.*.*.* libmysqlclient.a \
 	# 获取最新TARS源码
 	&& cd /root/ && git clone https://github.com/TarsCloud/Tars \
