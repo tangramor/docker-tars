@@ -15,6 +15,13 @@ ENV DBTarsPass tars2015
 
 ENV GOPATH=/usr/local/go
 
+# 中文字符集支持
+ENV LC_ALL "zh_CN.UTF-8"
+
+ENV JAVA_HOME /usr/java/jdk-10.0.2
+
+ENV MAVEN_HOME /usr/local/apache-maven-3.5.4
+
 ##安装
 RUN yum -y install https://repo.mysql.com/yum/mysql-8.0-community/el/7/x86_64/mysql80-community-release-el7-1.noarch.rpm \
 	&& yum -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm \
@@ -105,13 +112,6 @@ ENV MOUNT_DATA false
 
 # 网络接口名称，如果运行时使用 --net=host，宿主机网卡接口可能不叫 eth0
 ENV INET_NAME eth0
-
-# 中文字符集支持
-ENV LC_ALL "zh_CN.UTF-8"
-
-ENV JAVA_HOME /usr/java/jdk-10.0.2
-
-ENV MAVEN_HOME /usr/local/apache-maven-3.5.4
 
 VOLUME ["/data"]
 	

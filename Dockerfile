@@ -19,6 +19,9 @@ ENV MAVEN_HOME /usr/local/apache-maven-3.5.4
 
 ENV GOPATH=/usr/local/go
 
+# 中文字符集支持
+ENV LC_ALL "zh_CN.UTF-8"
+
 COPY --from=tarscloud/tars:dev /usr/local/mysql/lib /usr/local/mysql/lib
 COPY --from=tarscloud/tars:dev /usr/include/mysql /usr/include/mysql
 COPY --from=tarscloud/tars:dev $GOPATH $GOPATH
@@ -80,9 +83,6 @@ ENV MOUNT_DATA false
 
 # 网络接口名称，如果运行时使用 --net=host，宿主机网卡接口可能不叫 eth0
 ENV INET_NAME eth0
-
-# 中文字符集支持
-ENV LC_ALL "zh_CN.UTF-8"
 
 VOLUME ["/data"]
 	
