@@ -78,15 +78,6 @@ install_base_services(){
 	cd /root/
 	mv t*.tgz /data
 
-	if [ ${MOUNT_DATA} = true ];
-	then
-		mkdir -p /data/tarsconfig_data && ln -s /data/tarsconfig_data /usr/local/app/tars/tarsconfig/data
-		mkdir -p /data/tarsnode_data && ln -s /data/tarsnode_data /usr/local/app/tars/tarsnode/data
-		mkdir -p /data/tarspatch_data && ln -s /data/tarspatch_data /usr/local/app/tars/tarspatch/data
-		mkdir -p /data/tarsregistry_data && ln -s /data/tarsregistry_data /usr/local/app/tars/tarsregistry/data
-		mkdir -p /data/tars_patchs && cp -Rf /usr/local/app/patchs/* /data/tars_patchs/ && rm -rf /usr/local/app/patchs && ln -s /data/tars_patchs /usr/local/app/patchs
-	fi
-
 	# 安装 tarsnotify、tarsstat、tarsproperty、tarslog、tarsquerystat、tarsqueryproperty
 	rm -rf /usr/local/app/tars/tarsnotify && mkdir -p /usr/local/app/tars/tarsnotify/bin && mkdir -p /usr/local/app/tars/tarsnotify/conf && mkdir -p /usr/local/app/tars/tarsnotify/data
 	rm -rf /usr/local/app/tars/tarsstat && mkdir -p /usr/local/app/tars/tarsstat/bin && mkdir -p /usr/local/app/tars/tarsstat/conf && mkdir -p /usr/local/app/tars/tarsstat/data
@@ -94,6 +85,15 @@ install_base_services(){
 	rm -rf /usr/local/app/tars/tarslog && mkdir -p /usr/local/app/tars/tarslog/bin && mkdir -p /usr/local/app/tars/tarslog/conf && mkdir -p /usr/local/app/tars/tarslog/data
 	rm -rf /usr/local/app/tars/tarsquerystat && mkdir -p /usr/local/app/tars/tarsquerystat/bin && mkdir -p /usr/local/app/tars/tarsquerystat/conf && mkdir -p /usr/local/app/tars/tarsquerystat/data
 	rm -rf /usr/local/app/tars/tarsqueryproperty && mkdir -p /usr/local/app/tars/tarsqueryproperty/bin && mkdir -p /usr/local/app/tars/tarsqueryproperty/conf && mkdir -p /usr/local/app/tars/tarsqueryproperty/data
+
+	if [ ${MOUNT_DATA} = true ];
+	then
+		mkdir -p /data/tarsconfig_data && rm -rf /usr/local/app/tars/tarsconfig/data && ln -s /data/tarsconfig_data /usr/local/app/tars/tarsconfig/data
+		mkdir -p /data/tarsnode_data && rm -rf /usr/local/app/tars/tarsnode/data && ln -s /data/tarsnode_data /usr/local/app/tars/tarsnode/data
+		mkdir -p /data/tarspatch_data && rm -rf /usr/local/app/tars/tarspatch/data && ln -s /data/tarspatch_data /usr/local/app/tars/tarspatch/data
+		mkdir -p /data/tarsregistry_data && rm -rf /usr/local/app/tars/tarsregistry/data && ln -s /data/tarsregistry_data /usr/local/app/tars/tarsregistry/data
+		mkdir -p /data/tars_patchs && cp -Rf /usr/local/app/patchs/* /data/tars_patchs/ && rm -rf /usr/local/app/patchs && ln -s /data/tars_patchs /usr/local/app/patchs
+	fi
 
 	cd /data/ && tar zxf tarsnotify.tgz && mv /data/tarsnotify/tarsnotify /usr/local/app/tars/tarsnotify/bin/ && rm -rf /data/tarsnotify
 	echo '#!/bin/sh' > /usr/local/app/tars/tarsnotify/bin/tars_start.sh
