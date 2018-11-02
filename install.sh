@@ -33,17 +33,29 @@ build_cpp_framework(){
 	sed -i "s/db.tars.com/${DBIP}/g" `grep db.tars.com -rl /root/sql/*`
 	sed -i "s/'65','2',0)/'65','2',0,'NORMAL')/g" `grep "'65','2',0)" -rl /root/sql/*`
 	sed -i "s/'65','2',0,'NORMAL');/'65','2',0,'NORMAL') ON DUPLICATE KEY UPDATE exe_path='\/usr\/local\/app\/tars\/tarsnotify\/bin\/tarsnotify';/g" /root/sql/tarsnotify.sql
-
+echo "Test 36" >> /root/log
 	cd /root/sql/
 	sed -i "s/proot@appinside/h${DBIP} -P${DBPort} -u${DBUser} -p${DBPassword} /g" `grep proot@appinside -rl ./exec-sql.sh`
 	
 	chmod u+x /root/sql/exec-sql.sh
-	
+
+echo "Test 42" >> /root/log
+
 	CHECK=$(mysqlshow --user=${DBUser} --password=${DBPassword} --host=${DBIP} --port=${DBPort} db_tars | grep -v Wildcard | grep -o db_tars)
-	if [ "$CHECK" = "db_tars" -a ${MOUNT_DATA} = true ];
+	if [[ "$CHECK" = "db_tars" && ${MOUNT_DATA} = true && ( ! -f /data/OldMachineIp || -f /data/OldMachineIp && $(cat /data/OldMachineIp) = ${MachineIp} ) ]];
 	then
+echo "Test 47" >> /root/log
 		echo "DB db_tars already exists" > /root/DB_Exists.lock
+
+	elif [[ "$CHECK" = "db_tars" && ${MOUNT_DATA} = true && -f /data/OldMachineIp && $(cat /data/OldMachineIp) != ${MachineIp} ]]; then
+echo "Test 51" >> /root/log
+		OLDIP=$(cat /data/OldMachineIp)
+		echo "DB db_tars already exists" > /root/DB_Exists.lock
+
+		mysql -h${DBIP} -P${DBPort} -u${DBUser} -p${DBPassword} -e "USE db_tars; UPDATE t_adapter_conf SET node_name=REPLACE(node_name, '${OLDIP}', '${MachineIp}'), endpoint=REPLACE(endpoint,'${OLDIP}', '${MachineIp}'); UPDATE t_machine_tars_info SET node_name=REPLACE(node_name, '${OLDIP}', '${MachineIp}'); UPDATE t_server_conf SET node_name=REPLACE(node_name, '${OLDIP}', '${MachineIp}'); UPDATE t_server_notifys SET node_name=REPLACE(node_name, '${OLDIP}', '${MachineIp}'), server_id=REPLACE(server_id, '${OLDIP}', '${MachineIp}');"
+
 	else
+echo "Test 58" >> /root/log
 		/root/sql/exec-sql.sh
 
 		mysql -h${DBIP} -P${DBPort} -u${DBUser} -p${DBPassword} db_tars < /root/sql/tarsconfig.sql
@@ -55,6 +67,8 @@ build_cpp_framework(){
 		mysql -h${DBIP} -P${DBPort} -u${DBUser} -p${DBPassword} db_tars < /root/sql/tarsquerystat.sql
 		mysql -h${DBIP} -P${DBPort} -u${DBUser} -p${DBPassword} db_tars < /root/sql/tarsqueryproperty.sql
 	fi
+echo "Test 70" >> /root/log
+	echo ${MachineIp} > /data/OldMachineIp
 }
 
 install_base_services(){
