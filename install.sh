@@ -47,10 +47,22 @@ build_cpp_framework(){
 	chmod u+x /root/sql/exec-sql.sh
 	
 	CHECK=$(mysqlshow --user=${DBUser} --password=${DBPassword} --host=${DBIP} --port=${DBPort} db_tars | grep -v Wildcard | grep -o db_tars)
-	if [ "$CHECK" = "db_tars" -a ${MOUNT_DATA} = true ];
+	if [[ "$CHECK" = "db_tars" && ${MOUNT_DATA} = true && ( ! -f /data/OldMachineIp || -f /data/OldMachineIp && $(cat /data/OldMachineIp) = ${MachineIp} ) ]];
 	then
+
 		echo "DB db_tars already exists" > /root/DB_Exists.lock
+
+	elif [[ "$CHECK" = "db_tars" && ${MOUNT_DATA} = true && -f /data/OldMachineIp && $(cat /data/OldMachineIp) != ${MachineIp} ]]; then
+
+		OLDIP=$(cat /data/OldMachineIp)
+		echo "DB db_tars already exists" > /root/DB_Exists.lock
+
+		mysql -h${DBIP} -P${DBPort} -u${DBUser} -p${DBPassword} -e "USE db_tars; UPDATE t_adapter_conf SET node_name=REPLACE(node_name, '${OLDIP}', '${MachineIp}'), endpoint=REPLACE(endpoint,'${OLDIP}', '${MachineIp}'); UPDATE t_machine_tars_info SET node_name=REPLACE(node_name, '${OLDIP}', '${MachineIp}'); UPDATE t_server_conf SET node_name=REPLACE(node_name, '${OLDIP}', '${MachineIp}'); UPDATE t_server_notifys SET node_name=REPLACE(node_name, '${OLDIP}', '${MachineIp}'), server_id=REPLACE(server_id, '${OLDIP}', '${MachineIp}');"
+
+		sed -i "s/${OLDIP}/${MachineIp}/g" `grep ${OLDIP} -rl /data/tarsnode_data/*`
+
 	else
+
 		/root/sql/exec-sql.sh
 
 		mysql -h${DBIP} -P${DBPort} -u${DBUser} -p${DBPassword} db_tars < /root/sql/tarsconfig.sql
@@ -62,6 +74,8 @@ build_cpp_framework(){
 		mysql -h${DBIP} -P${DBPort} -u${DBUser} -p${DBPassword} db_tars < /root/sql/tarsquerystat.sql
 		mysql -h${DBIP} -P${DBPort} -u${DBUser} -p${DBPassword} db_tars < /root/sql/tarsqueryproperty.sql
 	fi
+
+	echo ${MachineIp} > /data/OldMachineIp
 }
 
 install_base_services(){
