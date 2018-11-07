@@ -57,7 +57,7 @@ build_cpp_framework(){
 		OLDIP=$(cat /data/OldMachineIp)
 		echo "DB db_tars already exists" > /root/DB_Exists.lock
 
-		mysql -h${DBIP} -P${DBPort} -u${DBUser} -p${DBPassword} -e "USE db_tars; UPDATE t_adapter_conf SET node_name=REPLACE(node_name, '${OLDIP}', '${MachineIp}'), endpoint=REPLACE(endpoint,'${OLDIP}', '${MachineIp}'); UPDATE t_machine_tars_info SET node_name=REPLACE(node_name, '${OLDIP}', '${MachineIp}'); UPDATE t_server_conf SET node_name=REPLACE(node_name, '${OLDIP}', '${MachineIp}'); UPDATE t_server_notifys SET node_name=REPLACE(node_name, '${OLDIP}', '${MachineIp}'), server_id=REPLACE(server_id, '${OLDIP}', '${MachineIp}'); DELETE FROM t_node_info WHERE present_state='inactive'; DELETE FROM t_registry_info WHERE present_state='inactive';"
+		mysql -h${DBIP} -P${DBPort} -u${DBUser} -p${DBPassword} -e "USE db_tars; UPDATE t_adapter_conf SET node_name=REPLACE(node_name, '${OLDIP}', '${MachineIp}'), endpoint=REPLACE(endpoint,'${OLDIP}', '${MachineIp}'); UPDATE t_machine_tars_info SET node_name=REPLACE(node_name, '${OLDIP}', '${MachineIp}'); UPDATE t_server_conf SET node_name=REPLACE(node_name, '${OLDIP}', '${MachineIp}'); UPDATE t_server_notifys SET node_name=REPLACE(node_name, '${OLDIP}', '${MachineIp}'), server_id=REPLACE(server_id, '${OLDIP}', '${MachineIp}'); DELETE FROM t_node_info WHERE node_name='${OLDIP}'; DELETE FROM t_registry_info WHERE locator_id LIKE '${OLDIP}:%';"
 
 		sed -i "s/${OLDIP}/${MachineIp}/g" `grep ${OLDIP} -rl /data/tarsnode_data/*`
 
