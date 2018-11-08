@@ -168,6 +168,8 @@ docker build -t tars-node -f Dockerfile .
 
 **[TARS JAVA服务端与客户端开发](https://tangramor.gitlab.io/tars-docker-guide/4.TARS-JAVA-%E6%9C%8D%E5%8A%A1%E7%AB%AF%E4%B8%8E%E5%AE%A2%E6%88%B7%E7%AB%AF%E5%BC%80%E5%8F%91/)**
 
+**[TARS Kubernetes部署](https://tangramor.gitlab.io/tars-docker-guide/9.TARS-Kubernetes-%E9%83%A8%E7%BD%B2/)**
+
 以上文档网站基于 https://github.com/tangramor/mkdocs 生成，支持 Gitlab Pages 和 PDF 导出（含中文）。
 
 
