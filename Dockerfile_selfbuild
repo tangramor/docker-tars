@@ -18,7 +18,7 @@ ENV GOPATH=/usr/local/go
 # 中文字符集支持
 ENV LC_ALL "zh_CN.UTF-8"
 
-ENV JAVA_HOME /usr/java/jdk-10.0.2
+ENV JAVA_HOME /usr/java/jdk-11.0.2
 
 ENV MAVEN_HOME /usr/local/apache-maven-3.5.4
 
@@ -26,8 +26,8 @@ ENV MAVEN_HOME /usr/local/apache-maven-3.5.4
 RUN yum -y install https://repo.mysql.com/yum/mysql-8.0-community/el/7/x86_64/mysql80-community-release-el7-1.noarch.rpm \
 	&& yum -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm \
 	&& yum -y install http://rpms.remirepo.net/enterprise/remi-release-7.rpm \
-	&& yum -y install yum-utils && yum-config-manager --enable remi-php72 \
-	&& yum -y install git gcc gcc-c++ go make wget cmake mysql mysql-devel unzip iproute which glibc-devel flex bison ncurses-devel protobuf-devel zlib-devel kde-l10n-Chinese glibc-common hiredis-devel rapidjson-devel boost boost-devel php php-cli php-devel php-mcrypt php-cli php-gd php-curl php-mysql php-zip php-fileinfo php-phpiredis php-seld-phar-utils tzdata \
+	&& yum -y install yum-utils && yum-config-manager --enable remi-php73 \
+	&& yum -y install git gcc gcc-c++ go make wget cmake mysql mysql-devel unzip iproute which glibc-devel flex bison ncurses-devel protobuf-devel zlib-devel kde-l10n-Chinese glibc-common hiredis-devel rapidjson-devel boost boost-devel php php-cli php-devel php-mbstring php-mcrypt php-json php-gd php-curl php-mysql php-zip php-fileinfo php-phpiredis php-seld-phar-utils pcre-devel tzdata \
 	# 设置时区与编码
 	&& ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone \
 	&& localedef -c -f UTF-8 -i zh_CN zh_CN.utf8 \
@@ -62,10 +62,12 @@ RUN yum -y install https://repo.mysql.com/yum/mysql-8.0-community/el/7/x86_64/my
 	&& ./configure --enable-phptars --with-php-config=/usr/bin/php-config && make && make install \
 	&& echo "extension=phptars.so" > /etc/php.d/phptars.ini \
 	# 安装PHP swoole模块
-	&& cd /root && wget -c -t 0 https://github.com/swoole/swoole-src/archive/v2.2.0.tar.gz \
-	&& tar zxf v2.2.0.tar.gz && cd swoole-src-2.2.0 && phpize && ./configure && make && make install \
+	&& cd /root && git clone https://github.com/swoole/swoole-src.git \
+	&& cd swoole-src && phpize \
+	&& ./configure --enable-openssl --enable-sockets \
+	&& make && make install \
 	&& echo "extension=swoole.so" > /etc/php.d/swoole.ini \
-	&& cd /root && rm -rf v2.2.0.tar.gz swoole-src-2.2.0 \
+	&& cd /root && rm -rf swoole-src \
 	&& mkdir -p /root/phptars && cp -f /root/Tars/php/tars2php/src/tars2php.php /root/phptars \
 	# 安装tars go
 	&& go get github.com/TarsCloud/TarsGo/tars \
@@ -76,14 +78,15 @@ RUN yum -y install https://repo.mysql.com/yum/mysql-8.0-community/el/7/x86_64/my
 	&& cp -Rf /root/Tars/web /usr/local/tarsweb && cd /usr/local/tarsweb/ && npm install \
 	&& npm install -g pm2 @tars/deploy @tars/stream @tars/rpc @tars/logs @tars/config @tars/monitor @tars/notify @tars/utils @tars/dyeing @tars/registry \
 	# 获取并安装JDK
-	&& mkdir -p /root/init && cd /root/init/ \
-	&& wget -c -t 0 --header "Cookie: oraclelicense=accept" -c --no-check-certificate http://download.oracle.com/otn-pub/java/jdk/10.0.2+13/90cf5d8f270a4347a95050320eef3fb7/jdk-10.0.2_linux-x64_bin.rpm \
-	&& rpm -ivh /root/init/jdk-10.0.2_linux-x64_bin.rpm && rm -rf /root/init/jdk-10.0.2_linux-x64_bin.rpm \
-	&& echo "export JAVA_HOME=/usr/java/jdk-10.0.2" >> /etc/profile \
+	&& mkdir -p /root/init && mkdir -p /usr/java && cd /root/init/ \
+	&& wget -c -t 0 https://download.java.net/java/GA/jdk11/9/GPL/openjdk-11.0.2_linux-x64_bin.tar.gz \
+	&& tar zxf openjdk-11.0.2_linux-x64_bin.tar.gz && mv jdk-11.0.2 /usr/java/ \
+	&& rm -rf /root/init/openjdk-11.0.2_linux-x64_bin.tar.gz \
+	&& echo "export JAVA_HOME=/usr/java/jdk-11.0.2" >> /etc/profile \
 	&& echo "CLASSPATH=\$JAVA_HOME/lib/dt.jar:\$JAVA_HOME/lib/tools.jar" >> /etc/profile \
 	&& echo "PATH=\$JAVA_HOME/bin:\$PATH" >> /etc/profile \
 	&& echo "export PATH JAVA_HOME CLASSPATH" >> /etc/profile \
-	&& echo "export JAVA_HOME=/usr/java/jdk-10.0.2" >> /root/.bashrc \
+	&& echo "export JAVA_HOME=/usr/java/jdk-11.0.2" >> /root/.bashrc \
 	&& echo "CLASSPATH=\$JAVA_HOME/lib/dt.jar:\$JAVA_HOME/lib/tools.jar" >> /root/.bashrc \
 	&& echo "PATH=\$JAVA_HOME/bin:\$PATH" >> /root/.bashrc \
 	&& echo "export PATH JAVA_HOME CLASSPATH" >> /root/.bashrc \
