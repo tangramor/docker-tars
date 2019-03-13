@@ -20,7 +20,7 @@ ENV LC_ALL "zh_CN.UTF-8"
 
 ENV JAVA_HOME /usr/java/jdk-11.0.2
 
-ENV MAVEN_HOME /usr/local/apache-maven-3.5.4
+ENV MAVEN_HOME /usr/local/apache-maven-3.6.0
 
 ##安装
 RUN yum -y install https://repo.mysql.com/yum/mysql-8.0-community/el/7/x86_64/mysql80-community-release-el7-1.noarch.rpm \
@@ -74,7 +74,7 @@ RUN yum -y install https://repo.mysql.com/yum/mysql-8.0-community/el/7/x86_64/my
 	&& cd $GOPATH/src/github.com/TarsCloud/TarsGo/tars/tools/tars2go && go build . \
 	# 获取并安装nodejs
 	&& wget -qO- https://raw.githubusercontent.com/creationix/nvm/v0.33.11/install.sh | bash \
-	&& source ~/.bashrc && nvm install v8.11.3 \
+	&& source ~/.bashrc && nvm install v8.15.1 \
 	&& cp -Rf /root/Tars/web /usr/local/tarsweb && cd /usr/local/tarsweb/ && npm install \
 	&& npm install -g pm2 @tars/deploy @tars/stream @tars/rpc @tars/logs @tars/config @tars/monitor @tars/notify @tars/utils @tars/dyeing @tars/registry \
 	# 获取并安装JDK
@@ -90,15 +90,19 @@ RUN yum -y install https://repo.mysql.com/yum/mysql-8.0-community/el/7/x86_64/my
 	&& echo "CLASSPATH=\$JAVA_HOME/lib/dt.jar:\$JAVA_HOME/lib/tools.jar" >> /root/.bashrc \
 	&& echo "PATH=\$JAVA_HOME/bin:\$PATH" >> /root/.bashrc \
 	&& echo "export PATH JAVA_HOME CLASSPATH" >> /root/.bashrc \
-	&& cd /usr/local/ && wget -c -t 0 https://mirrors.tuna.tsinghua.edu.cn/apache/maven/maven-3/3.5.4/binaries/apache-maven-3.5.4-bin.tar.gz \
-	&& tar zxvf apache-maven-3.5.4-bin.tar.gz && echo "export MAVEN_HOME=/usr/local/apache-maven-3.5.4/" >> /etc/profile \
+	&& cd /usr/local/ && wget -c -t 0 https://mirrors.tuna.tsinghua.edu.cn/apache/maven/maven-3/3.6.0/binaries/apache-maven-3.6.0-bin.tar.gz \
+	&& tar zxvf apache-maven-3.6.0-bin.tar.gz && echo "export MAVEN_HOME=/usr/local/apache-maven-3.6.0/" >> /etc/profile \
 	# 设置阿里云maven镜像
-	# && sed -i '/<mirrors>/a\\t<mirror>\n\t\t<id>nexus-aliyun<\/id>\n\t\t<mirrorOf>*<\/mirrorOf>\n\t\t<name>Nexus aliyun<\/name>\n\t\t<url>http:\/\/maven.aliyun.com\/nexus\/content\/groups\/public<\/url>\n\t<\/mirror>' /usr/local/apache-maven-3.5.4/conf/settings.xml \
+	# && sed -i '/<mirrors>/a\\t<mirror>\n\t\t<id>nexus-aliyun<\/id>\n\t\t<mirrorOf>*<\/mirrorOf>\n\t\t<name>Nexus aliyun<\/name>\n\t\t<url>http:\/\/maven.aliyun.com\/nexus\/content\/groups\/public<\/url>\n\t<\/mirror>' /usr/local/apache-maven-3.6.0/conf/settings.xml \
 	&& echo "export PATH=\$PATH:\$MAVEN_HOME/bin" >> /etc/profile \
 	&& echo "export PATH=\$PATH:\$MAVEN_HOME/bin" >> /root/.bashrc \
 	&& source /etc/profile && mvn -v \
-	&& rm -rf apache-maven-3.5.4-bin.tar.gz \
-	&& cd /root/Tars/java && source /etc/profile && mvn clean install && mvn clean install -f core/client.pom.xml \
+	&& rm -rf apache-maven-3.6.0-bin.tar.gz \
+	&& sed -i 's/<dependencies>/<dependencies>\n<dependency>\n\t<groupId>javax\.annotation<\/groupId>\n\t<artifactId>javax\.annotation-api<\/artifactId>\n\t<version>1\.3\.2<\/version>\n<\/dependency>/g' /root/Tars/java/core/server.pom.xml \
+	&& sed -i 's/<dependencies>/<dependencies>\n<dependency>\n\t<groupId>javax\.annotation<\/groupId>\n\t<artifactId>javax\.annotation-api<\/artifactId>\n\t<version>1\.3\.2<\/version>\n<\/dependency>/g' /root/Tars/java/core/client.pom.xml \
+	&& sed -i 's/<dependencies>/<dependencies>\n<dependency>\n\t<groupId>javax\.annotation<\/groupId>\n\t<artifactId>javax\.annotation-api<\/artifactId>\n\t<version>1\.3\.2<\/version>\n<\/dependency>/g' /root/Tars/java/core/pom.xml \
+	&& cd /root/Tars/java && source /etc/profile \
+	&& mvn clean install && mvn clean install -f core/client.pom.xml \
 	&& mvn clean install -f core/server.pom.xml \
 	&& cd /root/init && mvn archetype:generate -DgroupId=com.tangramor -DartifactId=TestJava -DarchetypeArtifactId=maven-archetype-webapp -DinteractiveMode=false \
 	&& cd /root/Tars/java/examples/quickstart-server/ && mvn tars:tars2java && mvn package \
