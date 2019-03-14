@@ -9,8 +9,8 @@ ENV TZ=Asia/Shanghai
 RUN yum -y install https://repo.mysql.com/mysql57-community-release-el7-11.noarch.rpm \
 	&& yum -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm \
 	&& yum -y install http://rpms.remirepo.net/enterprise/remi-release-7.rpm \
-	&& yum -y install yum-utils && yum-config-manager --enable remi-php72 \
-	&& yum --enablerepo=mysql80-community -y install git gcc gcc-c++ make wget cmake mysql mysql-devel unzip iproute which glibc-devel flex bison ncurses-devel protobuf-devel zlib-devel kde-l10n-Chinese glibc-common hiredis-devel rapidjson-devel boost boost-devel php php-cli php-devel php-mcrypt php-cli php-gd php-curl php-mysql php-zip php-fileinfo php-phpiredis php-seld-phar-utils tzdata \
+	&& yum -y install yum-utils && yum-config-manager --enable remi-php73 \
+	&& yum --enablerepo=mysql80-community -y install git gcc gcc-c++ make wget cmake mysql mysql-devel unzip iproute which glibc-devel flex bison ncurses-devel protobuf-devel zlib-devel kde-l10n-Chinese glibc-common hiredis-devel rapidjson-devel boost boost-devel php php-cli php-devel php-mbstring php-pecl-mcrypt php-json php-gd php-curl php-mysqlnd php-pecl-zip php-fileinfo php-phpiredis php-pecl-redis4 php-seld-phar-utils pcre-devel tzdata rsync \
 	# 设置时区与编码
 	&& ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone \
 	&& localedef -c -f UTF-8 -i zh_CN zh_CN.utf8 \
@@ -20,10 +20,9 @@ RUN yum -y install https://repo.mysql.com/mysql57-community-release-el7-11.noarc
 	&& cp -Rf include/jdbc/* /usr/include/mysql/ && cp -Rf include/mysqlx/* /usr/include/mysql/ && cp -Rf lib64/* /usr/lib64/mysql/ \
 	&& cd /root && rm -rf mysql-connector* \
 	&& mkdir -p /usr/local/mysql && ln -s /usr/lib64/mysql /usr/local/mysql/lib && ln -s /usr/include/mysql /usr/local/mysql/include && echo "/usr/local/mysql/lib/" >> /etc/ld.so.conf && ldconfig \
-	&& cd /usr/local/mysql/lib/ && rm -f libmysqlclient.a && ln -s libmysqlclient.so.*.*.* libmysqlclient.a
-
-# 获取最新TARS源码
-RUN cd /root/ && git clone https://github.com/TarsCloud/Tars \
+	&& cd /usr/local/mysql/lib/ && rm -f libmysqlclient.a && ln -s libmysqlclient.so.*.*.* libmysqlclient.a \
+	# 获取最新TARS源码
+	&& cd /root/ && git clone https://github.com/TarsCloud/Tars \
 	&& cd /root/Tars/ && git submodule update --init --recursive framework \
 	&& git submodule update --init --recursive web \
 	&& git submodule update --init --recursive php \
@@ -44,14 +43,16 @@ RUN cd /root/ && git clone https://github.com/TarsCloud/Tars \
 	&& ./configure --enable-phptars --with-php-config=/usr/bin/php-config && make && make install \
 	&& echo "extension=phptars.so" > /etc/php.d/phptars.ini \
 	# 安装PHP swoole模块
-	&& cd /root && wget -c -t 0 https://github.com/swoole/swoole-src/archive/v2.2.0.tar.gz \
-	&& tar zxf v2.2.0.tar.gz && cd swoole-src-2.2.0 && phpize && ./configure && make && make install \
+	&& cd /root && git clone https://github.com/swoole/swoole-src.git \
+	&& cd swoole-src && phpize \
+	&& ./configure --enable-openssl --enable-sockets \
+	&& make && make install \
 	&& echo "extension=swoole.so" > /etc/php.d/swoole.ini \
-	&& cd /root && rm -rf v2.2.0.tar.gz swoole-src-2.2.0 \
+	&& cd /root && rm -rf swoole-src \
 	&& mkdir -p /root/phptars && cp -f /root/Tars/php/tars2php/src/tars2php.php /root/phptars \
 	# 获取并安装nodejs
 	&& wget -qO- https://raw.githubusercontent.com/creationix/nvm/v0.33.11/install.sh | bash \
-	&& source ~/.bashrc && nvm install v8.11.3 \
+	&& source ~/.bashrc && nvm install v8.15.1 \
 	&& cp -Rf /root/Tars/web /usr/local/tarsweb && npm install -g pm2 --registry=https://registry.npm.taobao.org \
 	&& cd /usr/local/tarsweb/ && npm install --registry=https://registry.npm.taobao.org \
 	&& mkdir -p /root/sql && cp -rf /root/Tars/framework/sql/* /root/sql/ \
@@ -90,14 +91,14 @@ COPY --from=builder /usr/local/bin/composer /usr/local/bin/composer
 RUN yum -y install https://repo.mysql.com/mysql57-community-release-el7-11.noarch.rpm \
 	&& yum -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm \
 	&& yum -y install http://rpms.remirepo.net/enterprise/remi-release-7.rpm \
-	&& yum -y install yum-utils && yum-config-manager --enable remi-php72 \
-	&& yum --enablerepo=mysql80-community -y install wget mysql unzip iproute which flex bison protobuf zlib kde-l10n-Chinese glibc-common boost php-cli php-mcrypt php-mbstring php-cli php-gd php-curl php-mysql php-zip php-fileinfo php-phpiredis php-seld-phar-utils tzdata rsync \
+	&& yum -y install yum-utils && yum-config-manager --enable remi-php73 \
+	&& yum --enablerepo=mysql80-community -y install wget mysql unzip iproute which flex bison protobuf zlib kde-l10n-Chinese glibc-common boost php-cli php-devel php-mbstring php-pecl-mcrypt php-json php-gd php-curl php-mysqlnd php-pecl-zip php-fileinfo php-phpiredis php-pecl-redis4 php-seld-phar-utils pcre-devel tzdata rsync \
 	&& ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone \
 	&& localedef -c -f UTF-8 -i zh_CN zh_CN.utf8 \
 	&& mkdir -p /usr/local/mysql && ln -s /usr/lib64/mysql /usr/local/mysql/lib && ln -s /usr/include/mysql /usr/local/mysql/include && echo "/usr/local/mysql/lib/" >> /etc/ld.so.conf && ldconfig \
 	&& cd /usr/local/mysql/lib/ && rm -f libmysqlclient.a && ln -s libmysqlclient.so.*.*.* libmysqlclient.a \
 	&& wget -qO- https://raw.githubusercontent.com/creationix/nvm/v0.33.11/install.sh | bash \
-	&& source ~/.bashrc && nvm install v8.11.3 \
+	&& source ~/.bashrc && nvm install v8.15.1 \
 	&& cd /usr/local/tarsweb/ && npm install -g pm2 --registry=https://registry.npm.taobao.org \
 	&& yum clean all && rm -rf /var/cache/yum
 
