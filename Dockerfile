@@ -30,13 +30,13 @@ RUN yum -y install https://repo.mysql.com/yum/mysql-8.0-community/el/7/x86_64/my
 	&& yum -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm \
 	&& yum -y install http://rpms.remirepo.net/enterprise/remi-release-7.rpm \
 	&& yum -y install yum-utils && yum-config-manager --enable remi-php72 \
-	&& yum -y install wget mysql unzip iproute which flex bison protobuf zlib kde-l10n-Chinese glibc-common boost php-cli php-mcrypt php-mbstring php-cli php-gd php-curl php-mysql php-zip php-fileinfo php-phpiredis php-seld-phar-utils tzdata rsync \
+	&& yum -y install wget mysql unzip iproute which flex bison protobuf zlib kde-l10n-Chinese glibc-common boost php-cli php-devel php-mbstring php-mcrypt php-json php-gd php-curl php-mysql php-zip php-fileinfo php-phpiredis php-seld-phar-utils pcre-devel tzdata rsync \
 	&& ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone \
 	&& localedef -c -f UTF-8 -i zh_CN zh_CN.utf8 \
 	&& mkdir -p /usr/local/mysql && ln -s /usr/lib64/mysql /usr/local/mysql/lib && ln -s /usr/include/mysql /usr/local/mysql/include && echo "/usr/local/mysql/lib/" >> /etc/ld.so.conf && ldconfig \
 	&& cd /usr/local/mysql/lib/ && rm -f libmysqlclient.a && ln -s libmysqlclient.so.*.*.* libmysqlclient.a \
 	&& wget -qO- https://raw.githubusercontent.com/creationix/nvm/v0.33.11/install.sh | bash \
-	&& source ~/.bashrc && nvm install v8.11.3 \
+	&& source ~/.bashrc && nvm install v8.15.1 \
 	&& cd /usr/local/tarsweb/ && npm install -g pm2 --registry=https://registry.npm.taobao.org \
 	&& yum clean all && rm -rf /var/cache/yum
 
