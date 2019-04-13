@@ -50,6 +50,9 @@ COPY --from=builder /usr/local/tars /usr/local/tars
 COPY --from=builder /home/tarsproto /home/tarsproto
 COPY --from=builder /root/t*.tgz /root/
 COPY --from=builder /root/Tars/framework/sql /root/sql
+COPY --from=builder /root/Tars/framework/deploy/tars*/conf/*.config.conf /root/confs/
+
+RUN echo "nameserver 8.8.8.8" >> /etc/resolv.conf
 
 RUN yum install -y wget mysql unzip iproute which flex bison protobuf zlib kde-l10n-Chinese glibc-common \
 	&& ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone \
@@ -78,8 +81,6 @@ VOLUME ["/data"]
 ##拷贝资源
 COPY install.sh /root/init/
 COPY entrypoint.sh /sbin/
-
-ADD confs /root/confs
 
 RUN chmod 755 /sbin/entrypoint.sh
 ENTRYPOINT [ "/sbin/entrypoint.sh", "start" ]

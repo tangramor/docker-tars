@@ -148,6 +148,7 @@ install_base_services(){
 
 	sed -i "s/dbhost.*=.*192.168.2.131/dbhost = ${DBIP}/g" `grep dbhost -rl ./*`
 	sed -i "s/192.168.2.131/${MachineIp}/g" `grep 192.168.2.131 -rl ./*`
+	sed -i "s/localip.tars.com/${MachineIp}/g" `grep localip.tars.com -rl ./*`
 	sed -i "s/db.tars.com/${DBIP}/g" `grep db.tars.com -rl ./*`
 	sed -i "s/dbport.*=.*3306/dbport = ${DBPort}/g" `grep dbport -rl /usr/local/app/tars/*`
 	sed -i "s/registry.tars.com/${MachineIp}/g" `grep registry.tars.com -rl ./*`
