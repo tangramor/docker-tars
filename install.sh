@@ -194,8 +194,27 @@ build_web_mgr(){
 	mysql -h${DBIP} -P${DBPort} -u${DBUser} -p${DBPassword} db_tars_web < /usr/local/tarsweb/sql/db_tars_web.sql
 }
 
-build_cpp_framework
+#build_cpp_framework
 
-install_base_services
+#install_base_services
 
-build_web_mgr
+#build_web_mgr
+
+echo "Module:" $Module
+
+if [ "$Module" == "db_init" ]
+then
+	echo "build_cpp_framework"
+	build_cpp_framework
+elif [ "$Module" == "web" ]
+then
+	echo "build_web_mgr"
+	build_web_mgr
+elif [ "$Module" == "framework" ]
+then
+	echo "install_base_services"
+	install_base_services
+else
+	echo "error Module";
+fi
+

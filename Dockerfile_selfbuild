@@ -74,10 +74,14 @@ ENV INET_NAME eth0
 # 中文字符集支持
 ENV LC_ALL "zh_CN.UTF-8"
 
+ENV ServerName "default"
+
 VOLUME ["/data"]
 	
 ##拷贝资源
 COPY install.sh /root/init/
+COPY init_db.sh /root/init/
+COPY init_server.sh /root/init/
 COPY entrypoint.sh /sbin/
 
 RUN chmod 755 /sbin/entrypoint.sh

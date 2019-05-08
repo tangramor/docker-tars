@@ -1,0 +1,16 @@
+version: '3'
+services:
+    tars_web:
+        #image: "ccr.ccs.tencentyun.com/sedtars/tars:0413"
+        image: "tempest/tars:0425"
+        environment:
+            MOUNT_DATA: "true"
+            DBIP: 192.168.56.102
+            DBPort: 3306
+            DBUser: root
+            DBPassword: liye_somepassword
+            DBTarsPass: tars2019
+            INET_NAME: enp0s8
+            ServerName: "tars_web|tarsAdminRegistry|tarsregistry|tarsnode|tarsconfig|tarsnotify|tarsstat|tarsproperty|tarslog|tarsquerystat|tarsqueryproperty"
+        network_mode: "host"
+
