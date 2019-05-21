@@ -148,6 +148,7 @@ install_base_services(){
 
 	sed -i "s/dbhost.*=.*192.168.2.131/dbhost = ${DBIP}/g" `grep dbhost -rl ./*`
 	sed -i "s/192.168.2.131/${MachineIp}/g" `grep 192.168.2.131 -rl ./*`
+	sed -i "s/localip.tars.com/${MachineIp}/g" `grep localip.tars.com -rl ./*`
 	sed -i "s/db.tars.com/${DBIP}/g" `grep db.tars.com -rl ./*`
 	sed -i "s/dbport.*=.*3306/dbport = ${DBPort}/g" `grep dbport -rl /usr/local/app/tars/*`
 	sed -i "s/registry.tars.com/${MachineIp}/g" `grep registry.tars.com -rl ./*`
@@ -193,8 +194,27 @@ build_web_mgr(){
 	mysql -h${DBIP} -P${DBPort} -u${DBUser} -p${DBPassword} db_tars_web < /usr/local/tarsweb/sql/db_tars_web.sql
 }
 
-build_cpp_framework
+#build_cpp_framework
 
-install_base_services
+#install_base_services
 
-build_web_mgr
+#build_web_mgr
+
+echo "Module:" $Module
+
+if [ "$Module" == "db_init" ]
+then
+	echo "build_cpp_framework"
+	build_cpp_framework
+elif [ "$Module" == "web" ]
+then
+	echo "build_web_mgr"
+	build_web_mgr
+elif [ "$Module" == "framework" ]
+then
+	echo "install_base_services"
+	install_base_services
+else
+	echo "error Module";
+fi
+

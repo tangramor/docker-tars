@@ -50,6 +50,7 @@ COPY --from=builder /usr/local/tars /usr/local/tars
 COPY --from=builder /home/tarsproto /home/tarsproto
 COPY --from=builder /root/t*.tgz /root/
 COPY --from=builder /root/Tars/framework/sql /root/sql
+COPY --from=builder /root/Tars/framework/deploy/tars*/conf/*.config.conf /root/confs/
 
 RUN yum install -y wget mysql unzip iproute which flex bison protobuf zlib kde-l10n-Chinese glibc-common \
 	&& ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone \
@@ -73,13 +74,15 @@ ENV INET_NAME eth0
 # 中文字符集支持
 ENV LC_ALL "zh_CN.UTF-8"
 
+ENV ServerName "default"
+
 VOLUME ["/data"]
 	
 ##拷贝资源
 COPY install.sh /root/init/
+COPY init_db.sh /root/init/
+COPY init_server.sh /root/init/
 COPY entrypoint.sh /sbin/
-
-ADD confs /root/confs
 
 RUN chmod 755 /sbin/entrypoint.sh
 ENTRYPOINT [ "/sbin/entrypoint.sh", "start" ]

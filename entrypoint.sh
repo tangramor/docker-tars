@@ -1,30 +1,15 @@
 #!/bin/bash
 
-if [ -d /root/init ];then
+source /etc/profile
+source ~/.bashrc
 
-	for x in $(ls /root/init)
-	do
-		if [ -f /root/init/$x ];then
-			chmod u+x /root/init/$x
-			/bin/bash /root/init/$x
-			rm -rf /root/init/$x
-		fi
-	done
+if [ "${ServerName}" == "init_db" ]
+then
+	echo "init db";
+	/bin/bash /root/init/init_db.sh
+else
+	echo "init server";
+	/bin/bash /root/init/init_server.sh
+	tail -f /dev/null
 fi
-
-
-case ${1} in
-	init)
-		;;
-	start)
-		source /etc/profile
-		source ~/.bashrc
-		cd /usr/local/app/tars && ./tars_install.sh
-		cd /usr/local/tarsweb/ && npm run prd
-		tail -f /dev/null
-		;;
-	*)
-		exec "$@"
-		;;
-esac
 
